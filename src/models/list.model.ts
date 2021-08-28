@@ -1,49 +1,46 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-import { Sequelize, DataTypes, Model, CreateOptions } from 'sequelize';
+import { Sequelize, DataTypes, Model } from 'sequelize';
 import { Application } from '../declarations';
 import { HookReturn } from 'sequelize/types/lib/hooks';
 
 export default function (app: Application): typeof Model {
   const sequelizeClient: Sequelize = app.get('sequelizeClient');
-  const users = sequelizeClient.define('users', {
-    uuid: {
+  const list = sequelizeClient.define('list', {
+    listid: {
       type: DataTypes.UUID,
       allowNull: false,
-      unique: true,
     },
-    email: {
+    owner: {
+      type: DataTypes.UUID
+    },
+    name: {
+      type: DataTypes.STRING
+    },
+    description: {
+      type: DataTypes.STRING
+    },
+    items: {
+      type: DataTypes.JSONB
+    },
+    backgroundURI: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    fullName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    avatarURI: {
-      type: DataTypes.STRING,
-    },
-
-    googleId: { type: DataTypes.STRING },
-    githubId: { type: DataTypes.STRING },
+      allowNull: true,
+      defaultValue: '',
+    }
   }, {
     hooks: {
       beforeCount(options: any): HookReturn {
-        options.raw = true;
+        options.raw = false;
       }
     }
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (users as any).associate = function (models: any): void {
+  (list as any).associate = function (models: any): void {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
   };
 
-  return users;
+  return list;
 }

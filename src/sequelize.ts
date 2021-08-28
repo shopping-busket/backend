@@ -4,7 +4,7 @@ import { Application } from './declarations';
 export default function (app: Application): void {
   const connectionString = app.get('postgres');
   const sequelize = new Sequelize(connectionString, {
-    dialect: 'postgres',
+    dialect: 'postgres', // sqlite
     logging: false,
     define: {
       freezeTableName: true
@@ -26,7 +26,11 @@ export default function (app: Application): void {
     });
 
     // Sync to the database
-    app.set('sequelizeSync', sequelize.sync());
+    try {
+      app.set('sequelizeSync', sequelize.sync({ logging: i => console.log(`${i}\n`)}));
+    } catch (e) {
+      console.error(e);
+    }
 
     return result;
   };

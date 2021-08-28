@@ -1,48 +1,9 @@
 {
-  "host": "localhost",
+  "host": "192.168.4.48",
   "port": 3030,
   "public": "../public/",
   "paginate": {
     "default": 10,
     "max": 50
-  },
-  "authentication": {
-    "entity": "user",
-    "service": "users",
-    "secret": "vbBNnaEcTL1gDymQISOAZ0xMxPI=",
-    "authStrategies": [
-      "jwt",
-      "local"
-    ],
-    "jwtOptions": {
-      "header": {
-        "typ": "access"
-      },
-      "audience": "https://yourdomain.com",
-      "issuer": "feathers",
-      "algorithm": "HS256",
-      "expiresIn": "1d"
-    },
-    "local": {
-      "usernameField": "email",
-      "passwordField": "password"
-    },
-    "oauth": {
-      "redirect": "/",
-      "google": {
-        "key": "<google oauth key>",
-        "secret": "<google oauth secret>",
-        "scope": [
-          "email",
-          "profile",
-          "openid"
-        ]
-      },
-      "github": {
-        "key": "<github oauth key>",
-        "secret": "<github oauth secret>"
-      }
-    }
-  },
-  "postgres": "postgres://postgres:@localhost:5432/backend"
+  }
 }
