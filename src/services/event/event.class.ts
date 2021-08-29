@@ -14,7 +14,7 @@ interface Data {
 interface ServiceOptions {
 }
 
-export class Log implements ServiceMethods<Data> {
+export class Event implements ServiceMethods<Data> {
   app: Application;
   options: ServiceOptions;
 

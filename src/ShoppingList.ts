@@ -122,7 +122,7 @@ export default class ShoppingList {
 
   /**
    * Clear list of items that are marked as done.
-   * @return {IShoppingListItem[]} All the items marked as done before deletion, to, for example: push the values to log.
+   * @return {IShoppingListItem[]} All the items marked as done before deletion, to, for example: push the values to event.
    */
   public clearDone (): IShoppingListItem[] {
     const del = this.items.filter((t) => t.done);
