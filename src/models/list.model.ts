@@ -20,7 +20,7 @@ export default function (app: Application): typeof Model {
     description: {
       type: DataTypes.STRING
     },
-    items: {
+    entries: {
       type: DataTypes.JSONB
     },
     backgroundURI: {
