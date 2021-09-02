@@ -3,6 +3,8 @@ logs
 *.log
 
 src/shoppinglist
+config/local.json
+public/*
 
 # Runtime data
 pids
