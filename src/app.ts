@@ -38,6 +38,7 @@ app.use(helmet({
   contentSecurityPolicy: false
 }));
 app.use(cors());
+app.use(historyMiddleware)
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
