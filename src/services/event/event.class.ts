@@ -20,6 +20,11 @@ interface Data {
     state: {
       name: string,
       done: boolean,
+      aboveEntry?: string,
+      belowEntry?: string,
+      index?: number,
+      oldIndex?: number,
+      newIndex?: number,
     },
     isoDate: string,
   },
@@ -83,7 +88,7 @@ export class Event implements ServiceMethods<Data> {
         case EventType.DELETE_ENTRY:
           console.log(`Delete entry at ${event.isoDate}`);
 
-          const item = entries.items.forEach((t: IShoppingListItem, i: number) => {
+          entries.items.forEach((t: IShoppingListItem, i: number) => {
             if (t.id === event.entryId) {
               entries.items.splice(i, 1);
               found = true;
@@ -95,7 +100,38 @@ export class Event implements ServiceMethods<Data> {
 
           break;
         case EventType.MOVE_ENTRY:
-          console.log('Not implemented yet!');
+          // TODO: Don't just do it with index :)
+          // Reason of a try-catch: Feathers behaves weird with errors
+          try {
+            console.log(event.state);
+            if (event.state.oldIndex === undefined || event.state.newIndex === undefined) await Promise.reject('Missing parameters!');
+
+            let newIndex = event.state.newIndex;
+            entries.items.forEach((t: IShoppingListItem, i: number) => {
+              if (event.state.aboveEntry !== undefined && t.id === event.state.aboveEntry) {
+                newIndex = i;
+              } else if (event.state.belowEntry !== undefined && t.id === event.state.belowEntry) {
+                newIndex = i;
+              }
+            });
+            found = true;
+
+            entries.items.forEach((t: IShoppingListItem, i: number) => {
+              if (t.id === event.entryId) {
+                const element = entries.items[event.state.oldIndex || 0];
+                entries.items.splice(event.state.oldIndex, 1);
+                entries.items.splice(newIndex, 0, element);
+                found = true;
+              }
+            });
+            if (!found) await Promise.reject('Can\'t find item! Wrong id.');
+
+            updated = { entries };
+          } catch (e) {
+            console.log(e);
+            await Promise.reject(e);
+          }
+
           break;
         default:
           console.log('Received unknown event type!');
