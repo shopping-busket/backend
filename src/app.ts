@@ -1,3 +1,4 @@
+import historyApiFallback from 'connect-history-api-fallback';
 import path from 'path';
 import favicon from 'serve-favicon';
 import compress from 'compression';
@@ -24,6 +25,11 @@ import * as fs from 'fs';
 
 const app: Application = express(feathers());
 export type HookContext<T = any> = { app: Application } & FeathersHookContext<T>;
+
+const historyMiddleware = historyApiFallback({
+  verbose: true,
+  logger: console.log.bind(console),
+});
 
 // Load app configuration
 app.configure(configuration());
