@@ -29,6 +29,22 @@ export default function (app: Application): typeof Model {
       type: DataTypes.STRING,
     },
 
+    preferredLanguage: {
+      type: DataTypes.STRING,
+      defaultValue: 'en',
+      allowNull: false,
+    },
+    prefersDarkMode: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+    prefersMiniDrawer: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+
     googleId: { type: DataTypes.STRING },
     githubId: { type: DataTypes.STRING },
   }, {
