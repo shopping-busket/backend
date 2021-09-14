@@ -27,7 +27,7 @@ export default function (app: Application): void {
 
     // Sync to the database
     try {
-      app.set('sequelizeSync', sequelize.sync({ logging: i => console.log(`${i}\n`), force: true }));
+      app.set('sequelizeSync', sequelize.sync({ logging: i => console.log(`${i}\n`), force: false }));
     } catch (e) {
       console.error(e);
     }
