@@ -59,7 +59,7 @@ export class Event implements ServiceMethods<Data> {
       let [found, update] = [false, {}];
       switch (event.event) {
         case EventType.CREATE_ENTRY:
-          entries.items.push({ id: event.entryId, ...event.state });
+          entries.items.unshift({ id: event.entryId, ...event.state });
           updated = { entries };
           break;
         case EventType.CHANGED_ENTRY_NAME:
