@@ -114,3 +114,4 @@ $RECYCLE.BIN/
 # Others
 lib/
 data/
+/shoppinglist/data.json
