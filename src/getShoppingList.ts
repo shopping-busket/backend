@@ -5,7 +5,11 @@ import * as fs from 'fs';
 console.log(`Checking ShoppingList file for updates.`);
 
 const path = 'shoppinglist'
-const filePath = 'src/shoppinglist/ShoppingList.ts'
+const filePath = {
+  dir: 'src/shoppinglist/',
+  file: 'ShoppingList.ts',
+  path: () => filePath.dir + filePath.file,
+}
 
 export async function checkUpdates(): Promise<void> {
   let requestSuccess = true;
@@ -50,9 +54,10 @@ async function getOrSetLastUpdate(): Promise<{ lastUpdate: string }> {
 
 async function downloadFile() {
   const content = await axios.get("https://raw.githubusercontent.com/shopping-busket/web/master/src/shoppinglist/ShoppingList.ts")
-  await fsp.writeFile(filePath, content.data);
+  await fsp.mkdir(filePath.dir, {recursive: true});
+  await fsp.writeFile(filePath.path(), content.data);
 }
 
 if (require.main === module) {
-  checkUpdates();
+  (async () => await checkUpdates())();
 }
