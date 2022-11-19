@@ -42,6 +42,14 @@ app.use(historyMiddleware)
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  console.log("app.middleware")
+  if (req.body && typeof req.body !== 'object') {
+    req.body = { data: req.body };
+  }
+  next();
+});
+
 try {
   app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
 } catch (e) {
@@ -49,7 +57,7 @@ try {
 }
 // Host the public folder
 app.use('/', express.static(app.get('public')));
-
+// app.use(bodyParser.text({type: 'text/plain'}));
 // Set up Plugins and providers
 app.configure(express.rest());
 app.configure(socketio());

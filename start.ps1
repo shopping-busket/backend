@@ -12,7 +12,7 @@ if ($close.Equals($false))
     return
   }
 
-  Start-Process -FilePath "powershell" -Verb RunAs -ArgumentList "/c Start-Service postgresql-x64-13"
+  Start-Process -FilePath "powershell" -Verb RunAs -ArgumentList "/c Start-Service postgresql-x64-14"
 } else {
   if ($Service.Status.Equals("Stopped")) {
     Write-Output "Service already stopped."

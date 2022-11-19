@@ -1,7 +1,11 @@
 import logger from './logger';
 import app from './app';
 import { exec } from 'child_process';
+import { checkUpdates } from "./getShoppingList";
 
+(async () => {
+  await checkUpdates()
+})();
 const port = app.get('port');
 const server = app.listen(port);
 
@@ -27,7 +31,7 @@ process.on('SIGUSR2', exitHandler.bind(null));
 process.on('uncaughtException', exitHandler.bind(null));
 
 function exitHandler () {
-  console.log('Stopping postgres...');
-  exec('powershell .\\start.ps1 $true');
+  // console.log('Stopping postgres...');
+  // exec('powershell .\\start.ps1 $true');
   process.exit();
 }
