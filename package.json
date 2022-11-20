@@ -24,10 +24,10 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "pull-shoppinglist": "ts-node-dev --no-notify src/getShoppingList.ts",
+    "pull-shoppinglist": "ts-node-dev --no-notify ./src/getShoppingList.ts",
     "test": "npm run lint && npm run compile && npm run mocha",
-    "lint": "eslint src/. test/. --config .eslintrc.json --ext .ts --fix",
-    "dev": "ts-node-dev --no-notify src/",
+    "lint": "eslint ./src/. test/. --config .eslintrc.json --ext .ts --fix",
+    "dev": "ts-node-dev --no-notify ./src/",
     "stop-postgres": "echo Stopping... && powershell .\\start.ps1 $true && echo Stopped PostgreSQL!",
     "start": "npm run compile && node lib/",
     "mocha": "ts-mocha \"test/**/*.ts\" --recursive --exit",
@@ -56,16 +56,19 @@
     "connect-history-api-fallback": "^1.6.0",
     "cors": "^2.8.5",
     "exit-hook": "^3.0.0",
+    "express": "^4.18.2",
     "feathers-sequelize": "^6.2.0",
     "helmet": "^4.6.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.6.5",
+    "sequelize": "^6.25.7",
     "serve-favicon": "^2.5.0",
     "shx": "^0.3.3",
     "sqlite": "^4.0.23",
     "sqlite3": "^5.0.2",
-    "ts-node-dev": "^1.1.8",
+    "src": "link:./src",
+    "ts-node-dev": "latest",
+    "typescript": "^4.9.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -79,5 +82,6 @@
     "@types/uuid": "^8.3.1",
     "@types/validator": "^10.11.3",
     "sequelize-cli": "^6.2.0"
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }
