@@ -37,6 +37,7 @@ export default {
     all: [
       (ctx: HookContext) => {
         console.log("app.hooks error->all");
+        console.error(ctx);
         return ctx;
       }
     ],
