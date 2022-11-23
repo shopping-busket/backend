@@ -1,6 +1,6 @@
-import {IShoppingListEntries, IShoppingListItem} from "../../shoppinglist/ShoppingList";
-import {NotImplemented} from "@feathersjs/errors";
-import app from "../../app";
+import { IShoppingListEntries, IShoppingListItem } from "../../shoppinglist/ShoppingList";
+import { NotImplemented } from "@feathersjs/errors";
+import { Model } from "sequelize";
 
 export interface Event {
   event: EventType,
@@ -20,6 +20,12 @@ export interface Event {
 export interface EventData {
   event: Event,
   entries: IShoppingListEntries,
+  list?: Model<any, any>
+}
+
+export interface EventReceiverData {
+  event: Event,
+  list: Model<any, any>,
 }
 
 export enum EventType {
@@ -32,13 +38,25 @@ export enum EventType {
   MARK_ENTRY_TODO = 'MARK_ENTRY_TODO',
 }
 
-export type NewEntryState = { found: boolean, update: Record<string, any> };
+export type NewEntryState = {
+  update: {
+    entries?: Record<string, any>,
+    checkedEntries?: Record<string, any>,
+  },
+  found: boolean,
+};
 export type NewEntryStateAsync = Promise<NewEntryState>;
 
 export class EventReceiver {
-  public async receive({event, entries}: EventData): NewEntryStateAsync {
-    const eventData: EventData = {event, entries};
-    let res: NewEntryState = {found: false, update: {}};
+  public async receive({ event, list }: EventReceiverData): NewEntryStateAsync {
+    const entries = list.getDataValue("entries");
+
+    if (event.event === EventType.MARK_ENTRY_TODO || event.event == EventType.MARK_ENTRY_DONE) {
+      return await this.markEntryAsDone({ event, entries, list }, false);
+    }
+
+    const eventData: EventData = { event, entries };
+    let res: NewEntryState = { found: false, update: {} };
     switch (event.event) {
       case EventType.CREATE_ENTRY:
         res = await this.createEntry(eventData);
@@ -60,14 +78,6 @@ export class EventReceiver {
         res = await this.renameEntry(eventData);
         break;
 
-      case EventType.MARK_ENTRY_DONE:
-        res = await this.markEntryAsDone(eventData, true);
-        break;
-
-      case EventType.MARK_ENTRY_TODO:
-        res = await this.markEntryAsDone(eventData, false);
-        break;
-
       default:
         console.log('Received unknown event type!');
         await Promise.reject('Received unknown event type!');
@@ -78,7 +88,7 @@ export class EventReceiver {
   }
 
   async modifyEntryState(eventData: EventData, key: string, val: boolean | string): NewEntryStateAsync {
-    const {event, entries} = eventData;
+    const { event, entries } = eventData;
     entries.items.find((t: IShoppingListItem) => t.id === event.entryId)
 
     let found = false;
@@ -90,11 +100,11 @@ export class EventReceiver {
         if (key === 'name' && typeof val === 'string') {
           entry.name = val;
         } else if (typeof val === 'boolean') {
-          entry.done = val;
+          console.log('Deprecation Warn: Action skipped because modifying entry.done is now deprecated. Put it in the checkedEntries list instead.');
         }
 
         found = true;
-        updated = {entries};
+        updated = { entries };
       }
     }
 
@@ -104,12 +114,28 @@ export class EventReceiver {
     };
   }
 
-  public createEntry({event, entries}: EventData): NewEntryState {
-    entries.items.unshift({id: event.entryId, ...event.state});
-    return {update: { entries }, found: true};
+  public generateEntryChanges(entries: IShoppingListEntries, found: boolean, isCheckedEntry?: boolean): NewEntryState {
+    const changes: NewEntryState = {
+      update: {},
+      found,
+    };
+
+    if (isCheckedEntry != null && isCheckedEntry) {
+      changes.update.checkedEntries = entries;
+    } else {
+      changes.update.entries = entries;
+    }
+
+    return changes;
   }
 
-  public async moveEntry({event, entries}: EventData): NewEntryStateAsync {
+  public createEntry({ event, entries }: EventData, isCheckedEntry?: boolean): NewEntryState {
+    entries.items.unshift({ id: event.entryId, ...event.state });
+
+    return this.generateEntryChanges(entries, true, isCheckedEntry);
+  }
+
+  public async moveEntry({ event, entries }: EventData): NewEntryStateAsync {
     let found = false;
     try {
       if (event.state.oldIndex == null || event.state.newIndex == null) await Promise.reject('Missing parameters!');
@@ -117,7 +143,7 @@ export class EventReceiver {
 
       entries.items.forEach((t: IShoppingListItem) => {
         if (t.id === event.entryId) {
-          const element = entries.items[event.state.oldIndex ||  0];
+          const element = entries.items[event.state.oldIndex || 0];
           entries.items.splice(<number>event.state.oldIndex, 1);
           entries.items.splice(<number>event.state.newIndex, 0, element);
           console.log("modified", JSON.stringify(entries, null, 4))
@@ -131,14 +157,14 @@ export class EventReceiver {
       await Promise.reject(e);
     }
 
-    return {found, update: { entries }}
+    return { found, update: { entries } }
   }
 
-  public async moveEntryRequest({event, entries}: EventData): NewEntryStateAsync {
+  public async moveEntryRequest({ event, entries }: EventData): NewEntryStateAsync {
     throw new NotImplemented();
   }
 
-  public async deleteEntry({event, entries}: EventData): NewEntryStateAsync {
+  public async deleteEntry({ event, entries }: EventData, isCheckedEntry = false): NewEntryStateAsync {
     let found = false;
     entries.items.forEach((t: IShoppingListItem, i: number) => {
       if (t.id === event.entryId) {
@@ -146,14 +172,23 @@ export class EventReceiver {
         found = true;
       }
     });
-    return {update: { entries }, found};
+
+    return this.generateEntryChanges(entries, found, isCheckedEntry);
   }
 
   public async renameEntry(eventData: EventData): NewEntryStateAsync {
     return this.modifyEntryState(eventData, 'name', eventData.event.state.name);
   }
 
-  public async markEntryAsDone(eventData: EventData, done: boolean): NewEntryStateAsync {
-    return this.modifyEntryState(eventData, 'done', done);
+  public async markEntryAsDone({ entries, event, list }: EventData, markAsDone: boolean): NewEntryStateAsync {
+    const checkedEntries = list?.getDataValue("checkedEntries");
+
+    if (markAsDone) {
+      await this.deleteEntry({ event, entries }, false);
+      return this.createEntry({ event, entries: checkedEntries }, true)
+    }
+
+    await this.deleteEntry({ entries: checkedEntries, event }, true);
+    return this.createEntry({ event, entries }, false)
   }
 }

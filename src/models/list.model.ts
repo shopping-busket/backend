@@ -1,6 +1,6 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-import { Sequelize, DataTypes, Model } from 'sequelize';
+import { Sequelize, DataTypes, Model, CreateOptions } from 'sequelize';
 import { Application } from '../declarations';
 import { HookReturn } from 'sequelize/types/hooks';
 
@@ -22,6 +22,9 @@ export default function (app: Application): typeof Model {
     },
     entries: {
       type: DataTypes.JSONB
+    },
+    checkedEntries: {
+      type: DataTypes.JSONB,
     },
     backgroundURI: {
       type: DataTypes.STRING,

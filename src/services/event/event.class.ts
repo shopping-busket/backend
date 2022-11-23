@@ -1,8 +1,8 @@
-import {Id, NullableId, Paginated, Params, ServiceMethods} from '@feathersjs/feathers';
-import {Application} from '../../declarations';
-import {Sequelize} from 'sequelize';
-import {Event as IEvent, EventReceiver} from './eventReceiver';
-import {NotFound} from "@feathersjs/errors";
+import { Id, NullableId, Paginated, Params, ServiceMethods } from '@feathersjs/feathers';
+import { Application } from '../../declarations';
+import { Sequelize } from 'sequelize';
+import { Event as IEvent, EventReceiver } from './eventReceiver';
+import { NotFound } from "@feathersjs/errors";
 
 interface Data {
   listid: string,
@@ -30,26 +30,20 @@ export class Event implements ServiceMethods<Data> {
     for (const d of data) {
       const event = d.eventData;
 
-      const oldList = await this.sequelizeClient.models.list.findOne({where: {listid: d.listid}});
-      if (!oldList) await Promise.reject('List not found. Is the given listid correct?');
+      const oldList = await this.sequelizeClient.models.list.findOne({ where: { listid: d.listid } });
+      if (!oldList) throw new NotFound('List not found. Is the given listid correct?');
 
       const entries = oldList?.getDataValue('entries');
       if (!entries.items) entries.items = [];
 
-      let {found, update} = (await this.eventReceiver.receive({event, entries}));
-      if (!found) await new NotFound('Item not found!');
+      let { found, update } = (await this.eventReceiver.receive({ event, list: oldList }));
+      if (!found) throw new NotFound('Item not found!');
 
-      const list = await this.sequelizeClient.models.list.findOne({where: {listid: d.listid}});
-      if (!list) {
-        await Promise.reject('List not found. Is the given id correct?');
-      }
+      console.log('upd', JSON.stringify(update, null, 4));
 
-      let updated = update;
-      if (Object.hasOwnProperty.call(updated, "items")) {
-        updated = updated.items;
-      }
-      console.log('upd', JSON.stringify(updated, null, 4));
-      await list?.update(updated).catch(e => console.log);
+      const list = await this.sequelizeClient.models.list.findOne({ where: { listid: d.listid } });
+      if (!list) throw new NotFound('List not found. Is the given listid correct?');
+      await list?.update(update).catch(e => console.log);
     }
 
     return data;
