@@ -2,8 +2,7 @@
 // Don't remove this comment. It's needed to format import lines nicely.
 
 
-import {HookContext} from "@feathersjs/feathers";
-import logger from "./logger";
+import { HookContext } from "@feathersjs/feathers";
 
 export default {
   before: {

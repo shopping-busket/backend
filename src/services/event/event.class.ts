@@ -1,18 +1,13 @@
 import { Id, NullableId, Paginated, Params, ServiceMethods } from '@feathersjs/feathers';
 import { Application } from '../../declarations';
 import { Sequelize } from 'sequelize';
-import { Event as IEvent, EventReceiver } from './eventReceiver';
-import { NotFound } from "@feathersjs/errors";
-
-interface Data {
-  listid: string,
-  eventData: IEvent,
-}
+import { EventReceiver, RawEventData } from './eventReceiver';
+import { NotFound } from '@feathersjs/errors';
 
 interface ServiceOptions {
 }
 
-export class Event implements ServiceMethods<Data> {
+export class Event implements ServiceMethods<RawEventData> {
   sequelizeClient: Sequelize;
   app: Application;
   options: ServiceOptions;
@@ -22,55 +17,44 @@ export class Event implements ServiceMethods<Data> {
     this.options = options;
     this.app = app;
     this.sequelizeClient = this.app.get('sequelizeClient');
-    this.eventReceiver = new EventReceiver();
+    this.eventReceiver = new EventReceiver(this.sequelizeClient);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async create(data: Data[], params?: Params): Promise<Data[]> {
-    for (const d of data) {
-      const event = d.eventData;
-
-      const oldList = await this.sequelizeClient.models.list.findOne({ where: { listid: d.listid } });
-      if (!oldList) throw new NotFound('List not found. Is the given listid correct?');
-
-      const entries = oldList?.getDataValue('entries');
-      if (!entries.items) entries.items = [];
-
-      let { found, update } = (await this.eventReceiver.receive({ event, list: oldList }));
-      if (!found) throw new NotFound('Item not found!');
-
-      console.log('upd', JSON.stringify(update, null, 4));
-
-      const list = await this.sequelizeClient.models.list.findOne({ where: { listid: d.listid } });
+  async create(dataArray: RawEventData[], params?: Params): Promise<RawEventData[]> {
+    for (const data of dataArray) {
+      const list = await this.sequelizeClient.models.list.findOne({ where: { listid: data.listid } });
       if (!list) throw new NotFound('List not found. Is the given listid correct?');
-      await list?.update(update).catch(e => console.log);
+
+      const newState = (await this.eventReceiver.receive({ event: data.eventData, list }));
+      await this.eventReceiver.applyUpdateIfFound(newState);
     }
 
-    return data;
+    return dataArray;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async find(params?: Params): Promise<Data[] | Paginated<Data>> {
+  async find(params?: Params): Promise<RawEventData[] | Paginated<RawEventData>> {
     return Promise.reject('Not implemented. Only allows CREATE!');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async get(id: Id, params?: Params): Promise<Data> {
+  async get(id: Id, params?: Params): Promise<RawEventData> {
     return Promise.reject('Not implemented. Only allows CREATE!');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(id: NullableId, data: Data, params?: Params): Promise<Data> {
+  async update(id: NullableId, data: RawEventData, params?: Params): Promise<RawEventData> {
     return Promise.reject('Not implemented. Only allows CREATE!');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async patch(id: NullableId, data: Data, params?: Params): Promise<Data> {
+  async patch(id: NullableId, data: RawEventData, params?: Params): Promise<RawEventData> {
     return Promise.reject('Not implemented. Only allows CREATE!');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async remove(id: NullableId, params?: Params): Promise<Data> {
+  async remove(id: NullableId, params?: Params): Promise<RawEventData> {
     return Promise.reject('Not implemented. Only allows CREATE!');
   }
 }
