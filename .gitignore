@@ -13,7 +13,6 @@
 logs
 *.log
 
-src/shoppinglist
 config/local.json
 public/*
 
@@ -125,4 +124,3 @@ $RECYCLE.BIN/
 # Others
 lib/
 data/
-/shoppinglist/data.json
