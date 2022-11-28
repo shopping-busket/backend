@@ -2,7 +2,7 @@ import {
   IShoppingListEntries,
   IShoppingListItem, ShoppingListItem, EntryList,
 } from '../../shoppinglist/ShoppingList';
-import { NotFound, NotImplemented } from '@feathersjs/errors';
+import { NotFound } from '@feathersjs/errors';
 import { Model, Sequelize } from 'sequelize';
 
 export interface Event {
@@ -38,7 +38,6 @@ export interface EventReceiverData {
 
 export enum EventType {
   MOVE_ENTRY = 'MOVE_ENTRY',
-  MOVE_ENTRY_REQUEST = 'MOVE_ENTRY_REQUEST',
   DELETE_ENTRY = 'DELETE_ENTRY',
   CREATE_ENTRY = 'CREATE_ENTRY',
   CHANGED_ENTRY_NAME = 'CHANGED_ENTRY_NAME',
@@ -98,10 +97,6 @@ export class EventReceiver {
 
     case EventType.MOVE_ENTRY:
       res = await this.moveEntry(eventData);
-      break;
-
-    case EventType.MOVE_ENTRY_REQUEST:
-      res = await this.moveEntryRequest(eventData);
       break;
 
     case EventType.DELETE_ENTRY:
@@ -215,15 +210,11 @@ export class EventReceiver {
     return { found, update: { entries } };
   }
 
-  public async moveEntryRequest({ event, entries }: EventData): NewEntryStateAsync {
-    throw new NotImplemented();
-  }
-
   public async deleteEntry(eventData: EventData): NewEntryStateAsync {
     if (!eventData.checkedEntries) return Promise.reject('checkedEntries not loaded');
 
     let found = false;
-    const foundEntry = this.globalFind(eventData.entries, eventData.checkedEntries, (t, i, l, foundInList) => t.id === eventData.event.entryId);
+    const foundEntry = this.globalFind(eventData.entries, eventData.checkedEntries, (t) => t.id === eventData.event.entryId);
     if (foundEntry == null) return Promise.reject('Item not found!');
 
     eventData[foundEntry.foundIn]?.items.splice(foundEntry.index, 1);

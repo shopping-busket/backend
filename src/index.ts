@@ -1,11 +1,6 @@
 import logger from './logger';
 import app from './app';
-import { exec } from 'child_process';
-import { checkUpdates } from "./getShoppingList";
 
-(async () => {
-  await checkUpdates()
-})();
 const port = app.get('port');
 const server = app.listen(port);
 

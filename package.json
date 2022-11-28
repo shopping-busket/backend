@@ -24,7 +24,6 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "pull-shoppinglist": "ts-node-dev --no-notify ./src/getShoppingList.ts",
     "test": "npm run lint && npm run compile && npm run mocha",
     "lint": "eslint ./src/. test/. --config .eslintrc.json --ext .ts --fix",
     "dev": "ts-node-dev --no-notify ./src/",
