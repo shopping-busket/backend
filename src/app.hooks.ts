@@ -2,13 +2,13 @@
 // Don't remove this comment. It's needed to format import lines nicely.
 
 
-import { HookContext } from "@feathersjs/feathers";
+import { HookContext } from '@feathersjs/feathers';
 
 export default {
   before: {
     all: [
       (ctx: HookContext) => {
-        if (ctx.data && typeof ctx.data === "string") {
+        if (ctx.data && typeof ctx.data === 'string') {
           ctx.data = JSON.parse(ctx.data);
         }
         return ctx;
@@ -35,7 +35,7 @@ export default {
   error: {
     all: [
       (ctx: HookContext) => {
-        console.log("app.hooks error->all");
+        console.log('app.hooks error->all');
         console.error(ctx);
         return ctx;
       }

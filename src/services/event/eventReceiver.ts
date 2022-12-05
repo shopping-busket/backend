@@ -239,14 +239,14 @@ export class EventReceiver {
     return this.createEntry({ event, entries }, false);
   }
 
-  public async applyUpdateIfFound(newState: NewEntryState, _list?: Model<any, any>) {
+  public async applyUpdateIfFound(newState: NewEntryState) {
     if (newState.found) {
-      return this.applyUpdate(newState, _list);
+      return this.applyUpdate(newState);
     }
     throw new NotFound('Item not found');
   }
 
-  public async applyUpdate(newState: NewEntryState, _list?: Model<any, any>): Promise<void> {
+  public async applyUpdate(newState: NewEntryState): Promise<void> {
     await this.sequelizeClient.models.list.update(newState.update, {
       where: {
         listid: this.currentList?.getDataValue('listid') || '',

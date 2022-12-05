@@ -20,7 +20,6 @@ import channels from './channels';
 import { HookContext as FeathersHookContext } from '@feathersjs/feathers';
 import authentication from './authentication';
 import sequelize from './sequelize';
-import * as fs from 'fs';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 const app: Application = express(feathers());
@@ -38,12 +37,12 @@ app.use(helmet({
   contentSecurityPolicy: false
 }));
 app.use(cors());
-app.use(historyMiddleware)
+app.use(historyMiddleware);
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
-  console.log("app.middleware")
+  console.log('app.middleware');
   if (req.body && typeof req.body !== 'object') {
     req.body = { data: req.body };
   }
