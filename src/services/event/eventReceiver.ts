@@ -2,7 +2,7 @@ import {
   IShoppingListEntries,
   IShoppingListItem, ShoppingListItem, EntryList,
 } from '../../shoppinglist/ShoppingList';
-import { NotFound } from '@feathersjs/errors';
+import { BadRequest, NotFound } from '@feathersjs/errors';
 import { Model, Sequelize } from 'sequelize';
 
 export interface Event {
@@ -190,22 +190,21 @@ export class EventReceiver {
 
   public async moveEntry({ event, entries }: EventData): NewEntryStateAsync {
     let found = false;
-    try {
-      if (event.state.oldIndex == null || event.state.newIndex == null) await Promise.reject('Missing parameters!');
+    if (event.state.oldIndex == undefined || event.state.newIndex == undefined) return Promise.reject('Missing parameters!');
 
-      entries.items.forEach((t: IShoppingListItem) => {
-        if (t.id === event.entryId) {
-          const element = entries.items[event.state.oldIndex || 0];
-          entries.items.splice(<number>event.state.oldIndex, 1);
-          entries.items.splice(<number>event.state.newIndex, 0, element);
+    entries.items.forEach((t: IShoppingListItem) => {
+      if (t.id === event.entryId) {
+        if (event.state.oldIndex != null && event.state.newIndex != null) {
+          const element = entries.items[event.state.oldIndex];
+          entries.items.splice(event.state.oldIndex, 1);
+          entries.items.splice(event.state.newIndex, 0, element);
           found = true;
+        } else {
+          throw new BadRequest('Missing parameters! oldIndex, newIndex');
         }
-      });
-      if (!found) await Promise.reject('Can\'t find item! Wrong id.');
-
-    } catch (e) {
-      await Promise.reject(e);
-    }
+      }
+    });
+    if (!found) await Promise.reject('Can\'t find item! Wrong id.');
 
     return { found, update: { entries } };
   }
