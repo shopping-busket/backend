@@ -28,9 +28,11 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="9c63f75b-e194-4640-aade-c9ee63ee28f6">
-      <console name="Connection 1" type="STANDARD" schema="" session="Main"><![CDATA[select * from users]]></console>
-      <console name="Postres" type="STANDARD" schema="information_schema" session="Main"><![CDATA[Select * from users;]]></console>
+      <console name="Busket psql" type="STANDARD" schema="busket" session="Main" />
     </connection>
+  </component>
+  <component name="DBNavigator.Project.DatabaseEditorStateManager">
+    <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
