@@ -1,8 +1,8 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import crypto from 'crypto';
 import { resolve } from '@feathersjs/schema';
-import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
+import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 import { passwordHash } from '@feathersjs/authentication-local';
 
 import type { HookContext } from '../../declarations';

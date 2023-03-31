@@ -1,18 +1,13 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
-import { authenticate } from '@feathersjs/authentication'
+import { authenticate } from '@feathersjs/authentication';
 
-import { hooks as schemaHooks } from '@feathersjs/schema'
+import { hooks as schemaHooks } from '@feathersjs/schema';
 
-import {
-  eventDataValidator,
-  eventResolver,
-  eventExternalResolver,
-  eventDataResolver,
-} from './event.schema'
+import { eventDataResolver, eventDataValidator, eventExternalResolver, eventResolver, } from './event.schema';
 
-import type { Application } from '../../declarations'
-import { EventService, getOptions } from './event.class'
-import { eventPath, eventMethods } from './event.shared'
+import type { Application } from '../../declarations';
+import { EventService, getOptions } from './event.class';
+import { eventMethods, eventPath } from './event.shared';
 
 export * from './event.class'
 export * from './event.schema'

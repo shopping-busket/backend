@@ -1,22 +1,22 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
-import { authenticate } from '@feathersjs/authentication'
+import { authenticate } from '@feathersjs/authentication';
 
-import { hooks as schemaHooks } from '@feathersjs/schema'
+import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
-  listDataValidator,
-  listPatchValidator,
-  listQueryValidator,
-  listResolver,
-  listExternalResolver,
   listDataResolver,
+  listDataValidator,
+  listExternalResolver,
   listPatchResolver,
-  listQueryResolver
-} from './list.schema'
+  listPatchValidator,
+  listQueryResolver,
+  listQueryValidator,
+  listResolver
+} from './list.schema';
 
-import type { Application } from '../../declarations'
-import { ListService, getOptions } from './list.class'
-import { listPath, listMethods } from './list.shared'
+import type { Application } from '../../declarations';
+import { getOptions, ListService } from './list.class';
+import { listMethods, listPath } from './list.shared';
 
 export * from './list.class'
 export * from './list.schema'

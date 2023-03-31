@@ -1,7 +1,7 @@
-import { Type, getValidator, defaultAppConfiguration } from '@feathersjs/typebox'
-import type { Static } from '@feathersjs/typebox'
+import type { Static } from '@feathersjs/typebox';
+import { defaultAppConfiguration, getValidator, Type } from '@feathersjs/typebox';
 
-import { dataValidator } from './validators'
+import { dataValidator } from './validators';
 
 export const configurationSchema = Type.Intersect([
   defaultAppConfiguration,
