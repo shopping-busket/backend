@@ -1,0 +1,3 @@
+[submodule "src/shoppinglist"]
+	path = src/shoppinglist
+	url = https://github.com/shopping-busket/shoppinglist
