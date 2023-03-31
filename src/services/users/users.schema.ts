@@ -1,4 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
+import crypto from 'crypto';
 import { resolve } from '@feathersjs/schema';
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
@@ -10,11 +11,7 @@ import { dataValidator, queryValidator } from '../../validators';
 // Main data model schema
 export const userSchema = Type.Object(
   {
-    createdAt: Type.Optional(Type.Date()),
-    updatedAt: Type.Optional(Type.Date()),
-
     id: Type.Number(),
-    uuid: Type.String(),
 
     email: Type.String(),
     password: Type.Optional(Type.String()),
@@ -26,8 +23,8 @@ export const userSchema = Type.Object(
     prefersDarkMode: Type.Optional(Type.Boolean({ default: false })),
     prefersMiniDrawer: Type.Optional(Type.Boolean({ default: false })),
 
-    googleId: Type.String(),
-    githubId: Type.String(),
+    googleId: Type.Optional(Type.String()),
+    githubId: Type.Optional(Type.String()),
   },
   { $id: 'User', additionalProperties: false }
 );
@@ -41,13 +38,37 @@ export const userExternalResolver = resolve<User, HookContext>({
 });
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['createdAt', 'updatedAt', 'email', 'password', 'fullName', 'avatarURI', 'prefersDarkMode', 'preferredLanguage', 'prefersMiniDrawer', 'uuid', 'googleId', 'githubId'], {
+export const userDataSchema = Type.Pick(
+  userSchema,
+  [
+    'email',
+    'password',
+    'fullName',
+    'avatarURI',
+    'preferredLanguage',
+    'prefersDarkMode',
+    'prefersMiniDrawer',
+    'googleId',
+    'githubId',
+  ]
+  , {
   $id: 'UserData'
 });
 export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({
-  password: passwordHash({ strategy: 'local' })
+  password: passwordHash({ strategy: 'local' }),
+  avatarURI: async (value, user) => {
+    // If the user passed an avatar image, use it
+    if (value !== undefined) {
+      return value
+    }
+
+    // Gravatar uses MD5 hashes from an email address to get the image
+    const hash = crypto.createHash('md5').update(user.email.toLowerCase()).digest('hex')
+    // Return the full avatar URL
+    return `https://s.gravatar.com/avatar/${hash}?s=60`
+  }
 });
 
 // Schema for updating existing entries
@@ -61,7 +82,7 @@ export const userPatchResolver = resolve<User, HookContext>({
 });
 
 // Schema for allowed query properties
-export const userQueryProperties = Type.Pick(userSchema, ['id', 'email']);
+export const userQueryProperties = Type.Pick(userSchema, ['id', 'email', 'googleId', 'githubId']);
 export const userQuerySchema = Type.Intersect(
   [
     querySyntax(userQueryProperties),
