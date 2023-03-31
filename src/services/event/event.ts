@@ -40,12 +40,7 @@ export const event = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(eventQueryValidator), schemaHooks.resolveQuery(eventQueryResolver)],
-      find: [],
-      get: [],
       create: [schemaHooks.validateData(eventDataValidator), schemaHooks.resolveData(eventDataResolver)],
-      patch: [schemaHooks.validateData(eventPatchValidator), schemaHooks.resolveData(eventPatchResolver)],
-      remove: []
     },
     after: {
       all: []

@@ -1,71 +1,50 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.class.html#custom-services
-import type { Id, NullableId, Params, ServiceInterface } from '@feathersjs/feathers'
+import type { Params, ServiceInterface } from '@feathersjs/feathers';
 
-import type { Application } from '../../declarations'
-import type { Event, EventData, EventPatch, EventQuery } from './event.schema'
+import type { Application } from '../../declarations';
+import type { Event, EventData, EventPatch, EventQuery } from './event.schema';
+import { EventReceiver, EventType, RawEventData } from './eventReceiver';
+import knex from 'knex';
+import { app } from '../../app';
+import { NotFound } from '@feathersjs/errors';
+import ShoppingList, { IShoppingList } from '../../shoppinglist/ShoppingList';
 
-export type { Event, EventData, EventPatch, EventQuery }
+export type { Event, EventData, EventPatch, EventQuery };
 
 export interface EventServiceOptions {
-  app: Application
+  app: Application;
 }
 
-export interface EventParams extends Params<EventQuery> {}
+export interface EventParams extends Params<EventQuery> {
+}
 
 // This is a skeleton for a custom service class. Remove or add the methods you need here
 export class EventService<ServiceParams extends EventParams = EventParams>
-  implements ServiceInterface<Event, EventData, ServiceParams, EventPatch>
-{
-  constructor(public options: EventServiceOptions) {}
+  implements ServiceInterface<Event, Event, ServiceParams, EventPatch> {
+  private postgresClient = app.get('postgresqlClient');
+  private eventReceiver = new EventReceiver(this.postgresClient);
 
-  async find(_params?: ServiceParams): Promise<Event[]> {
-    return []
+  constructor(public options: EventServiceOptions) {
   }
 
-  async get(id: Id, _params?: ServiceParams): Promise<Event> {
-    return {
-      id: 0,
-      text: `A new message with ID: ${id}!`
+  async create(dataArray: EventData, params?: ServiceParams): Promise<Event>
+  async create(dataArray: EventData[], params?: ServiceParams): Promise<Event[]>
+  async create(dataArray: EventData | EventData[], params?: ServiceParams): Promise<Event | Event[]> {
+    if (!Array.isArray(dataArray)) return dataArray;
+
+    for (const data of dataArray) {
+      const list = await this.postgresClient.select().from('list').where('listid', '=', data.listid).first<IShoppingList>();
+      if (!list) throw new NotFound('List not found. Is the given listid correct?');
+
+      const newState = (await this.eventReceiver.receive({ event: data.eventData, list }));
+      await this.eventReceiver.applyUpdateIfFound(newState);
     }
+
+    return dataArray;
   }
 
-  async create(data: EventData, params?: ServiceParams): Promise<Event>
-  async create(data: EventData[], params?: ServiceParams): Promise<Event[]>
-  async create(data: EventData | EventData[], params?: ServiceParams): Promise<Event | Event[]> {
-    if (Array.isArray(data)) {
-      return Promise.all(data.map((current) => this.create(current, params)))
-    }
-
-    return {
-      id: 0,
-      ...data
-    }
-  }
-
-  // This method has to be added to the 'methods' option to make it available to clients
-  async update(id: NullableId, data: EventData, _params?: ServiceParams): Promise<Event> {
-    return {
-      id: 0,
-      ...data
-    }
-  }
-
-  async patch(id: NullableId, data: EventPatch, _params?: ServiceParams): Promise<Event> {
-    return {
-      id: 0,
-      text: `Fallback for ${id}`,
-      ...data
-    }
-  }
-
-  async remove(id: NullableId, _params?: ServiceParams): Promise<Event> {
-    return {
-      id: 0,
-      text: 'removed'
-    }
-  }
 }
 
 export const getOptions = (app: Application) => {
-  return { app }
-}
+  return { app };
+};
