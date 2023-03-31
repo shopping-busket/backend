@@ -118,31 +118,6 @@ export class EventReceiver {
     return res;
   }
 
-  private globalFind(entries: IShoppingListEntries, checkedEntries: IShoppingListEntries, predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | undefined {
-    let index = -1;
-    let entry;
-    const d = {
-      entries,
-      checkedEntries,
-    };
-
-    ['entries', 'checkedEntries'].every((k: string) => {
-      entry = d[k as EntryList].items.find((_v, _i, _obj) => {
-        const condition = predicate(_v, _i, _obj, k as EntryList);
-        if (condition) index = _i;
-
-        return condition;
-      }) as IShoppingListItem;
-
-      if (entry === undefined) return true;
-      (entry as unknown as FoundEntry).index = index;
-      (entry as unknown as FoundEntry).foundIn = k as EntryList;
-      return false;
-    });
-
-    return entry;
-  }
-
   async modifyEntryState(eventData: EventData, key: string, val: boolean | string): NewEntryStateAsync {
     const { event, entries } = eventData;
     entries.items.find((t: IShoppingListItem) => t.id === event.entryId);
@@ -251,5 +226,30 @@ export class EventReceiver {
   public async applyUpdate(newState: NewEntryState): Promise<void> {
     if (!this.currentList) return;
     await this.postgresClient('list').where('listid', '=', this.currentList.listid).update(newState.update).catch(console.log);
+  }
+
+  private globalFind(entries: IShoppingListEntries, checkedEntries: IShoppingListEntries, predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | undefined {
+    let index = -1;
+    let entry;
+    const d = {
+      entries,
+      checkedEntries,
+    };
+
+    ['entries', 'checkedEntries'].every((k: string) => {
+      entry = d[k as EntryList].items.find((_v, _i, _obj) => {
+        const condition = predicate(_v, _i, _obj, k as EntryList);
+        if (condition) index = _i;
+
+        return condition;
+      }) as IShoppingListItem;
+
+      if (entry === undefined) return true;
+      (entry as unknown as FoundEntry).index = index;
+      (entry as unknown as FoundEntry).foundIn = k as EntryList;
+      return false;
+    });
+
+    return entry;
   }
 }

@@ -18,8 +18,8 @@ import type { Application } from '../../declarations';
 import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
 
-export * from './list.class'
-export * from './list.schema'
+export * from './list.class';
+export * from './list.schema';
 
 // A configure function that registers the service and its hooks via `app.configure`
 export const list = (app: Application) => {
@@ -29,7 +29,7 @@ export const list = (app: Application) => {
     methods: listMethods,
     // You can add additional custom events to be sent to clients here
     events: []
-  })
+  });
   // Initialize hooks
   app.service(listPath).hooks({
     around: {
@@ -53,12 +53,12 @@ export const list = (app: Application) => {
     error: {
       all: []
     }
-  })
-}
+  });
+};
 
 // Add this service to the service type index
 declare module '../../declarations' {
   interface ServiceTypes {
-    [listPath]: ListService
+    [listPath]: ListService;
   }
 }

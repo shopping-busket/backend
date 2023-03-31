@@ -24,7 +24,7 @@ export const eventSchema = Type.Object(
         markAsDone: Type.Optional(Type.Boolean()),
 
         aboveEntry: Type.Optional(Type.String()),
-        belowEntry:Type.Optional( Type.String()),
+        belowEntry: Type.Optional(Type.String()),
 
         index: Type.Optional(Type.Number()),
         oldIndex: Type.Optional(Type.Number()),

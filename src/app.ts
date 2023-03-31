@@ -12,31 +12,31 @@ import { authentication } from './authentication';
 import { services } from './services';
 import { channels } from './channels';
 
-const app: Application = koa(feathers())
+const app: Application = koa(feathers());
 
 // Load our app configuration (see config/ folder)
-app.configure(configuration(configurationValidator))
+app.configure(configuration(configurationValidator));
 
 // Set up Koa middleware
-app.use(cors())
-app.use(serveStatic(app.get('public')))
-app.use(errorHandler())
-app.use(parseAuthentication())
-app.use(bodyParser())
+app.use(cors());
+app.use(serveStatic(app.get('public')));
+app.use(errorHandler());
+app.use(parseAuthentication());
+app.use(bodyParser());
 
 // Configure services and transports
-app.configure(rest())
+app.configure(rest());
 app.configure(
   socketio({
     cors: {
       origin: app.get('origins')
     }
   })
-)
-app.configure(channels)
-app.configure(postgresql)
-app.configure(authentication)
-app.configure(services)
+);
+app.configure(channels);
+app.configure(postgresql);
+app.configure(authentication);
+app.configure(services);
 
 // Register hooks that run on all service methods
 app.hooks({
@@ -46,11 +46,11 @@ app.hooks({
   before: {},
   after: {},
   error: {}
-})
+});
 // Register application setup and teardown hooks here
 app.hooks({
   setup: [],
   teardown: []
-})
+});
 
-export { app }
+export { app };

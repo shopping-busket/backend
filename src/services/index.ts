@@ -5,8 +5,8 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
-  app.configure(event)
-  app.configure(list)
-  app.configure(user)
+  app.configure(event);
+  app.configure(list);
+  app.configure(user);
   // All services will be registered here
-}
+};

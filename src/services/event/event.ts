@@ -9,8 +9,8 @@ import type { Application } from '../../declarations';
 import { EventService, getOptions } from './event.class';
 import { eventMethods, eventPath } from './event.shared';
 
-export * from './event.class'
-export * from './event.schema'
+export * from './event.class';
+export * from './event.schema';
 
 // A configure function that registers the service and its hooks via `app.configure`
 export const event = (app: Application) => {
@@ -20,7 +20,7 @@ export const event = (app: Application) => {
     methods: eventMethods,
     // You can add additional custom events to be sent to clients here
     events: []
-  })
+  });
   // Initialize hooks
   app.service(eventPath).hooks({
     around: {
@@ -39,12 +39,12 @@ export const event = (app: Application) => {
     error: {
       all: []
     }
-  })
-}
+  });
+};
 
 // Add this service to the service type index
 declare module '../../declarations' {
   interface ServiceTypes {
-    [eventPath]: EventService
+    [eventPath]: EventService;
   }
 }

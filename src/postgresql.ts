@@ -5,13 +5,13 @@ import type { Application } from './declarations';
 
 declare module './declarations' {
   interface Configuration {
-    postgresqlClient: Knex
+    postgresqlClient: Knex;
   }
 }
 
 export const postgresql = (app: Application) => {
-  const config = app.get('postgresql')
-  const db = knex(config!)
+  const config = app.get('postgresql');
+  const db = knex(config!);
 
-  app.set('postgresqlClient', db)
-}
+  app.set('postgresqlClient', db);
+};

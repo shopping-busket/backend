@@ -10,8 +10,8 @@ export const configurationSchema = Type.Intersect([
     port: Type.Number(),
     public: Type.String()
   })
-])
+]);
 
 export type ApplicationConfiguration = Static<typeof configurationSchema>
 
-export const configurationValidator = getValidator(configurationSchema, dataValidator)
+export const configurationValidator = getValidator(configurationSchema, dataValidator);

@@ -52,8 +52,8 @@ export const userDataSchema = Type.Pick(
     'githubId',
   ]
   , {
-  $id: 'UserData'
-});
+    $id: 'UserData'
+  });
 export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({
@@ -61,13 +61,13 @@ export const userDataResolver = resolve<User, HookContext>({
   avatarURI: async (value, user) => {
     // If the user passed an avatar image, use it
     if (value !== undefined) {
-      return value
+      return value;
     }
 
     // Gravatar uses MD5 hashes from an email address to get the image
-    const hash = crypto.createHash('md5').update(user.email.toLowerCase()).digest('hex')
+    const hash = crypto.createHash('md5').update(user.email.toLowerCase()).digest('hex');
     // Return the full avatar URL
-    return `https://s.gravatar.com/avatar/${hash}?s=60`
+    return `https://s.gravatar.com/avatar/${hash}?s=60`;
   }
 });
 

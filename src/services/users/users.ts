@@ -18,8 +18,8 @@ import type { Application } from '../../declarations';
 import { getOptions, UserService } from './users.class';
 import { userMethods, userPath } from './users.shared';
 
-export * from './users.class'
-export * from './users.schema'
+export * from './users.class';
+export * from './users.schema';
 
 // A configure function that registers the service and its hooks via `app.configure`
 export const user = (app: Application) => {
@@ -29,7 +29,7 @@ export const user = (app: Application) => {
     methods: userMethods,
     // You can add additional custom events to be sent to clients here
     events: []
-  })
+  });
   // Initialize hooks
   app.service(userPath).hooks({
     around: {
@@ -55,12 +55,12 @@ export const user = (app: Application) => {
     error: {
       all: []
     }
-  })
-}
+  });
+};
 
 // Add this service to the service type index
 declare module '../../declarations' {
   interface ServiceTypes {
-    [userPath]: UserService
+    [userPath]: UserService;
   }
 }

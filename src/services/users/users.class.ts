@@ -6,9 +6,10 @@ import { KnexService } from '@feathersjs/knex';
 import type { Application } from '../../declarations';
 import type { User, UserData, UserPatch, UserQuery } from './users.schema';
 
-export type { User, UserData, UserPatch, UserQuery }
+export type { User, UserData, UserPatch, UserQuery };
 
-export interface UserParams extends KnexAdapterParams<UserQuery> {}
+export interface UserParams extends KnexAdapterParams<UserQuery> {
+}
 
 // By default calls the standard Knex adapter service methods but can be customized with your own functionality.
 export class UserService<ServiceParams extends Params = UserParams> extends KnexService<
@@ -16,12 +17,13 @@ export class UserService<ServiceParams extends Params = UserParams> extends Knex
   UserData,
   UserParams,
   UserPatch
-> {}
+> {
+}
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
     paginate: app.get('paginate'),
     Model: app.get('postgresqlClient'),
     name: 'users'
-  }
-}
+  };
+};
