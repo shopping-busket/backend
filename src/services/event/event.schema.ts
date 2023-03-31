@@ -30,7 +30,7 @@ export const eventSchema = Type.Object(
         oldIndex: Type.Optional(Type.Number()),
         newIndex: Type.Optional(Type.Number()),
       }),
-      isoDate: Type.String({ format: 'date' }),
+      isoDate: Type.String(),
       sender: Type.String({ format: 'uuid' }),
     }),
   },
