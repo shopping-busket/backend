@@ -8,6 +8,7 @@ import { configurationValidator } from './configuration'
 import type { Application } from './declarations'
 import { logError } from './hooks/log-error'
 import { postgresql } from './postgresql'
+import { authentication } from './authentication'
 import { services } from './services'
 import { channels } from './channels'
 
@@ -34,6 +35,7 @@ app.configure(
 )
 app.configure(channels)
 app.configure(postgresql)
+app.configure(authentication)
 app.configure(services)
 
 // Register hooks that run on all service methods

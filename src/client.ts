@@ -4,6 +4,15 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { eventClient } from './services/event/event.shared'
+export type { Event, EventData, EventQuery, EventPatch } from './services/event/event.shared'
+
+import { listClient } from './services/list/list.shared'
+export type { List, ListData, ListQuery, ListPatch } from './services/list/list.shared'
+
+import { userClient } from './services/users/users.shared'
+export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
+
 export interface Configuration {
   connection: TransportConnection<ServiceTypes>
 }
@@ -30,5 +39,8 @@ export const createClient = <Configuration = any>(
   client.configure(authenticationClient(authenticationOptions))
   client.set('connection', connection)
 
+  client.configure(userClient)
+  client.configure(listClient)
+  client.configure(eventClient)
   return client
 }
