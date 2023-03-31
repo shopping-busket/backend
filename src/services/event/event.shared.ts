@@ -15,7 +15,7 @@ export const eventClient = (client: ClientApplication) => {
   const connection = client.get('connection');
 
   client.use(eventPath, connection.service(eventPath), {
-    methods: eventMethods
+    methods: eventMethods,
   });
 };
 

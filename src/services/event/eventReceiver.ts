@@ -87,7 +87,7 @@ export class EventReceiver {
         event,
         entries,
         checkedEntries,
-        list
+        list,
       }, event.event == EventType.MARK_ENTRY_DONE);
     }
 

@@ -3,7 +3,7 @@ import { authenticate } from '@feathersjs/authentication';
 
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
-import { eventDataResolver, eventDataValidator, eventExternalResolver, eventResolver, } from './event.schema';
+import { eventDataResolver, eventDataValidator, eventExternalResolver, eventResolver } from './event.schema';
 
 import type { Application } from '../../declarations';
 import { EventService, getOptions } from './event.class';
@@ -19,7 +19,7 @@ export const event = (app: Application) => {
     // A list of all methods this service exposes externally
     methods: eventMethods,
     // You can add additional custom events to be sent to clients here
-    events: []
+    events: [],
   });
   // Initialize hooks
   app.service(eventPath).hooks({
@@ -27,18 +27,18 @@ export const event = (app: Application) => {
       all: [
         authenticate('jwt'),
         schemaHooks.resolveExternal(eventExternalResolver),
-        schemaHooks.resolveResult(eventResolver)
-      ]
+        schemaHooks.resolveResult(eventResolver),
+      ],
     },
     before: {
       create: [schemaHooks.validateData(eventDataValidator), schemaHooks.resolveData(eventDataResolver)],
     },
     after: {
-      all: []
+      all: [],
     },
     error: {
-      all: []
-    }
+      all: [],
+    },
   });
 };
 

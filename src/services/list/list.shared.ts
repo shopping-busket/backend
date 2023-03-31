@@ -15,7 +15,7 @@ export const listClient = (client: ClientApplication) => {
   const connection = client.get('connection');
 
   client.use(listPath, connection.service(listPath), {
-    methods: listMethods
+    methods: listMethods,
   });
 };
 

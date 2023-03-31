@@ -11,7 +11,7 @@ import {
   userPatchValidator,
   userQueryResolver,
   userQueryValidator,
-  userResolver
+  userResolver,
 } from './users.schema';
 
 import type { Application } from '../../declarations';
@@ -28,7 +28,7 @@ export const user = (app: Application) => {
     // A list of all methods this service exposes externally
     methods: userMethods,
     // You can add additional custom events to be sent to clients here
-    events: []
+    events: [],
   });
   // Initialize hooks
   app.service(userPath).hooks({
@@ -39,7 +39,7 @@ export const user = (app: Application) => {
       create: [],
       update: [authenticate('jwt')],
       patch: [authenticate('jwt')],
-      remove: [authenticate('jwt')]
+      remove: [authenticate('jwt')],
     },
     before: {
       all: [schemaHooks.validateQuery(userQueryValidator), schemaHooks.resolveQuery(userQueryResolver)],
@@ -47,14 +47,14 @@ export const user = (app: Application) => {
       get: [],
       create: [schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
       patch: [schemaHooks.validateData(userPatchValidator), schemaHooks.resolveData(userPatchResolver)],
-      remove: []
+      remove: [],
     },
     after: {
-      all: []
+      all: [],
     },
     error: {
-      all: []
-    }
+      all: [],
+    },
   });
 };
 

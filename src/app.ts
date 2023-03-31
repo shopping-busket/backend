@@ -29,9 +29,9 @@ app.configure(rest());
 app.configure(
   socketio({
     cors: {
-      origin: app.get('origins')
-    }
-  })
+      origin: app.get('origins'),
+    },
+  }),
 );
 app.configure(channels);
 app.configure(postgresql);
@@ -41,16 +41,16 @@ app.configure(services);
 // Register hooks that run on all service methods
 app.hooks({
   around: {
-    all: [logError]
+    all: [logError],
   },
   before: {},
   after: {},
-  error: {}
+  error: {},
 });
 // Register application setup and teardown hooks here
 app.hooks({
   setup: [],
-  teardown: []
+  teardown: [],
 });
 
 export { app };

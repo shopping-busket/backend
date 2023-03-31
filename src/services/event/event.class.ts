@@ -3,7 +3,7 @@ import type { Params, ServiceInterface } from '@feathersjs/feathers';
 
 import type { Application } from '../../declarations';
 import type { Event, EventData, EventPatch, EventQuery } from './event.schema';
-import { EventReceiver, } from './eventReceiver';
+import { EventReceiver } from './eventReceiver';
 import { app } from '../../app';
 import { NotFound } from '@feathersjs/errors';
 import { IShoppingList } from '../../shoppinglist/ShoppingList';

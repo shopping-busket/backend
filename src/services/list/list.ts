@@ -11,7 +11,7 @@ import {
   listPatchValidator,
   listQueryResolver,
   listQueryValidator,
-  listResolver
+  listResolver,
 } from './list.schema';
 
 import type { Application } from '../../declarations';
@@ -28,7 +28,7 @@ export const list = (app: Application) => {
     // A list of all methods this service exposes externally
     methods: listMethods,
     // You can add additional custom events to be sent to clients here
-    events: []
+    events: [],
   });
   // Initialize hooks
   app.service(listPath).hooks({
@@ -36,8 +36,8 @@ export const list = (app: Application) => {
       all: [
         authenticate('jwt'),
         schemaHooks.resolveExternal(listExternalResolver),
-        schemaHooks.resolveResult(listResolver)
-      ]
+        schemaHooks.resolveResult(listResolver),
+      ],
     },
     before: {
       all: [schemaHooks.validateQuery(listQueryValidator), schemaHooks.resolveQuery(listQueryResolver)],
@@ -45,14 +45,14 @@ export const list = (app: Application) => {
       get: [],
       create: [schemaHooks.validateData(listDataValidator), schemaHooks.resolveData(listDataResolver)],
       patch: [schemaHooks.validateData(listPatchValidator), schemaHooks.resolveData(listPatchResolver)],
-      remove: []
+      remove: [],
     },
     after: {
-      all: []
+      all: [],
     },
     error: {
-      all: []
-    }
+      all: [],
+    },
   });
 };
 
