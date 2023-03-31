@@ -2,6 +2,15 @@
 import type { Application, TransportConnection } from '@feathersjs/feathers';
 import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
+
+import { shareLinkClient } from './services/share-link/share-link.shared';
+export type {
+  ShareLink,
+  ShareLinkData,
+  ShareLinkQuery,
+  ShareLinkPatch,
+} from './services/share-link/share-link.shared';
+
 import authenticationClient from '@feathersjs/authentication-client';
 
 import { eventClient } from './services/event/event.shared';
@@ -18,10 +27,9 @@ export interface Configuration {
   connection: TransportConnection<ServiceTypes>;
 }
 
-export interface ServiceTypes {
-}
+export interface ServiceTypes {}
 
-export type ClientApplication = Application<ServiceTypes, Configuration>
+export type ClientApplication = Application<ServiceTypes, Configuration>;
 
 /**
  * Returns a typed client for the backend app.
@@ -44,5 +52,6 @@ export const createClient = <Configuration = any>(
   client.configure(userClient);
   client.configure(listClient);
   client.configure(eventClient);
+  client.configure(shareLinkClient);
   return client;
 };
