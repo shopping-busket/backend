@@ -1,80 +1,54 @@
-import historyApiFallback from 'connect-history-api-fallback';
-import path from 'path';
-import favicon from 'serve-favicon';
-import compress from 'compression';
-import helmet from 'helmet';
-import cors from 'cors';
+// For more information about this file see https://dove.feathersjs.com/guides/cli/application.html
+import { feathers } from '@feathersjs/feathers'
+import configuration from '@feathersjs/configuration'
+import { koa, rest, bodyParser, errorHandler, parseAuthentication, cors, serveStatic } from '@feathersjs/koa'
+import socketio from '@feathersjs/socketio'
 
-import feathers from '@feathersjs/feathers';
-import configuration from '@feathersjs/configuration';
-import express from '@feathersjs/express';
-import socketio from '@feathersjs/socketio';
+import { configurationValidator } from './configuration'
+import type { Application } from './declarations'
+import { logError } from './hooks/log-error'
+import { postgresql } from './postgresql'
+import { services } from './services/index'
+import { channels } from './channels'
 
+const app: Application = koa(feathers())
 
-import { Application } from './declarations';
-import logger from './logger';
-import middleware from './middleware';
-import services from './services';
-import appHooks from './app.hooks';
-import channels from './channels';
-import { HookContext as FeathersHookContext } from '@feathersjs/feathers';
-import authentication from './authentication';
-import sequelize from './sequelize';
-// Don't remove this comment. It's needed to format import lines nicely.
+// Load our app configuration (see config/ folder)
+app.configure(configuration(configurationValidator))
 
-const app: Application = express(feathers());
-export type HookContext<T = any> = { app: Application } & FeathersHookContext<T>;
+// Set up Koa middleware
+app.use(cors())
+app.use(serveStatic(app.get('public')))
+app.use(errorHandler())
+app.use(parseAuthentication())
+app.use(bodyParser())
 
-const historyMiddleware = historyApiFallback({
-  verbose: true,
-  logger: console.log.bind(console),
-});
+// Configure services and transports
+app.configure(rest())
+app.configure(
+  socketio({
+    cors: {
+      origin: app.get('origins')
+    }
+  })
+)
+app.configure(channels)
+app.configure(postgresql)
+app.configure(services)
 
-// Load app configuration
-app.configure(configuration());
-// Enable security, CORS, compression, favicon and body parsing
-app.use(helmet({
-  contentSecurityPolicy: false
-}));
-app.use(cors());
-app.use(historyMiddleware);
-app.use(compress());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  console.log('app.middleware');
-  if (req.body && typeof req.body !== 'object') {
-    req.body = { data: req.body };
-  }
-  next();
-});
+// Register hooks that run on all service methods
+app.hooks({
+  around: {
+    all: [logError]
+  },
+  before: {},
+  after: {},
+  error: {}
+})
+// Register application setup and teardown hooks here
+app.hooks({
+  setup: [],
+  teardown: []
+})
 
-try {
-  app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
-} catch (e) {
-  console.log('public/favicon.ico doesn\'t exist!');
-}
-// Host the public folder
-app.use('/', express.static(app.get('public')));
-// app.use(bodyParser.text({type: 'text/plain'}));
-// Set up Plugins and providers
-app.configure(express.rest());
-app.configure(socketio());
-
-app.configure(sequelize);
-
-// Configure other middleware (see `middleware/index.ts`)
-app.configure(middleware);
-app.configure(authentication);
-// Set up our services (see `services/index.ts`)
-app.configure(services);
-// Set up event channels (see channels.ts)
-app.configure(channels);
-
-// Configure a middleware for 404s and the error handler
-app.use(express.notFound());
-app.use(express.errorHandler({ logger } as any));
-
-app.hooks(appHooks);
-
-export default app;
+export { app }
