@@ -16,9 +16,9 @@ const entryProperties = {
 export const listSchema = Type.Object(
   {
     id: Type.Number(),
-    listid: Type.String(),
+    listid: Type.String({ format: 'uuid' }),
 
-    owner: Type.String(),
+    owner: Type.String({ format: 'uuid' }),
 
     name: Type.String(),
     description: Type.String(),

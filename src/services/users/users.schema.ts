@@ -12,9 +12,9 @@ import { dataValidator, queryValidator } from '../../validators';
 export const userSchema = Type.Object(
   {
     id: Type.Number(),
-    uuid: Type.Optional(Type.String()),
+    uuid: Type.Optional(Type.String({ format: 'uuid' })),
 
-    email: Type.String(),
+    email: Type.String({ format: 'email' }),
     password: Type.Optional(Type.String()),
 
     fullName: Type.Optional(Type.String()),

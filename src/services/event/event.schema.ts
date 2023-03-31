@@ -10,11 +10,11 @@ import { EventType } from './eventReceiver';
 // Main data model schema
 export const eventSchema = Type.Object(
   {
-    listid: Type.String(),
+    listid: Type.String({ format: 'uuid' }),
     eventData: Type.Object({
       id: Type.Optional(Type.Number()),
       event: Type.Enum(EventType),
-      entryId: Type.String(),
+      entryId: Type.String({ format: 'uuid' }),
       state: Type.Object({
         name: Type.String(),
         /**
@@ -30,8 +30,8 @@ export const eventSchema = Type.Object(
         oldIndex: Type.Optional(Type.Number()),
         newIndex: Type.Optional(Type.Number()),
       }),
-      isoDate: Type.String(),
-      sender: Type.String(),
+      isoDate: Type.String({ format: 'date' }),
+      sender: Type.String({ format: 'uuid' }),
     }),
   },
   { $id: 'Event', additionalProperties: false },
