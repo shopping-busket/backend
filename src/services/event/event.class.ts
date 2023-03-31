@@ -26,9 +26,9 @@ export class EventService<ServiceParams extends EventParams = EventParams>
   constructor(public options: EventServiceOptions) {
   }
 
-  async create(dataArray: EventData, params?: ServiceParams): Promise<Event>
-  async create(dataArray: EventData[], params?: ServiceParams): Promise<Event[]>
-  async create(dataArray: EventData | EventData[], params?: ServiceParams): Promise<Event | Event[]> {
+  async create(dataArray: EventData): Promise<Event>
+  async create(dataArray: EventData[]): Promise<Event[]>
+  async create(dataArray: EventData | EventData[]): Promise<Event | Event[]> {
     if (!Array.isArray(dataArray)) return dataArray;
 
     for (const data of dataArray) {
