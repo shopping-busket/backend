@@ -5,13 +5,9 @@ import { hooks as schemaHooks } from '@feathersjs/schema'
 
 import {
   eventDataValidator,
-  eventPatchValidator,
-  eventQueryValidator,
   eventResolver,
   eventExternalResolver,
   eventDataResolver,
-  eventPatchResolver,
-  eventQueryResolver
 } from './event.schema'
 
 import type { Application } from '../../declarations'

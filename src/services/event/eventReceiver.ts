@@ -1,4 +1,4 @@
-import ShoppingList, {
+import {
   IShoppingListEntries,
   IShoppingListItem, ShoppingListItem, EntryList, IShoppingList,
 } from '../../shoppinglist/ShoppingList';
