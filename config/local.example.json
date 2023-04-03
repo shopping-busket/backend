@@ -1,0 +1,5 @@
+{
+  "postgresql": {
+    "connection": "postgres://USERNAME:PASSWORD@HOST:5432/DATABASE"
+  }
+}
