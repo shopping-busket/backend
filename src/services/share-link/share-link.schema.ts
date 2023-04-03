@@ -30,7 +30,7 @@ export const shareLinkDataSchema = Type.Pick(shareLinkSchema, ['pointsTo', 'user
 export type ShareLinkData = Static<typeof shareLinkDataSchema>;
 export const shareLinkDataValidator = getValidator(shareLinkDataSchema, dataValidator);
 export const shareLinkDataResolver = resolve<ShareLink, HookContext>({
-  uri: async (value, shareLink, context) => {
+  uri: async () => {
     return randomUUID();
   },
 });
