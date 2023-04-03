@@ -1,13 +1,7 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.shared.html
 import type { Params } from '@feathersjs/feathers';
 import type { ClientApplication } from '../../client';
-import type {
-  ShareLink,
-  ShareLinkData,
-  ShareLinkPatch,
-  ShareLinkQuery,
-  ShareLinkService,
-} from './share-link.class';
+import type { ShareLink, ShareLinkData, ShareLinkPatch, ShareLinkQuery, ShareLinkService } from './share-link.class';
 
 export type { ShareLink, ShareLinkData, ShareLinkPatch, ShareLinkQuery };
 

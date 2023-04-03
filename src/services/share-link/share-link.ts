@@ -4,19 +4,19 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  shareLinkDataResolver,
   shareLinkDataValidator,
+  shareLinkExternalResolver,
+  shareLinkPatchResolver,
   shareLinkPatchValidator,
+  shareLinkQueryResolver,
   shareLinkQueryValidator,
   shareLinkResolver,
-  shareLinkExternalResolver,
-  shareLinkDataResolver,
-  shareLinkPatchResolver,
-  shareLinkQueryResolver,
 } from './share-link.schema';
 
 import type { Application } from '../../declarations';
-import { ShareLinkService, getOptions } from './share-link.class';
-import { shareLinkPath, shareLinkMethods } from './share-link.shared';
+import { getOptions, ShareLinkService } from './share-link.class';
+import { shareLinkMethods, shareLinkPath } from './share-link.shared';
 
 export * from './share-link.class';
 export * from './share-link.schema';
