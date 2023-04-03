@@ -1,7 +1,7 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve } from '@feathersjs/schema';
-import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
+import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
@@ -13,7 +13,7 @@ export const shareLinkSchema = Type.Object(
     id: Type.Number(),
     uri: Type.String({ format: 'uuid' }),
     pointsTo: Type.String({ format: 'uuid' }),
-    users: Type.Array(Type.String({ format: 'uuid' }))
+    users: Type.Array(Type.String({ format: 'uuid' })),
   },
   { $id: 'ShareLink', additionalProperties: false },
 );
@@ -32,7 +32,7 @@ export const shareLinkDataValidator = getValidator(shareLinkDataSchema, dataVali
 export const shareLinkDataResolver = resolve<ShareLink, HookContext>({
   uri: async (value, shareLink, context) => {
     return randomUUID();
-  }
+  },
 });
 
 // Schema for updating existing entries
