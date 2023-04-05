@@ -12,7 +12,7 @@ import { ShareLink } from '../share-link/share-link.schema';
 
 
 const entryProperties = {
-  id: Type.Number(),
+  id: Type.String({ format: 'uuid' }),
   name: Type.String(),
 };
 // Main data model schema
