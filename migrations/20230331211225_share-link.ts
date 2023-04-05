@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('share-link', (table) => {
     table.increments('id');
 
-    table.uuid('uri');
+    table.uuid('uri').unique();
     table.uuid('pointsTo');
   });
 }
