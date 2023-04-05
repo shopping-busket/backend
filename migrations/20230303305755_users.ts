@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.alterTable('users', (table) => {
+  await knex.schema.createTable('users', (table) => {
     table.increments('id');
     table.uuid('uuid').unique();
 
