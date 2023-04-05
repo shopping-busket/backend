@@ -121,3 +121,4 @@ dist
 .sqlite
 
 lib/
+/.yarn/releases/yarn-3.3.0.cjs
