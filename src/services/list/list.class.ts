@@ -22,6 +22,7 @@ export class ListService<ServiceParams extends Params = ListParams> extends Knex
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
+    multi: true,
     paginate: app.get('paginate'),
     Model: app.get('postgresqlClient'),
     name: 'list',
