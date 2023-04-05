@@ -8,7 +8,6 @@ import { dataValidator, queryValidator } from '../../validators';
 import { User } from '../users/users.schema';
 import { Forbidden } from '@feathersjs/errors';
 import { app } from '../../app';
-import { ShareLink } from '../share-link/share-link.schema';
 
 
 const entryProperties = {
@@ -77,16 +76,16 @@ export const listQueryResolver = resolve<ListQuery, HookContext>({
 
     if (shoppingList.owner && shoppingList.owner === userUUID) return value;
     else if (shoppingList.listid) {
-      let isAllowed = false;
+      // let isAllowed = false;
 
       // Allow users who joined a shared list to access the lists data
-      const shared = await knex('share-link').select().where({ pointsTo: shoppingList.listid }) as ShareLink[];
-      shared.forEach(share => {
+      // const shared = await knex('share-link').select().where({ pointsTo: shoppingList.listid }) as ShareLink[];
+      // shared.forEach(share => {
         // if (share.users.includes(userUUID)) isAllowed = true;
-      });
+      // });
 
       const { owner } = (await knex('list').select('owner').where({ listid: shoppingList.listid }).first() as { owner: string } | null) ?? { owner: null };
-      if (isAllowed || (owner != null && owner === userUUID)) return value;
+      if (/*isAllowed || */(owner != null && owner === userUUID)) return value;
     }
     throw new Forbidden('You are not allowed to access this content.');
   },
