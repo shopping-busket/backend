@@ -1,3 +1,4 @@
+import { shareLinkUser } from './share-link-user/share-link-user';
 import { shareLink } from './share-link/share-link';
 import { event } from './event/event';
 import { list } from './list/list';
@@ -6,6 +7,7 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(shareLinkUser);
   app.configure(shareLink);
   app.configure(event);
   app.configure(list);

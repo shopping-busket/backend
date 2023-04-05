@@ -13,7 +13,6 @@ export const shareLinkSchema = Type.Object(
     id: Type.Number(),
     uri: Type.String({ format: 'uuid' }),
     pointsTo: Type.String({ format: 'uuid' }),
-    users: Type.Array(Type.String({ format: 'uuid' })),
   },
   { $id: 'ShareLink', additionalProperties: false },
 );
@@ -24,7 +23,7 @@ export const shareLinkResolver = resolve<ShareLink, HookContext>({});
 export const shareLinkExternalResolver = resolve<ShareLink, HookContext>({});
 
 // Schema for creating new entries
-export const shareLinkDataSchema = Type.Pick(shareLinkSchema, ['pointsTo', 'users'], {
+export const shareLinkDataSchema = Type.Pick(shareLinkSchema, ['pointsTo'], {
   $id: 'ShareLinkData',
 });
 export type ShareLinkData = Static<typeof shareLinkDataSchema>;

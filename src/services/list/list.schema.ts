@@ -81,7 +81,7 @@ export const listQueryResolver = resolve<ListQuery, HookContext>({
       // Allow users who joined a shared list to access the lists data
       const shared = await knex('share-link').select().where({ pointsTo: shoppingList.listid }) as ShareLink[];
       shared.forEach(share => {
-        if (share.users.includes(userUUID)) isAllowed = true;
+        // if (share.users.includes(userUUID)) isAllowed = true;
       });
 
       const { owner } = (await knex('list').select('owner').where({ listid: shoppingList.listid }).first() as { owner: string } | null) ?? { owner: null };
