@@ -14,7 +14,6 @@ import { ShareLink } from '../share-link/share-link.schema';
 const entryProperties = {
   id: Type.Number(),
   name: Type.String(),
-  done: Type.Optional(Type.Boolean()),
 };
 // Main data model schema
 export const listSchema = Type.Object(
@@ -70,6 +69,8 @@ export type ListQuery = Static<typeof listQuerySchema>
 export const listQueryValidator = getValidator(listQuerySchema, queryValidator);
 export const listQueryResolver = resolve<ListQuery, HookContext>({
   id: async (value, shoppingList, context) => {
+    if (context.method === 'create') return value;
+
     const knex = app.get('postgresqlClient');
     const userUUID = (context.params.user as User).uuid;
     if (!userUUID) return;

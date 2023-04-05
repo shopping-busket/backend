@@ -1,7 +1,6 @@
 import {
   EntryList,
   IShoppingList,
-  IShoppingListEntries,
   IShoppingListItem,
   ShoppingListItem,
 } from '../../shoppinglist/ShoppingList';
@@ -29,8 +28,8 @@ export interface Event {
 
 export interface EventData {
   event: Event,
-  entries: IShoppingListEntries,
-  checkedEntries?: IShoppingListEntries,
+  entries: IShoppingListItem[],
+  checkedEntries?: IShoppingListItem[],
   list?: IShoppingList
 }
 
@@ -120,12 +119,12 @@ export class EventReceiver {
 
   async modifyEntryState(eventData: EventData, key: string, val: boolean | string): NewEntryStateAsync {
     const { event, entries } = eventData;
-    entries.items.find((t: IShoppingListItem) => t.id === event.entryId);
+    entries.find((t: IShoppingListItem) => t.id === event.entryId);
 
     let found = false;
     let updated = {};
-    for (let i = 0; i < entries.items.length; i++) {
-      const entry: IShoppingListItem = entries.items[i];
+    for (let i = 0; i < entries.length; i++) {
+      const entry: IShoppingListItem = entries[i];
 
       if (entry.id === event.entryId) {
         if (key === 'name' && typeof val === 'string') {
@@ -145,7 +144,7 @@ export class EventReceiver {
     };
   }
 
-  public generateEntryChanges(entries: IShoppingListEntries, found: boolean, isCheckedEntry?: boolean): NewEntryState {
+  public generateEntryChanges(entries: IShoppingListItem[], found: boolean, isCheckedEntry?: boolean): NewEntryState {
     const changes: NewEntryState = {
       update: {},
       found,
@@ -161,7 +160,7 @@ export class EventReceiver {
   }
 
   public createEntry({ event, entries }: EventData, isCheckedEntry?: boolean): NewEntryState {
-    entries.items.unshift({ id: event.entryId, ...event.state });
+    entries.unshift({ id: event.entryId, ...event.state });
 
     return this.generateEntryChanges(entries, true, isCheckedEntry);
   }
@@ -170,12 +169,12 @@ export class EventReceiver {
     let found = false;
     if (event.state.oldIndex == undefined || event.state.newIndex == undefined) return Promise.reject('Missing parameters!');
 
-    entries.items.forEach((t: IShoppingListItem) => {
+    entries.forEach((t: IShoppingListItem) => {
       if (t.id === event.entryId) {
         if (event.state.oldIndex != null && event.state.newIndex != null) {
-          const element = entries.items[event.state.oldIndex];
-          entries.items.splice(event.state.oldIndex, 1);
-          entries.items.splice(event.state.newIndex, 0, element);
+          const element = entries[event.state.oldIndex];
+          entries.splice(event.state.oldIndex, 1);
+          entries.splice(event.state.newIndex, 0, element);
           found = true;
         } else {
           throw new BadRequest('Missing parameters! oldIndex, newIndex');
@@ -194,7 +193,7 @@ export class EventReceiver {
     const foundEntry = this.globalFind(eventData.entries, eventData.checkedEntries, (t) => t.id === eventData.event.entryId);
     if (foundEntry == null) return Promise.reject('Item not found!');
 
-    eventData[foundEntry.foundIn]?.items.splice(foundEntry.index, 1);
+    eventData[foundEntry.foundIn]?.splice(foundEntry.index, 1);
     found = true;
 
     return this.generateEntryChanges(eventData[foundEntry.foundIn as 'entries'], found, foundEntry.foundIn == 'checkedEntries' || false);
@@ -228,7 +227,7 @@ export class EventReceiver {
     await this.postgresClient('list').where('listid', '=', this.currentList.listid).update(newState.update).catch(console.log);
   }
 
-  private globalFind(entries: IShoppingListEntries, checkedEntries: IShoppingListEntries, predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | undefined {
+  private globalFind(entries: IShoppingListItem[], checkedEntries: IShoppingListItem[], predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | undefined {
     let index = -1;
     let entry;
     const d = {
@@ -237,7 +236,7 @@ export class EventReceiver {
     };
 
     ['entries', 'checkedEntries'].every((k: string) => {
-      entry = d[k as EntryList].items.find((_v, _i, _obj) => {
+      entry = d[k as EntryList].find((_v, _i, _obj) => {
         const condition = predicate(_v, _i, _obj, k as EntryList);
         if (condition) index = _i;
 
