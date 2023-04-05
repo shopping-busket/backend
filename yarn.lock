@@ -108,7 +108,7 @@
     long-timeout "^0.1.1"
     uuid "^9.0.0"
 
-"@feathersjs/cli@5.0.2":
+"@feathersjs/cli@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@feathersjs/cli/-/cli-5.0.2.tgz#afc102463c52cf41a454272fb235f66ee875ca09"
   integrity sha512-MorQ6cOTFR4me/fl/2e5UrjIbeS6Z43XqzOxPDnc5leIOIFREiZyqsRLVtoNRnZG77xLVLBA0GLBeof88RIqrg==
