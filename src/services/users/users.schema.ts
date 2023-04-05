@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import crypto from 'crypto';
+import crypto, { randomUUID } from 'crypto';
 import { resolve } from '@feathersjs/schema';
 import type { Static } from '@feathersjs/typebox';
 import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
@@ -59,6 +59,9 @@ export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({
   password: passwordHash({ strategy: 'local' }),
+  uuid: async () => {
+    return randomUUID();
+  },
   avatarURI: async (value, user) => {
     // If the user passed an avatar image, use it
     if (value !== undefined) {

@@ -4,17 +4,17 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('users', (table) => {
     table.increments('id');
-    table.uuid('uuid').unique();
+    table.uuid('uuid').unique().notNullable();
 
-    table.string('email');
-    table.string('password');
+    table.string('email').notNullable();
+    table.string('password').notNullable();
 
-    table.string('fullName');
-    table.string('avatarURI');
+    table.string('fullName').notNullable();
+    table.string('avatarURI').notNullable();
 
-    table.string('preferredLanguage');
-    table.boolean('prefersDarkMode');
-    table.boolean('prefersMiniDrawer');
+    table.string('preferredLanguage').defaultTo('en');
+    table.boolean('prefersDarkMode').defaultTo(false);
+    table.boolean('prefersMiniDrawer').defaultTo(false);
 
     table.string('googleId');
     table.string('githubId');
