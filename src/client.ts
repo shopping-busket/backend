@@ -3,6 +3,14 @@ import type { Application, TransportConnection } from '@feathersjs/feathers';
 import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 
+import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted-users.shared';
+export type {
+  WhitelistedUsers,
+  WhitelistedUsersData,
+  WhitelistedUsersQuery,
+  WhitelistedUsersPatch,
+} from './services/whitelisted-users/whitelisted-users.shared';
+
 import { shareLinkUserClient } from './services/share-link-user/share-link-user.shared';
 export type {
   ShareLinkUser,
@@ -63,5 +71,6 @@ export const createClient = <Configuration = any>(
   client.configure(eventClient);
   client.configure(shareLinkClient);
   client.configure(shareLinkUserClient);
+  client.configure(whitelistedUsersClient);
   return client;
 };
