@@ -8,25 +8,28 @@ This project uses [Feathers](http://feathersjs.com). An open source framework fo
 
 ## Getting Started
 
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
+1. Make sure you have [NodeJS](https://nodejs.org/) and [yarn](https://yarnpkg.com/) installed.
 2. Install your dependencies
 
     ```
     cd path/to/backend
-    npm install
+    yarn
     ```
 
 3. Start your app
 
     ```
-    npm run compile # Compile TypeScript source
-    npm run migrate # Run migrations to set up the database
-    npm start
+    yarn  compile # Compile TypeScript source
+    yarn migrate # Run migrations to set up the database
+    yarn start
     ```
+
+## Dev Server
+Run `yarn dev` to start a dev-server with hot reload
 
 ## Testing
 
-Run `npm test` and all your tests in the `test/` directory will be run.
+Run `yarn test` and all your tests in the `test/` directory will be run.
 
 ## Scaffolding
 
@@ -39,4 +42,4 @@ $ npx feathers generate service               # Generate a new Service
 
 ## Help
 
-For more information on all the things you can do with Feathers visit [docs.feathersjs.com](http://docs.feathersjs.com).
+For more information on all the things you can do with Feathers visit [feathersjs.com](https://feathersjs.com/api/).
