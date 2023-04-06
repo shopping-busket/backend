@@ -2,37 +2,20 @@
 import type { Application, TransportConnection } from '@feathersjs/feathers';
 import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
-
-import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted-users.shared';
-export type {
-  WhitelistedUsers,
-  WhitelistedUsersData,
-  WhitelistedUsersQuery,
-  WhitelistedUsersPatch,
-} from './services/whitelisted-users/whitelisted-users.shared';
-
-import { shareLinkUserClient } from './services/share-link-user/share-link-user.shared';
-export type {
-  ShareLinkUser,
-  ShareLinkUserData,
-  ShareLinkUserQuery,
-  ShareLinkUserPatch,
-} from './services/share-link-user/share-link-user.shared';
-
 import authenticationClient from '@feathersjs/authentication-client';
 
-import { shareLinkClient } from './services/share-link/share-link.shared';
+import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted-users.shared';
 
 import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
 
 export type {
-  ShareLink,
-  ShareLinkData,
-  ShareLinkQuery,
-  ShareLinkPatch,
-} from './services/share-link/share-link.shared';
+  WhitelistedUsers,
+  WhitelistedUsersData,
+  WhitelistedUsersQuery,
+  WhitelistedUsersPatch,
+} from './services/whitelisted-users/whitelisted-users.shared';
 
 export type { Event, EventData, EventQuery, EventPatch } from './services/event/event.shared';
 
@@ -69,8 +52,6 @@ export const createClient = <Configuration = any>(
   client.configure(userClient);
   client.configure(listClient);
   client.configure(eventClient);
-  client.configure(shareLinkClient);
-  client.configure(shareLinkUserClient);
   client.configure(whitelistedUsersClient);
   return client;
 };
