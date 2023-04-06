@@ -6,6 +6,7 @@ import { dataValidator } from './validators';
 export const configurationSchema = Type.Intersect([
   defaultAppConfiguration,
   Type.Object({
+    ssl: Type.Boolean(),
     host: Type.String(),
     port: Type.Number(),
     public: Type.String(),
@@ -18,6 +19,7 @@ export const configurationSchema = Type.Intersect([
     }),
 
     frontend: Type.Object({
+      ssl: Type.Boolean(),
       host: Type.String(),
       port: Type.Number(),
     }),

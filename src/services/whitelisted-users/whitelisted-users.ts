@@ -89,16 +89,18 @@ export const whitelistedUsers = (app: Application) => {
           },
         });
 
-        const backendURL = `${app.get('host')}:${app.get('port')}`;
-        const bannerImgURL = `//${backendURL}/img/banner.png`;
-        const joinURL = `//${frontend.host}:${frontend.port}/me/list/${data.listId}/join`;
+        const backendProtocol = app.get('ssl') ? 'https' : 'http';
+        const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
+        const bannerImgURL = `${backendURL}/img/banner.png`;
+        const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join`;
 
         const info = await transporter.sendMail({
-          from: `"${mailer.name}" <${mailer.address}>`,
+          from: `"${mailer.name}"
+          <${mailer.address}>`,
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: 'Hello world?',
-          html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `//${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+          html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendProtocol}://${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
         });
 
         console.log('Message sent: %s', info.messageId);
