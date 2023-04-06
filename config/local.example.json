@@ -1,4 +1,8 @@
 {
+  "frontend": {
+    "host": "localhost",
+    "port": 5173
+  },
   "host": "localhost",
   "postgresql": {
     "connection": "postgres://USERNAME:PASSWORD@HOST:5432/DATABASE"

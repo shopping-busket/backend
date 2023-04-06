@@ -9,11 +9,17 @@ export const configurationSchema = Type.Intersect([
     host: Type.String(),
     port: Type.Number(),
     public: Type.String(),
+
     mailer: Type.Object({
       host: Type.String(),
       name: Type.String(),
       address: Type.String({ format: 'email' }),
       password: Type.String(),
+    }),
+
+    frontend: Type.Object({
+      host: Type.String(),
+      port: Type.Number(),
     }),
   }),
 ]);
