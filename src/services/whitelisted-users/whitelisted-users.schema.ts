@@ -10,7 +10,9 @@ import { dataValidator, queryValidator } from '../../validators';
 export const whitelistedUsersSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String(),
+    inviteEmail: Type.Optional(Type.String({ format: 'email' })),
+    user: Type.Optional(Type.String({ format: 'uuid' })),
+    listId: Type.String({ format: 'uuid' }),
   },
   { $id: 'WhitelistedUsers', additionalProperties: false },
 );
@@ -21,7 +23,7 @@ export const whitelistedUsersResolver = resolve<WhitelistedUsers, HookContext>({
 export const whitelistedUsersExternalResolver = resolve<WhitelistedUsers, HookContext>({});
 
 // Schema for creating new entries
-export const whitelistedUsersDataSchema = Type.Pick(whitelistedUsersSchema, ['text'], {
+export const whitelistedUsersDataSchema = Type.Pick(whitelistedUsersSchema, ['inviteEmail', 'listId'], {
   $id: 'WhitelistedUsersData',
 });
 export type WhitelistedUsersData = Static<typeof whitelistedUsersDataSchema>;
@@ -37,7 +39,7 @@ export const whitelistedUsersPatchValidator = getValidator(whitelistedUsersPatch
 export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookContext>({});
 
 // Schema for allowed query properties
-export const whitelistedUsersQueryProperties = Type.Pick(whitelistedUsersSchema, ['id', 'text']);
+export const whitelistedUsersQueryProperties = Type.Pick(whitelistedUsersSchema, ['id', 'user', 'listId']);
 export const whitelistedUsersQuerySchema = Type.Intersect(
   [
     querySyntax(whitelistedUsersQueryProperties),

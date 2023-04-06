@@ -10,6 +10,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.uuid('listId').notNullable();
     table.foreign('listId').references('list.listid');
+
+    table.string('inviteEmail').nullable();
   });
 }
 
