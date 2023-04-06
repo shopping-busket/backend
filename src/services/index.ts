@@ -1,3 +1,4 @@
+import { viewMail } from './view-mail/view-mail';
 import { whitelistedUsers } from './whitelisted-users/whitelisted-users';
 import { event } from './event/event';
 import { list } from './list/list';
@@ -6,6 +7,7 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(viewMail);
   app.configure(whitelistedUsers);
   app.configure(event);
   app.configure(list);

@@ -4,11 +4,20 @@ import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 import authenticationClient from '@feathersjs/authentication-client';
 
+import { viewMailClient } from './services/view-mail/view-mail.shared';
+
 import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted-users.shared';
 
 import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
+
+export type {
+  ViewMail,
+  ViewMailData,
+  ViewMailQuery,
+  ViewMailPatch,
+} from './services/view-mail/view-mail.shared';
 
 export type {
   WhitelistedUsers,
@@ -53,5 +62,6 @@ export const createClient = <Configuration = any>(
   client.configure(listClient);
   client.configure(eventClient);
   client.configure(whitelistedUsersClient);
+  client.configure(viewMailClient);
   return client;
 };
