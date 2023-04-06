@@ -1,9 +1,9 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.shared.html
 import type { Params } from '@feathersjs/feathers';
 import type { ClientApplication } from '../../client';
-import type { ViewMail, ViewMailData, ViewMailPatch, ViewMailQuery, ViewMailService } from './view-mail.class';
+import type { ViewMail, ViewMailQuery, ViewMailService } from './view-mail.class';
 
-export type { ViewMail, ViewMailData, ViewMailPatch, ViewMailQuery };
+export type { ViewMail, ViewMailQuery };
 
 export type ViewMailClientService = Pick<
   ViewMailService<Params<ViewMailQuery>>,

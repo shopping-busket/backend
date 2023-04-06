@@ -2,9 +2,9 @@
 import type { Params, ServiceInterface } from '@feathersjs/feathers';
 
 import type { Application } from '../../declarations';
-import type { ViewMail, ViewMailData, ViewMailPatch, ViewMailQuery } from './view-mail.schema';
+import type { ViewMail, ViewMailQuery } from './view-mail.schema';
 
-export type { ViewMail, ViewMailData, ViewMailPatch, ViewMailQuery };
+export type { ViewMail, ViewMailQuery };
 
 export interface ViewMailServiceOptions {
   app: Application;
@@ -14,7 +14,7 @@ export interface ViewMailParams extends Params<ViewMailQuery> {
 }
 
 // This is a skeleton for a custom service class. Remove or add the methods you need here
-export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailParams> implements ServiceInterface<ViewMail, ViewMailData, ServiceParams, ViewMailPatch> {
+export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailParams> implements ServiceInterface<ViewMail, ServiceParams> {
   constructor(public options: ViewMailServiceOptions) {
   }
 
