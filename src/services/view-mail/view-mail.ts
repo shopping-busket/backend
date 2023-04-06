@@ -2,12 +2,7 @@
 
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
-import {
-  viewMailExternalResolver,
-  viewMailQueryResolver,
-  viewMailQueryValidator,
-  viewMailResolver,
-} from './view-mail.schema';
+import { viewMailQueryResolver, viewMailQueryValidator, viewMailResolver } from './view-mail.schema';
 
 import type { Application } from '../../declarations';
 import { getOptions, ViewMailService } from './view-mail.class';
@@ -29,7 +24,6 @@ export const viewMail = (app: Application) => {
   app.service(viewMailPath).hooks({
     around: {
       all: [
-        schemaHooks.resolveExternal(viewMailExternalResolver),
         schemaHooks.resolveResult(viewMailResolver),
       ],
     },

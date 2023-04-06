@@ -14,9 +14,7 @@ import { userClient } from './services/users/users.shared';
 
 export type {
   ViewMail,
-  ViewMailData,
   ViewMailQuery,
-  ViewMailPatch,
 } from './services/view-mail/view-mail.shared';
 
 export type {

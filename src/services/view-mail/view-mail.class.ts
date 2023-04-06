@@ -3,6 +3,7 @@ import type { Params, ServiceInterface } from '@feathersjs/feathers';
 
 import type { Application } from '../../declarations';
 import type { ViewMail, ViewMailQuery } from './view-mail.schema';
+import emailHtml from '../whitelisted-users/email';
 
 export type { ViewMail, ViewMailQuery };
 
@@ -14,12 +15,13 @@ export interface ViewMailParams extends Params<ViewMailQuery> {
 }
 
 // This is a skeleton for a custom service class. Remove or add the methods you need here
-export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailParams> implements ServiceInterface<ViewMail, ServiceParams> {
+export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailParams> implements ServiceInterface<string, string, ServiceParams> {
   constructor(public options: ViewMailServiceOptions) {
   }
 
-  async find(_params?: ServiceParams): Promise<ViewMail[]> {
-    return [];
+  async find(params?: ServiceParams): Promise<string> {
+    if (!params || !params.query) return 'Error';
+    return emailHtml(params.query.listName, params.query.ownerName, decodeURIComponent(params.query.bannerImgURL), decodeURIComponent(params.query.joinURL), '');
   }
 }
 

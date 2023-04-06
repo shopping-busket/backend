@@ -21,8 +21,6 @@ export const viewMailSchema = Type.Object(
 export type ViewMail = Static<typeof viewMailSchema>;
 export const viewMailResolver = resolve<ViewMail, HookContext>({});
 
-export const viewMailExternalResolver = resolve<ViewMail, HookContext>({});
-
 // Schema for allowed query properties
 export type ViewMailQuery = Static<typeof viewMailSchema>;
 export const viewMailQueryValidator = getValidator(viewMailSchema, queryValidator);
