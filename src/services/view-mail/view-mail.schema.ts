@@ -14,6 +14,7 @@ export const viewMailSchema = Type.Object(
     ownerName: Type.String(),
     joinURL: Type.String(),
     bannerImgURL: Type.String(),
+    $select: Type.Optional(Type.Any()),
   },
   { $id: 'ViewMail', additionalProperties: false },
 );
