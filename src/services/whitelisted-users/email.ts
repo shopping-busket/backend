@@ -20,7 +20,7 @@ export default (listName: string, ownerName: string, bannerImgURL: string, joinU
     <table role="presentation" style="width:602px;border-collapse:collapse;border:none;border-spacing:0;text-align:left;font-family:Arial, sans-serif;">
       <tr>
         <td align="center" style="padding:20px 0 20px 0;background:#fff;font-family:Arial, sans-serif;">
-          <img src="${bannerImgURL}" alt='Logo Banner' width="300" style="height:auto;display:block;">
+          <img src="${bannerImgURL}" alt='${process.env.NODE_ENV !== 'production' ? 'This image is probably not shown, because you are hosting from a local server' : 'Logo Banner'}' width="300" style="height:auto;display:block;">
         </td>
       </tr>
       <tr>
