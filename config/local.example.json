@@ -2,5 +2,10 @@
   "host": "localhost",
   "postgresql": {
     "connection": "postgres://USERNAME:PASSWORD@HOST:5432/DATABASE"
+  },
+  "mailer": {
+    "host": "mail.host.at",
+    "address": "mail@server.at",
+    "password": "PASSWORD"
   }
 }

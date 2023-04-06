@@ -7,6 +7,9 @@
   "postgresql": {
     "client": "pg"
   },
+  "mailer": {
+    "name": "Busket"
+  },
   "authentication": {
     "entity": "user",
     "service": "users",

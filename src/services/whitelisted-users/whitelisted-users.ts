@@ -1,5 +1,6 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication';
+import nodemailer from 'nodemailer';
 
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
@@ -11,12 +12,13 @@ import {
   whitelistedUsersExternalResolver,
   whitelistedUsersDataResolver,
   whitelistedUsersPatchResolver,
-  whitelistedUsersQueryResolver,
+  whitelistedUsersQueryResolver, WhitelistedUsers,
 } from './whitelisted-users.schema';
 
 import type { Application } from '../../declarations';
 import { WhitelistedUsersService, getOptions } from './whitelisted-users.class';
 import { whitelistedUsersPath, whitelistedUsersMethods } from './whitelisted-users.shared';
+import { HookContext } from '@feathersjs/feathers';
 
 export * from './whitelisted-users.class';
 export * from './whitelisted-users.schema';
@@ -58,6 +60,31 @@ export const whitelistedUsers = (app: Application) => {
     },
     after: {
       all: [],
+      async create(context: HookContext): Promise<HookContext> {
+        const mailer = app.get('mailer');
+
+        const transporter = nodemailer.createTransport({
+          host: mailer.host,
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: mailer.address, // generated ethereal user
+            pass: mailer.password, // generated ethereal password
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"${mailer.name}" <${mailer.address}>`,
+          to: (context.result as WhitelistedUsers).inviteEmail,
+          subject: "You have been invited to a Busket list!",
+          text: "Hello world?",
+          html: "<b>Hello world?</b>",
+        });
+
+        console.log("Message sent: %s", info.messageId);
+
+        return context;
+      }
     },
     error: {
       all: [],
