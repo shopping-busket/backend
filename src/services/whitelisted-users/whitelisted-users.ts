@@ -89,13 +89,14 @@ export const whitelistedUsers = (app: Application) => {
           },
         });
 
+        const backendURL = `${app.get('host')}:${app.get('port')}`;
         const joinURL = `//${frontend.host}:${frontend.port}/me/list/${data.listId}/join`;
         const info = await transporter.sendMail({
           from: `"${mailer.name}" <${mailer.address}>`,
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: 'Hello world?',
-          html: emailHtml(list.name, ownerName ?? 'Error', joinURL, `//${app.get('host')}:${app.get('port')}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${joinURL}`),
+          html: emailHtml(list.name, ownerName ?? 'Error', `//${backendURL}/img/banner.png`, joinURL, `//${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${joinURL}`),
         });
 
         console.log('Message sent: %s', info.messageId);
