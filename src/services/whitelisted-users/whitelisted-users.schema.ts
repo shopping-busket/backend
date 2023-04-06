@@ -10,9 +10,12 @@ import { dataValidator, queryValidator } from '../../validators';
 export const whitelistedUsersSchema = Type.Object(
   {
     id: Type.Number(),
-    inviteEmail: Type.Optional(Type.String({ format: 'email' })),
     user: Type.Optional(Type.String({ format: 'uuid' })),
+    inviteEmail: Type.Optional(Type.String({ format: 'email' })),
     listId: Type.String({ format: 'uuid' }),
+
+    canEditEntries: Type.Optional(Type.Boolean({ default: true })),
+    canDeleteEntries: Type.Optional(Type.Boolean({ default: false })),
   },
   { $id: 'WhitelistedUsers', additionalProperties: false },
 );

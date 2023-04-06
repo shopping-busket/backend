@@ -5,13 +5,16 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('whitelisted-users', (table) => {
     table.increments('id');
 
-    table.uuid('user').notNullable();
+    table.uuid('user').nullable();
     table.foreign('user').references('users.uuid');
 
     table.uuid('listId').notNullable();
     table.foreign('listId').references('list.listid');
 
     table.string('inviteEmail').nullable();
+
+    table.boolean('canEditEntries').notNullable().defaultTo(true);
+    table.boolean('canDeleteEntries').notNullable().defaultTo(false);
   });
 }
 

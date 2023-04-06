@@ -71,7 +71,7 @@ export const userDataResolver = resolve<User, HookContext>({
     // Gravatar uses MD5 hashes from an email address to get the image
     const hash = crypto.createHash('md5').update(user.email.toLowerCase()).digest('hex');
     // Return the full avatar URL
-    return `https://s.gravatar.com/avatar/${hash}?s=60`;
+    return `https://gravatar.com/avatar/${hash}?s=60&d=identicon`;
   },
 });
 
