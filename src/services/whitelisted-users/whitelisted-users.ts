@@ -76,15 +76,15 @@ export const whitelistedUsers = (app: Application) => {
         const info = await transporter.sendMail({
           from: `"${mailer.name}" <${mailer.address}>`,
           to: (context.result as WhitelistedUsers).inviteEmail,
-          subject: "You have been invited to a Busket list!",
-          text: "Hello world?",
-          html: "<b>Hello world?</b>",
+          subject: '🛍️🛒 You have been invited to a Busket list!',
+          text: 'Hello world?',
+          html: '<b>Hello world?</b>',
         });
 
-        console.log("Message sent: %s", info.messageId);
+        console.log('Message sent: %s', info.messageId);
 
         return context;
-      }
+      },
     },
     error: {
       all: [],
