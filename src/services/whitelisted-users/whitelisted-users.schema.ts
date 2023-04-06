@@ -1,10 +1,12 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve } from '@feathersjs/schema';
-import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
+import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
+import { app } from '../../app';
+import { BadRequest } from '@feathersjs/errors';
 
 // Main data model schema
 export const whitelistedUsersSchema = Type.Object(
@@ -31,7 +33,24 @@ export const whitelistedUsersDataSchema = Type.Pick(whitelistedUsersSchema, ['in
 });
 export type WhitelistedUsersData = Static<typeof whitelistedUsersDataSchema>;
 export const whitelistedUsersDataValidator = getValidator(whitelistedUsersDataSchema, dataValidator);
-export const whitelistedUsersDataResolver = resolve<WhitelistedUsers, HookContext>({});
+export const whitelistedUsersDataResolver = resolve<WhitelistedUsers, HookContext>({
+  inviteEmail: async (value, whitelist) => {
+    if (!value) throw new Error('error: inviteEmail not defined on create (whitelisted-users)[whitelistedUsersDataResolver]: this should not be possible because of typebox validation!');
+    const knex = app.get('postgresqlClient');
+
+    const rowsWithSameEmail = await knex('whitelisted-users').select('listId').where({
+      inviteEmail: value,
+    } as Partial<WhitelistedUsers>) as Pick<WhitelistedUsers, 'listId'>[];
+
+    let allowContinue = true;
+    rowsWithSameEmail.forEach(({ listId }) => {
+      if (listId === whitelist.listId) allowContinue = false; // there is already an invitation with the same email on this list
+    });
+
+    if (allowContinue) return value;
+    throw new BadRequest('There is already a whitelisted user with the same email on the same list. There can only be one at a time!');
+  },
+});
 
 // Schema for updating existing entries
 export const whitelistedUsersPatchSchema = Type.Partial(whitelistedUsersSchema, {
