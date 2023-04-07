@@ -9,6 +9,7 @@ import { User } from '../users/users.schema';
 import { Forbidden } from '@feathersjs/errors';
 import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
+import { ListParams } from './list.class';
 
 
 const entryProperties = {
@@ -79,7 +80,25 @@ export const listPatchSchema = Type.Partial(listSchema, {
 });
 export type ListPatch = Static<typeof listPatchSchema>
 export const listPatchValidator = getValidator(listPatchSchema, dataValidator);
-export const listPatchResolver = resolve<List, HookContext>({});
+
+const checkIfOwner = async <T>(value: T | undefined, list: Partial<List>, ctx: HookContext<any>): Promise<T | undefined> => {
+  if (!value) return value;
+  if (!(ctx.params.query as List).listid) throw new Error('Patch only allowed with listid as query arg!');
+  const knex = app.get('postgresqlClient');
+
+  const { owner: listOwner } = await knex('list').select('owner').where({
+    listid: (ctx.params.query as List).listid,
+  } as Partial<List>).first() as Pick<List, 'owner'>;
+
+  if (listOwner !== (ctx.params as ListParams).user?.uuid) throw new Error('Only the list\'s owner is allowed to edit the list\'s name!');
+  return value;
+};
+
+export const listPatchResolver = resolve<List, HookContext>({
+  name: checkIfOwner<string>,
+  description: checkIfOwner<string>,
+  backgroundURI: checkIfOwner<string>,
+});
 
 // Schema for allowed query properties
 export const listQueryProperties = Type.Pick(listSchema, ['id', 'listid', 'owner', 'name', 'description', 'entries', 'checkedEntries', 'backgroundURI']);
