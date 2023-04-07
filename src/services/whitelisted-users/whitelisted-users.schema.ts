@@ -57,15 +57,17 @@ export const whitelistedUsersDataResolver = resolve<WhitelistedUsers, HookContex
 });
 
 // Schema for updating existing entries
-export const whitelistedUsersPatchSchema = Type.Pick(whitelistedUsersSchema, ['user', 'canDeleteEntries', 'canEditEntries'] as (keyof WhitelistedUsers)[], {
+export const whitelistedUsersPatchSchema = Type.Pick(whitelistedUsersSchema, ['inviteSecret', 'canDeleteEntries', 'canEditEntries'] as (keyof WhitelistedUsers)[], {
   $id: 'WhitelistedUsersPatch',
 });
 export type WhitelistedUsersPatch = Static<typeof whitelistedUsersPatchSchema>;
 export const whitelistedUsersPatchValidator = getValidator(whitelistedUsersPatchSchema, dataValidator);
 export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookContext>({
   user: async (value, whitelist, ctx) => {
-    if ((ctx.params as WhitelistedUsersParams).user?.uuid === value || value == null) return value;
-    throw new BadRequest('Only the user this whitelist entry belongs to (not the list\'s creator) can edit the user column!');
+    if (Object.keys(ctx.data as Partial<WhitelistedUsers>).includes('inviteSecret' as keyof WhitelistedUsers)) {
+      return (ctx.params as WhitelistedUsersParams).user?.uuid;
+    }
+    throw new Error('Only the invited user (not the list\'s creator) is allowed to edit his uuid. If you are the invited user, pass the inviteSecret for first time patch to user!');
   },
   inviteSecret: async (value, whitelist, ctx) => {
     const id = ctx.arguments[0];
@@ -86,7 +88,8 @@ export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookConte
       else if (listOwner !== (ctx.params as WhitelistedUsersParams).user?.uuid) allow = false;
     });
 
-    if (allow || (whitelistedUser.user != null || value != null)) return undefined;
+    if (allow || whitelistedUser.user != null) return undefined;
+    if (value != null) return undefined;
     throw new BadRequest('inviteSecret shouldn\'t be null or undefined until user uuid is set!');
   },
 });

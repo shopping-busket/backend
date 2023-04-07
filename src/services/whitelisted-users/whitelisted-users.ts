@@ -23,6 +23,7 @@ import { HookContext } from '@feathersjs/feathers';
 import { List } from '../list/list.schema';
 import { User } from '../users/users.schema';
 import emailHtml from './email';
+import { randomUUID } from 'crypto';
 
 export * from './whitelisted-users.class';
 export * from './whitelisted-users.schema';
@@ -77,6 +78,14 @@ export const whitelistedUsers = (app: Application) => {
           uuid: list.owner,
         }).first() as Pick<User, 'fullName'>;
 
+        const inviteSecret = randomUUID();
+        await knex('whitelisted-users').update({
+          inviteSecret,
+        } as Partial<WhitelistedUsers>).where({
+          id: data.id,
+        });
+
+
         const mailer = app.get('mailer');
 
         const transporter = nodemailer.createTransport({
@@ -92,7 +101,7 @@ export const whitelistedUsers = (app: Application) => {
         const backendProtocol = app.get('ssl') ? 'https' : 'http';
         const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
-        const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join`;
+        const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join/${inviteSecret}/${data.id}`;
 
         const info = await transporter.sendMail({
           from: `"${mailer.name}"

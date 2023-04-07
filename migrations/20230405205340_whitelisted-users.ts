@@ -15,6 +15,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.boolean('canEditEntries').notNullable().defaultTo(true);
     table.boolean('canDeleteEntries').notNullable().defaultTo(false);
+
+    table.uuid('inviteSecret').nullable();
   });
 }
 
