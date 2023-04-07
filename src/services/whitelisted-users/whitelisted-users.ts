@@ -109,7 +109,7 @@ export const whitelistedUsers = (app: Application) => {
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: 'Hello world?',
-          html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendProtocol}://${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+          html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
         });
 
         console.log('Message sent: %s', info.messageId);
