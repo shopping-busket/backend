@@ -19,11 +19,12 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, WhitelistedUsersService } from './whitelisted-users.class';
 import { whitelistedUsersMethods, whitelistedUsersPath } from './whitelisted-users.shared';
-import { HookContext } from '@feathersjs/feathers';
+import { HookContext, Paginated } from '@feathersjs/feathers';
 import { List } from '../list/list.schema';
 import { User } from '../users/users.schema';
 import emailHtml from './email';
 import { randomUUID } from 'crypto';
+import { requireDataToBeObject } from '../../helpers/channelSecurity';
 
 export * from './whitelisted-users.class';
 export * from './whitelisted-users.schema';
@@ -37,6 +38,12 @@ export const whitelistedUsers = (app: Application) => {
     // You can add additional custom events to be sent to clients here
     events: [],
   });
+
+  // Publish removed event to user who got kicked
+  app.service(whitelistedUsersPath).publish('removed', (whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
+    return app.channel(app.channels).filter((conn) => conn.user.uuid === requireDataToBeObject(whitelistedUser).user);
+  });
+
   // Initialize hooks
   app.service(whitelistedUsersPath).hooks({
     around: {

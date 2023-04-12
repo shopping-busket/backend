@@ -20,5 +20,10 @@ export const onlyAllowWhitelistedOrOwner = async (data: List | List[] | Paginate
   const whitelistedUsers = whitelisted.map(w => w.user);
 
   return app.channel(app.channels).filter(conn => conn.user.uuid != null && (conn.user.uuid === list.owner || whitelistedUsers.includes(conn.user.uuid)));
+};
 
+export const requireDataToBeObject = <T>(data: T | T[] | Paginated<T>): T => {
+  if (Object.prototype.hasOwnProperty.call(data, 'total')) throw new Error('Pagination not supported by this publisher!');
+  if (Array.isArray(data)) throw new Error('Arrays are not supported by this publisher!');
+  return data as T;
 };

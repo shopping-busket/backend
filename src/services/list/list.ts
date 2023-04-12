@@ -4,7 +4,6 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
-  List,
   listDataResolver,
   listDataValidator,
   listExternalResolver,
@@ -18,8 +17,6 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
-import { FeathersService, Paginated } from '@feathersjs/feathers';
-import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { onlyAllowWhitelistedOrOwner } from '../../helpers/channelSecurity';
 
 export * from './list.class';
@@ -36,7 +33,7 @@ export const list = (app: Application) => {
   });
 
   // Secure channels
-  (app.service('list') as FeathersService<Application, ListService>).publish('patched', onlyAllowWhitelistedOrOwner);
+  app.service(listPath).publish('patched', onlyAllowWhitelistedOrOwner);
 
   // Initialize hooks
   app.service(listPath).hooks({
