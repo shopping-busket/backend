@@ -39,9 +39,20 @@ export const whitelistedUsers = (app: Application) => {
     events: [],
   });
 
+  // Secure channels
   // Publish removed event to user who got kicked
   app.service(whitelistedUsersPath).publish('removed', (whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
-    return app.channel(app.channels).filter((conn) => conn.user.uuid === requireDataToBeObject(whitelistedUser).user);
+    return app.channel(app.channels).filter(conn => conn.user.uuid === requireDataToBeObject(whitelistedUser).user);
+  });
+
+  // Publish patched to list owner
+  app.service(whitelistedUsersPath).publish('patched', async (whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
+    const knex = app.get('postgresqlClient');
+    const { owner: listOwner } = await knex('list').select('owner').where({
+      listid: requireDataToBeObject(whitelistedUser).listId,
+    }).first() as Pick<List, 'owner'>;
+
+    return app.channel(app.channels).filter(conn => conn.user.uuid === listOwner);
   });
 
   // Initialize hooks
