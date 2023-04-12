@@ -46,13 +46,21 @@ export const whitelistedUsers = (app: Application) => {
   });
 
   // Publish patched to list owner
-  app.service(whitelistedUsersPath).publish('patched', async (whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
+  app.service(whitelistedUsersPath).publish('patched', async (_whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
     const knex = app.get('postgresqlClient');
+    const whitelisted = requireDataToBeObject(_whitelistedUser);
+
     const { owner: listOwner } = await knex('list').select('owner').where({
-      listid: requireDataToBeObject(whitelistedUser).listId,
+      listid: whitelisted.listId,
     }).first() as Pick<List, 'owner'>;
 
-    return app.channel(app.channels).filter(conn => conn.user.uuid === listOwner);
+    const _whitelisted = await knex('whitelisted-users').select('user').where({
+      listId: whitelisted.listId,
+    }) as Pick<WhitelistedUsers, 'user'>[];
+    const whitelistedUser = _whitelisted.find(w => w.user === whitelisted.user)?.user;
+    console.log(_whitelisted, whitelistedUser, listOwner);
+
+    return app.channel(app.channels).filter(conn => conn.user.uuid === listOwner || conn.user.uuid === whitelistedUser);
   });
 
   // Initialize hooks
