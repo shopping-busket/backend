@@ -126,7 +126,7 @@ export const whitelistedUsers = (app: Application) => {
           <${mailer.address}>`,
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
-          text: 'Hello world?',
+          text: `${ownerName} has invited you to his Busket list \"${list.name}\"! Click here to join their list, or ignore this E-mail if you don\'t feel like joining: ${joinURL}`,
           html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
         });
 
