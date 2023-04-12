@@ -24,7 +24,7 @@ export const listSchema = Type.Object(
 
     owner: Type.String({ format: 'uuid' }),
 
-    name: Type.String(),
+    name: Type.String({ minLength: 3 }),
     description: Type.String(),
 
     entries: Type.Array(Type.Object(entryProperties)),
