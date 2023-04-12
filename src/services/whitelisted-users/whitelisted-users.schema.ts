@@ -105,7 +105,7 @@ export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookConte
 });
 
 // Schema for allowed query properties
-export const whitelistedUsersQueryProperties = Type.Pick(whitelistedUsersSchema, ['listId']);
+export const whitelistedUsersQueryProperties = Type.Pick(whitelistedUsersSchema, ['user', 'listId']);
 export const whitelistedUsersQuerySchema = Type.Intersect(
   [
     querySyntax(whitelistedUsersQueryProperties),
@@ -117,18 +117,27 @@ export const whitelistedUsersQuerySchema = Type.Intersect(
 export type WhitelistedUsersQuery = Static<typeof whitelistedUsersQuerySchema>;
 export const whitelistedUsersQueryValidator = getValidator(whitelistedUsersQuerySchema, queryValidator);
 export const whitelistedUsersQueryResolver = resolve<WhitelistedUsersQuery, HookContext>({
-  listId: async (value, whitelist, ctx) => {
+  user: async (value, whitelist, ctx) => {
     if (ctx.method != 'find') return value;
-    if (value == null) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.listId.value is null or undefined! check chain!');
+    if (whitelist.listId == null) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.user.whitelist.listId is null or undefined! check chain!');
 
+    const userUUID = (ctx.params as WhitelistedUsersParams).user?.uuid;
     const knex = app.get('postgresqlClient');
-    const { owner: listOwner } = await knex('list').select('owner').where({
-      listid: value,
-    } as Partial<List>).first() as Pick<List, 'owner'>;
 
+    const { owner: listOwner } = await knex('list').select('owner').where({
+      listid: whitelist.listId,
+    } as Partial<List>).first() as Pick<List, 'owner'>;
     if (!listOwner) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.listId.listOwner is null or undefined! check chain!');
 
-    if (listOwner === (ctx.params as WhitelistedUsersParams).user?.uuid) return value;
+    if (listOwner === userUUID) return undefined;
+
+    const whitelisted = await knex('whitelisted-users').select('user').where({
+      listId: whitelist.listId,
+    }) as WhitelistedUsers[];
+    const whitelistedUsers = whitelisted.map(w => w.user);
+
+    if (whitelistedUsers.includes(userUUID)) return userUUID;
     throw new BadRequest('You are not allowed to access this content! Only the list\'s owner is allowed to query this.');
   },
+
 });
