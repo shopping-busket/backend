@@ -1,9 +1,4 @@
-import {
-  EntryList,
-  IShoppingList,
-  IShoppingListItem,
-  ShoppingListItem,
-} from '../../shoppinglist/ShoppingList';
+import { EntryList, IShoppingList, IShoppingListItem, ShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { BadRequest, NotFound } from '@feathersjs/errors';
 import { Knex } from 'knex';
 

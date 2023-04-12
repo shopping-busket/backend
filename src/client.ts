@@ -34,7 +34,8 @@ export interface Configuration {
   connection: TransportConnection<ServiceTypes>;
 }
 
-export interface ServiceTypes {}
+export interface ServiceTypes {
+}
 
 export type ClientApplication = Application<ServiceTypes, Configuration>;
 
