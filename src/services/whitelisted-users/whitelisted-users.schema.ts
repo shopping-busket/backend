@@ -6,7 +6,7 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 import { app } from '../../app';
-import { BadRequest } from '@feathersjs/errors';
+import { BadRequest, Forbidden } from '@feathersjs/errors';
 import { WhitelistedUsersParams } from './whitelisted-users.class';
 import { List } from '../list/list.schema';
 
@@ -77,7 +77,9 @@ export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookConte
 
     const whitelistedUser = await knex('whitelisted-users').select().where({
       id: id,
-    }).first() as WhitelistedUsers;
+    }).first() as WhitelistedUsers | null;
+    if (whitelistedUser == null) throw new Forbidden('inviteSecret expired.');
+
     const { owner: listOwner } = await knex('list').select('owner').where({
       listid: whitelistedUser.listId,
     }).first() as Pick<List, 'owner'>;
