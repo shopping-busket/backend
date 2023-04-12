@@ -64,10 +64,17 @@ export type WhitelistedUsersPatch = Static<typeof whitelistedUsersPatchSchema>;
 export const whitelistedUsersPatchValidator = getValidator(whitelistedUsersPatchSchema, dataValidator);
 export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookContext>({
   user: async (value, whitelist, ctx) => {
-    if (value == undefined) return value;
+    if (!ctx.id) throw new BadRequest('db id has to be present!');
+
+    const knex = app.get('postgresqlClient');
+    const whitelisted = await knex('whitelisted-users').select('user').where({
+      id: ctx.id,
+    }).first() as WhitelistedUsers;
+
     if (Object.keys(ctx.data as Partial<WhitelistedUsers>).includes('inviteSecret' as keyof WhitelistedUsers)) {
+      if (whitelisted.user != null) throw new Forbidden('This share link is already used by another person. Cannot override user!');
       return (ctx.params as WhitelistedUsersParams).user?.uuid;
-    }
+    } else if (whitelist.user == null) return undefined;
     throw new Error('Only the invited user (not the list\'s creator) is allowed to edit his uuid. If you are the invited user, pass the inviteSecret for first time patch to user!');
   },
   inviteSecret: async (value, whitelist, ctx) => {
