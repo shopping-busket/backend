@@ -17,7 +17,7 @@ export const whitelistedUsersSchema = Type.Object(
     user: Type.Optional(Type.String({ format: 'uuid' })),
     inviteEmail: Type.Optional(Type.String({ format: 'email' })),
     listId: Type.String({ format: 'uuid' }),
-    inviteSecret: Type.String({ format: 'uuid' }),
+    inviteSecret: Type.Optional(Type.String({ format: 'uuid' })),
 
     canEditEntries: Type.Optional(Type.Boolean({ default: true })),
     canDeleteEntries: Type.Optional(Type.Boolean({ default: false })),
@@ -64,6 +64,7 @@ export type WhitelistedUsersPatch = Static<typeof whitelistedUsersPatchSchema>;
 export const whitelistedUsersPatchValidator = getValidator(whitelistedUsersPatchSchema, dataValidator);
 export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookContext>({
   user: async (value, whitelist, ctx) => {
+    if (value == undefined) return value;
     if (Object.keys(ctx.data as Partial<WhitelistedUsers>).includes('inviteSecret' as keyof WhitelistedUsers)) {
       return (ctx.params as WhitelistedUsersParams).user?.uuid;
     }
