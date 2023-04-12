@@ -58,7 +58,6 @@ export const whitelistedUsers = (app: Application) => {
       listId: whitelisted.listId,
     }) as Pick<WhitelistedUsers, 'user'>[];
     const whitelistedUser = _whitelisted.find(w => w.user === whitelisted.user)?.user;
-    console.log(_whitelisted, whitelistedUser, listOwner);
 
     return app.channel(app.channels).filter(conn => conn.user.uuid === listOwner || conn.user.uuid === whitelistedUser);
   });
