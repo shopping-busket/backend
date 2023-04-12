@@ -8,6 +8,7 @@ import { eventDataResolver, eventDataValidator, eventExternalResolver, eventReso
 import type { Application } from '../../declarations';
 import { EventService, getOptions } from './event.class';
 import { eventMethods, eventPath } from './event.shared';
+import { onlyAllowWhitelistedOrOwner } from '../../helpers/channelSecurity';
 
 export * from './event.class';
 export * from './event.schema';
@@ -21,6 +22,10 @@ export const event = (app: Application) => {
     // You can add additional custom events to be sent to clients here
     events: [],
   });
+
+  // Secure channel
+  app.service(eventPath).publish('created', onlyAllowWhitelistedOrOwner);
+
   // Initialize hooks
   app.service(eventPath).hooks({
     around: {
