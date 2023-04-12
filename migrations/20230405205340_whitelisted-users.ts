@@ -6,10 +6,10 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id');
 
     table.uuid('user').nullable();
-    table.foreign('user').references('users.uuid');
+    table.foreign('user').references('users.uuid').onUpdate('CASCADE').onDelete('CASCADE');
 
     table.uuid('listId').notNullable();
-    table.foreign('listId').references('list.listid');
+    table.foreign('listId').references('list.listid').onUpdate('CASCADE').onDelete('CASCADE');
 
     table.string('inviteEmail').nullable();
 

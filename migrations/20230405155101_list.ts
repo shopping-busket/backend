@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
 
     table.uuid('listid').unique().notNullable();
     table.uuid('owner').notNullable();
+    table.foreign('owner').references('users.uuid').onUpdate('CASCADE').onDelete('CASCADE');
 
     table.string('name').notNullable();
     table.string('description');
