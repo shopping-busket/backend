@@ -1,9 +1,9 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.shared.html
 import type { Params } from '@feathersjs/feathers';
 import type { ClientApplication } from '../../client';
-import type { Library, LibraryData, LibraryPatch, LibraryQuery, LibraryService } from './library.class';
+import type { Library, LibraryData, LibraryQuery, LibraryService } from './library.class';
 
-export type { Library, LibraryData, LibraryPatch, LibraryQuery };
+export type { Library, LibraryData, LibraryQuery };
 
 export type LibraryClientService = Pick<
   LibraryService<Params<LibraryQuery>>,
