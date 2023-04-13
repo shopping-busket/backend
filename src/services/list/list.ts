@@ -4,6 +4,8 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  List,
+  ListData,
   listDataResolver,
   listDataValidator,
   listExternalResolver,
@@ -14,10 +16,12 @@ import {
   listResolver,
 } from './list.schema';
 
-import type { Application } from '../../declarations';
-import { getOptions, ListService } from './list.class';
+import type { Application, HookContext } from '../../declarations';
+import { getOptions, ListParams, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
-import { onlyAllowWhitelistedOrOwner } from '../../helpers/channelSecurity';
+import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
+import { FeathersService } from '@feathersjs/feathers';
+import { addToLibrary } from '../../helpers/libraryHelper';
 
 export * from './list.class';
 export * from './list.schema';
@@ -54,6 +58,9 @@ export const list = (app: Application) => {
     },
     after: {
       all: [],
+      create: [async (ctx: HookContext<ListService>) => {
+        await addToLibrary(requireDataToBeObject(ctx.result)?.owner ?? 'Error', requireDataToBeObject(ctx.result)?.listid ?? 'Error');
+      }],
     },
     error: {
       all: [],

@@ -9,6 +9,8 @@ import { app } from '../../app';
 import { BadRequest, Forbidden } from '@feathersjs/errors';
 import { WhitelistedUsersParams } from './whitelisted-users.class';
 import { List } from '../list/list.schema';
+import { addToLibrary } from '../../helpers/libraryHelper';
+import { requireDataToBeObject } from '../../helpers/channelSecurity';
 
 // Main data model schema
 export const whitelistedUsersSchema = Type.Object(
@@ -73,7 +75,10 @@ export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookConte
 
     if (Object.keys(ctx.data as Partial<WhitelistedUsers>).includes('inviteSecret' as keyof WhitelistedUsers)) {
       if (whitelisted.user != null) throw new Forbidden('This share link is already used by another person. Cannot override user!');
-      return (ctx.params as WhitelistedUsersParams).user?.uuid;
+
+      const user = (ctx.params as WhitelistedUsersParams).user?.uuid;
+      if (user) await addToLibrary(user, whitelisted.listId);
+      return user;
     } else if (whitelist.user == null) return undefined;
     throw new Error('Only the invited user (not the list\'s creator) is allowed to edit his uuid. If you are the invited user, pass the inviteSecret for first time patch to user!');
   },

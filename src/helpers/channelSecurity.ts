@@ -19,7 +19,7 @@ export const onlyAllowWhitelistedOrOwner = async (data: List | List[] | Paginate
   const whitelisted = await knex('whitelisted-users').select('user').where({
     listId: list.listid,
   } as Partial<WhitelistedUsers>) as Pick<WhitelistedUsers, 'user'>[];
-  const whitelistedUsers = whitelisted.map(w => w.user);
+  const whitelistedUsers = whitelisted.map(w => w.user)
 
   return app.channel(app.channels).filter(conn => conn.user.uuid != null && (conn.user.uuid === list.owner || whitelistedUsers.includes(conn.user.uuid)));
 };
