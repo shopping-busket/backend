@@ -10,7 +10,6 @@ import { BadRequest, Forbidden } from '@feathersjs/errors';
 import { WhitelistedUsersParams } from './whitelisted-users.class';
 import { List } from '../list/list.schema';
 import { addToLibrary } from '../../helpers/libraryHelper';
-import { requireDataToBeObject } from '../../helpers/channelSecurity';
 
 // Main data model schema
 export const whitelistedUsersSchema = Type.Object(
@@ -69,9 +68,9 @@ export const whitelistedUsersPatchResolver = resolve<WhitelistedUsers, HookConte
     if (!ctx.id) throw new BadRequest('db id has to be present!');
 
     const knex = app.get('postgresqlClient');
-    const whitelisted = await knex('whitelisted-users').select('user').where({
+    const whitelisted = await knex('whitelisted-users').select('user', 'listId').where({
       id: ctx.id,
-    }).first() as WhitelistedUsers;
+    }).first() as Pick<WhitelistedUsers, 'user' | 'listId'>;
 
     if (Object.keys(ctx.data as Partial<WhitelistedUsers>).includes('inviteSecret' as keyof WhitelistedUsers)) {
       if (whitelisted.user != null) throw new Forbidden('This share link is already used by another person. Cannot override user!');
