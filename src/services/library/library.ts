@@ -4,17 +4,19 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  Library,
+  libraryDataResolver,
   libraryDataValidator,
+  libraryExternalResolver,
+  libraryQueryResolver,
   libraryQueryValidator,
   libraryResolver,
-  libraryExternalResolver,
-  libraryDataResolver,
-  libraryQueryResolver,
 } from './library.schema';
 
 import type { Application } from '../../declarations';
-import { LibraryService, getOptions } from './library.class';
-import { libraryPath, libraryMethods } from './library.shared';
+import { getOptions, LibraryService } from './library.class';
+import { libraryMethods, libraryPath } from './library.shared';
+import { List } from '../list/list.schema';
 
 export * from './library.class';
 export * from './library.schema';
@@ -45,6 +47,15 @@ export const library = (app: Application) => {
     },
     after: {
       all: [],
+      find: [async (ctx) => {
+        const knex = app.get('postgresqlClient');
+
+        for (const entry of (ctx.result as Library[])) {
+          entry.list = await knex('list').select().where({
+            listid: entry.listId,
+          }).first() as List;
+        }
+      }],
     },
     error: {
       all: [],

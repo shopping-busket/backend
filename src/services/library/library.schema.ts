@@ -14,6 +14,7 @@ export const librarySchema = Type.Object(
     id: Type.Number(),
     user: Type.String({ format: 'uuid' }),
     listId: Type.String({ format: 'uuid' }),
+    list: Type.Optional(Type.Any()),
   },
   { $id: 'Library', additionalProperties: false },
 );
@@ -41,7 +42,7 @@ export const libraryDataValidator = getValidator(libraryDataSchema, dataValidato
 export const libraryDataResolver = resolve<Library, HookContext>({});
 
 // Schema for allowed query properties
-export const libraryQueryProperties = Type.Pick(librarySchema, ['id', 'user', 'listId']);
+export const libraryQueryProperties = Type.Pick(librarySchema, ['id', 'user', 'listId', 'list']);
 export const libraryQuerySchema = Type.Intersect(
   [
     querySyntax(libraryQueryProperties),
