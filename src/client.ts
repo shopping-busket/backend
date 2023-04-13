@@ -2,6 +2,10 @@
 import type { Application, TransportConnection } from '@feathersjs/feathers';
 import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
+
+import { libraryClient } from './services/library/library.shared';
+export type { Library, LibraryData, LibraryQuery, LibraryPatch } from './services/library/library.shared';
+
 import authenticationClient from '@feathersjs/authentication-client';
 
 import { viewMailClient } from './services/view-mail/view-mail.shared';
@@ -12,10 +16,7 @@ import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
 
-export type {
-  ViewMail,
-  ViewMailQuery,
-} from './services/view-mail/view-mail.shared';
+export type { ViewMail, ViewMailQuery } from './services/view-mail/view-mail.shared';
 
 export type {
   WhitelistedUsers,
@@ -34,8 +35,7 @@ export interface Configuration {
   connection: TransportConnection<ServiceTypes>;
 }
 
-export interface ServiceTypes {
-}
+export interface ServiceTypes {}
 
 export type ClientApplication = Application<ServiceTypes, Configuration>;
 
@@ -62,5 +62,6 @@ export const createClient = <Configuration = any>(
   client.configure(eventClient);
   client.configure(whitelistedUsersClient);
   client.configure(viewMailClient);
+  client.configure(libraryClient);
   return client;
 };
