@@ -5,12 +5,10 @@ import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
   libraryDataValidator,
-  libraryPatchValidator,
   libraryQueryValidator,
   libraryResolver,
   libraryExternalResolver,
   libraryDataResolver,
-  libraryPatchResolver,
   libraryQueryResolver,
 } from './library.schema';
 
@@ -42,9 +40,7 @@ export const library = (app: Application) => {
     before: {
       all: [schemaHooks.validateQuery(libraryQueryValidator), schemaHooks.resolveQuery(libraryQueryResolver)],
       find: [],
-      get: [],
       create: [schemaHooks.validateData(libraryDataValidator), schemaHooks.resolveData(libraryDataResolver)],
-      patch: [schemaHooks.validateData(libraryPatchValidator), schemaHooks.resolveData(libraryPatchResolver)],
       remove: [],
     },
     after: {

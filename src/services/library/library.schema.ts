@@ -16,7 +16,6 @@ export const librarySchema = Type.Object(
   { $id: 'Library', additionalProperties: false },
 );
 export type Library = Static<typeof librarySchema>;
-export const libraryValidator = getValidator(librarySchema, dataValidator);
 export const libraryResolver = resolve<Library, HookContext>({});
 
 export const libraryExternalResolver = resolve<Library, HookContext>({});
@@ -28,14 +27,6 @@ export const libraryDataSchema = Type.Pick(librarySchema, ['user', 'listId'], {
 export type LibraryData = Static<typeof libraryDataSchema>;
 export const libraryDataValidator = getValidator(libraryDataSchema, dataValidator);
 export const libraryDataResolver = resolve<Library, HookContext>({});
-
-// Schema for updating existing entries
-export const libraryPatchSchema = Type.Partial(librarySchema, {
-  $id: 'LibraryPatch',
-});
-export type LibraryPatch = Static<typeof libraryPatchSchema>;
-export const libraryPatchValidator = getValidator(libraryPatchSchema, dataValidator);
-export const libraryPatchResolver = resolve<Library, HookContext>({});
 
 // Schema for allowed query properties
 export const libraryQueryProperties = Type.Pick(librarySchema, ['id', 'user', 'listId']);

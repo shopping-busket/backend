@@ -12,7 +12,7 @@ export type LibraryClientService = Pick<
 
 export const libraryPath = 'library';
 
-export const libraryMethods = ['find', 'get', 'create', 'patch', 'remove'] as const;
+export const libraryMethods = ['find', 'create', 'remove'] as const;
 
 export const libraryClient = (client: ClientApplication) => {
   const connection = client.get('connection');
