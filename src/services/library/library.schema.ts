@@ -1,12 +1,12 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve } from '@feathersjs/schema';
-import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
+import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
-import { LibraryParams } from './library.class';
 import { MethodNotAllowed } from '@feathersjs/errors';
+import { calledInternally } from '../../helpers/channelSecurity';
 
 // Main data model schema
 export const librarySchema = Type.Object(
@@ -22,11 +22,14 @@ export const libraryResolver = resolve<Library, HookContext>({});
 
 export const libraryExternalResolver = resolve<Library, HookContext>({
   id: async (value, library, ctx) => {
-    // When call is internal (from backend), allow it
-    if ((ctx.params as LibraryParams).provider === undefined) return value;
+    if (calledInternally(ctx)) return value;
     else if (ctx.method !== 'create') return value;
     throw new MethodNotAllowed();
-  }
+  },
+  user: async (value, library, ctx) => {
+    if (calledInternally(ctx)) return value;
+    return ctx.params.user.uuid;
+  },
 });
 
 // Schema for creating new entries

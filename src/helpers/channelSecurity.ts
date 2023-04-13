@@ -1,8 +1,10 @@
 import { List } from '../services/list/list.schema';
 import { Event } from '../services/event/event.schema';
 import { WhitelistedUsers } from '../services/whitelisted-users/whitelisted-users.schema';
-import { Paginated } from '@feathersjs/feathers';
+import { Paginated, Params } from '@feathersjs/feathers';
 import { app } from '../app';
+import { HookContext } from '../declarations';
+import { LibraryParams } from '../services/library/library.class';
 
 export const onlyAllowWhitelistedOrOwner = async (data: List | List[] | Paginated<List> | Event | Event[] | Paginated<Event>) => {
   if (Object.prototype.hasOwnProperty.call(data, 'data')) throw new Error('Pagination not supported by publisher. have to implement');
@@ -27,3 +29,7 @@ export const requireDataToBeObject = <T>(data: T | T[] | Paginated<T>): T => {
   if (Array.isArray(data)) throw new Error('Arrays are not supported by this publisher!');
   return data as T;
 };
+
+export const calledInternally = (ctx: HookContext) => {
+  return (ctx.params as Params).provider === undefined;
+}
