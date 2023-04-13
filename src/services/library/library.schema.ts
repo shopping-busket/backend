@@ -5,6 +5,8 @@ import type { Static } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
+import { LibraryParams } from './library.class';
+import { MethodNotAllowed } from '@feathersjs/errors';
 
 // Main data model schema
 export const librarySchema = Type.Object(
@@ -18,7 +20,14 @@ export const librarySchema = Type.Object(
 export type Library = Static<typeof librarySchema>;
 export const libraryResolver = resolve<Library, HookContext>({});
 
-export const libraryExternalResolver = resolve<Library, HookContext>({});
+export const libraryExternalResolver = resolve<Library, HookContext>({
+  id: async (value, library, ctx) => {
+    // When call is internal (from backend), allow it
+    if ((ctx.params as LibraryParams).provider === undefined) return value;
+    else if (ctx.method !== 'create') return value;
+    throw new MethodNotAllowed();
+  }
+});
 
 // Schema for creating new entries
 export const libraryDataSchema = Type.Pick(librarySchema, ['user', 'listId'], {
