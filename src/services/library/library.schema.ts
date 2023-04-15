@@ -21,17 +21,7 @@ export const librarySchema = Type.Object(
 export type Library = Static<typeof librarySchema>;
 export const libraryResolver = resolve<Library, HookContext>({});
 
-export const libraryExternalResolver = resolve<Library, HookContext>({
-  id: async (value, library, ctx) => {
-    if (calledInternally(ctx)) return value;
-    else if (ctx.method !== 'create') return value;
-    throw new MethodNotAllowed();
-  },
-  user: async (value, library, ctx) => {
-    if (calledInternally(ctx)) return value;
-    return ctx.params.user.uuid;
-  },
-});
+export const libraryExternalResolver = resolve<Library, HookContext>({});
 
 // Schema for creating new entries
 export const libraryDataSchema = Type.Pick(librarySchema, ['user', 'listId'], {
@@ -53,4 +43,14 @@ export const libraryQuerySchema = Type.Intersect(
 );
 export type LibraryQuery = Static<typeof libraryQuerySchema>;
 export const libraryQueryValidator = getValidator(libraryQuerySchema, queryValidator);
-export const libraryQueryResolver = resolve<LibraryQuery, HookContext>({});
+export const libraryQueryResolver = resolve<LibraryQuery, HookContext>({
+  id: async (value, library, ctx) => {
+    if (calledInternally(ctx)) return value;
+    else if (ctx.method !== 'create') return value;
+    throw new MethodNotAllowed();
+  },
+  user: async (value, library, ctx) => {
+    if (calledInternally(ctx)) return value;
+    return ctx.params.user.uuid;
+  },
+});
