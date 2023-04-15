@@ -10,6 +10,7 @@ import { BadRequest, Forbidden } from '@feathersjs/errors';
 import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { ListParams } from './list.class';
+import { randomUUID } from 'crypto';
 
 
 const entryProperties = {
@@ -41,12 +42,15 @@ export const listResolver = resolve<List, HookContext>({});
 export const listExternalResolver = resolve<List, HookContext>({});
 
 // Schema for creating new entries
-export const listDataSchema = Type.Pick(listSchema, ['listid', 'owner', 'name', 'description', 'entries', 'checkedEntries', 'backgroundURI'], {
+export const listDataSchema = Type.Pick(listSchema, ['name', 'description', 'entries', 'checkedEntries', 'backgroundURI'], {
   $id: 'ListData',
 });
 export type ListData = Static<typeof listDataSchema>
 export const listDataValidator = getValidator(listDataSchema, dataValidator);
-export const listDataResolver = resolve<List, HookContext>({});
+export const listDataResolver = resolve<List, HookContext>({
+  listid: async () => randomUUID(),
+  owner: async (value, list, ctx) => (ctx.params as ListParams).user?.uuid,
+});
 
 // Schema for updating existing entries
 export const listPatchSchema = Type.Partial(listSchema, {
