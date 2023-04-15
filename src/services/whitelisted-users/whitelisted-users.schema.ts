@@ -122,7 +122,9 @@ export type WhitelistedUsersQuery = Static<typeof whitelistedUsersQuerySchema>;
 export const whitelistedUsersQueryValidator = getValidator(whitelistedUsersQuerySchema, queryValidator);
 export const whitelistedUsersQueryResolver = resolve<WhitelistedUsersQuery, HookContext>({
   user: async (value, whitelist, ctx) => {
-    if (ctx.method != 'find' && ctx.method != 'get') return value;
+    if (ctx.method === 'create') whitelist.listId = (ctx.data as WhitelistedUsersData).listId;
+    else if (ctx.method != 'find' && ctx.method != 'get') return value;
+
     if (whitelist.listId == null) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.user.whitelist.listId is null or undefined! check chain!');
 
     const userUUID = (ctx.params as WhitelistedUsersParams).user?.uuid;
@@ -133,6 +135,7 @@ export const whitelistedUsersQueryResolver = resolve<WhitelistedUsersQuery, Hook
     } as Partial<List>).first() as Pick<List, 'owner'>;
     if (!listOwner) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.listId.listOwner is null or undefined! check chain!');
 
+    if (ctx.method === 'create' && listOwner !== userUUID) throw new BadRequest('You cannot add a user to a list you dont own!');
     if (listOwner === userUUID) return undefined;
 
     const whitelisted = await knex('whitelisted-users').select('user').where({
