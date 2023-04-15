@@ -10,7 +10,7 @@ import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { List } from '../list/list.schema';
 import { EventParams } from './event.class';
-import { Forbidden, NotAuthenticated } from '@feathersjs/errors';
+import { Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors';
 
 // Main data model schema
 export const eventSchema = Type.Object(
@@ -63,7 +63,8 @@ export const eventDataResolver = resolve<Event, HookContext>({
 
     const list = await knex('list').select('owner').where({
       listid: event.listid,
-    } as Partial<List>).first() as Pick<List, 'owner'>;
+    } as Partial<List>).first() as Pick<List, 'owner'> | undefined;
+    if (list === undefined) throw new NotFound(`List with id ${event.listid} not found!`);
 
 
     const loggedInUser = (ctx.params as EventParams).user?.uuid;
