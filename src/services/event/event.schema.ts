@@ -81,7 +81,6 @@ export const eventDataResolver = resolve<Event, HookContext>({
     return {
       ...value,
       isoDate: new Date().toISOString(),
-      sender: userUUID,
     };
   },
 });
