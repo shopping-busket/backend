@@ -6,7 +6,7 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 import { User } from '../users/users.schema';
-import { Forbidden } from '@feathersjs/errors';
+import { BadRequest, Forbidden } from '@feathersjs/errors';
 import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { ListParams } from './list.class';
@@ -89,12 +89,22 @@ export const listQueryValidator = getValidator(listQuerySchema, queryValidator);
 export const listQueryResolver = resolve<ListQuery, HookContext>({
   id: async (value, shoppingList, context) => {
     if (context.method === 'create') return value;
+    value = context.id as number | undefined;
 
     const knex = app.get('postgresqlClient');
     const userUUID = (context.params.user as User).uuid;
     if (!userUUID) return;
 
-    if (shoppingList.owner && shoppingList.owner === userUUID) return value;
+    const where: Partial<List> = {};
+    if (value) where.id = value as number;
+    else if (shoppingList.listid) where.listid = shoppingList.listid as string;
+    else throw new BadRequest('Either listId or id have to be present! Neither are...');
+
+    const { owner } = (await knex('list').select('owner').where(where).first() as {
+      owner: string
+    } | null) ?? { owner: null };
+
+    if (owner && owner === userUUID) return value;
     else if (shoppingList.listid) {
       const whitelist = await knex('whitelisted-users').select('user', 'listId').where({
         listId: shoppingList.listid,
@@ -105,9 +115,6 @@ export const listQueryResolver = resolve<ListQuery, HookContext>({
         if (!isWhitelisted && whitelist.user === userUUID) isWhitelisted = true;
       });
 
-      const { owner } = (await knex('list').select('owner').where({ listid: shoppingList.listid }).first() as {
-        owner: string
-      } | null) ?? { owner: null };
       if (isWhitelisted || (owner != null && owner === userUUID)) return value;
     }
     throw new Forbidden('You are not allowed to access this content.');
