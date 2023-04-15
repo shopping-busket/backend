@@ -25,6 +25,7 @@ import { User } from '../users/users.schema';
 import emailHtml from './email';
 import { randomUUID } from 'crypto';
 import { requireDataToBeObject } from '../../helpers/channelSecurity';
+import { Library } from '../library/library.schema';
 
 export * from './whitelisted-users.class';
 export * from './whitelisted-users.schema';
@@ -141,6 +142,16 @@ export const whitelistedUsers = (app: Application) => {
 
         return context;
       },
+      async remove(context: HookContext): Promise<HookContext> {
+        const data = context.result as WhitelistedUsers;
+        const knex = app.get('postgresqlClient');
+
+        await knex('library').delete().where({
+          user: data.user,
+          listId: data.listId,
+        } as Partial<Library>);
+        return context;
+      }
     },
     error: {
       all: [],
