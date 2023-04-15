@@ -46,7 +46,7 @@ export const libraryQueryValidator = getValidator(libraryQuerySchema, queryValid
 export const libraryQueryResolver = resolve<LibraryQuery, HookContext>({
   id: async (value, library, ctx) => {
     if (calledInternally(ctx)) return value;
-    else if (ctx.method !== 'create') return value;
+    else if (ctx.method === 'find') return value;
     throw new MethodNotAllowed();
   },
   user: async (value, library, ctx) => {
