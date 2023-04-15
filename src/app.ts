@@ -12,6 +12,8 @@ import { authentication } from './authentication';
 import { services } from './services';
 import { channels } from './channels';
 
+const swagger = require('feathers-swagger');
+
 const app: Application = koa(feathers());
 
 // Load our app configuration (see config/ folder)
@@ -24,7 +26,27 @@ app.use(errorHandler());
 app.use(parseAuthentication());
 app.use(bodyParser());
 
+
 // Configure services and transports
+app.configure(swagger({
+  specs: {
+    info: {
+      title: 'Feathers app with swagger with authentication',
+      version: '1.0.0',
+      description: '...',
+    },
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+        },
+      },
+    },
+    security: [{ BearerAuth: [] }],
+  },
+  ui: swagger.swaggerUI({ docsPath: '/docs' }),
+}))
 app.configure(rest());
 app.configure(
   socketio({
