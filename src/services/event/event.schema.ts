@@ -45,7 +45,15 @@ export type Event = Static<typeof eventSchema>
 export const eventValidator = getValidator(eventSchema, dataValidator);
 export const eventResolver = resolve<Event, HookContext>({});
 
-export const eventExternalResolver = resolve<Event, HookContext>({
+export const eventExternalResolver = resolve<Event, HookContext>({});
+
+// Schema for creating new entries
+export const eventDataSchema = Type.Pick(eventSchema, ['listid', 'eventData'], {
+  $id: 'EventData',
+});
+export type EventData = Static<typeof eventDataSchema>
+export const eventDataValidator = getValidator(eventDataSchema, dataValidator);
+export const eventDataResolver = resolve<Event, HookContext>({
   listid: async (value, event, ctx) => {
     const knex = app.get('postgresqlClient');
     const whitelisted = await knex('whitelisted-users').select('user').where({
@@ -65,14 +73,6 @@ export const eventExternalResolver = resolve<Event, HookContext>({
     throw new Forbidden('You are not permitted to access this content!');
   },
 });
-
-// Schema for creating new entries
-export const eventDataSchema = Type.Pick(eventSchema, ['listid', 'eventData'], {
-  $id: 'EventData',
-});
-export type EventData = Static<typeof eventDataSchema>
-export const eventDataValidator = getValidator(eventDataSchema, dataValidator);
-export const eventDataResolver = resolve<Event, HookContext>({});
 
 // Schema for updating existing entries
 export const eventPatchSchema = Type.Partial(eventSchema, {
