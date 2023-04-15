@@ -11,12 +11,14 @@ import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { ListParams } from './list.class';
 import { randomUUID } from 'crypto';
+import { onlyAllowInternal } from '../../helpers/channelSecurity';
 
 
-const entryProperties = {
+const entryProperties = Type.Object({
   id: Type.String({ format: 'uuid' }),
   name: Type.String(),
-};
+});
+
 // Main data model schema
 export const listSchema = Type.Object(
   {
@@ -28,8 +30,8 @@ export const listSchema = Type.Object(
     name: Type.String({ minLength: 3 }),
     description: Type.String(),
 
-    entries: Type.Array(Type.Object(entryProperties)),
-    checkedEntries: Type.Array(Type.Object(entryProperties)),
+    entries: Type.Array(entryProperties),
+    checkedEntries: Type.Array(entryProperties),
 
     backgroundURI: Type.Optional(Type.String()),
   },
@@ -59,7 +61,7 @@ export const listPatchSchema = Type.Partial(listSchema, {
 export type ListPatch = Static<typeof listPatchSchema>
 export const listPatchValidator = getValidator(listPatchSchema, dataValidator);
 
-const checkIfOwner = async <T>(value: T | undefined, list: Partial<List>, ctx: HookContext<any>): Promise<T | undefined> => {
+const checkIfOwner = async <T>(value: T | undefined, list: Partial<List>, ctx: HookContext): Promise<T | undefined> => {
   if (!value) return value;
   if (!(ctx.params.query as List).listid) throw new Error('Patch only allowed with listid as query arg!');
   const knex = app.get('postgresqlClient');
@@ -76,6 +78,8 @@ export const listPatchResolver = resolve<List, HookContext>({
   name: checkIfOwner<string>,
   description: checkIfOwner<string>,
   backgroundURI: checkIfOwner<string>,
+  entries: onlyAllowInternal<any>,
+  checkedEntries: onlyAllowInternal<any>,
 });
 
 // Schema for allowed query properties

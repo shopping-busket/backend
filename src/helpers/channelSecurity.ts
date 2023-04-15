@@ -4,7 +4,7 @@ import { WhitelistedUsers } from '../services/whitelisted-users/whitelisted-user
 import { Paginated, Params } from '@feathersjs/feathers';
 import { app } from '../app';
 import { HookContext } from '../declarations';
-import { LibraryParams } from '../services/library/library.class';
+import { BadRequest } from '@feathersjs/errors';
 
 export const onlyAllowWhitelistedOrOwner = async (data: List | List[] | Paginated<List> | Event | Event[] | Paginated<Event>) => {
   if (Object.prototype.hasOwnProperty.call(data, 'data')) throw new Error('Pagination not supported by publisher. have to implement');
@@ -30,6 +30,10 @@ export const requireDataToBeObject = <T>(data: T | T[] | Paginated<T>): T => {
   return data as T;
 };
 
+export const onlyAllowInternal = async <T>(value: T, obj: unknown, ctx: HookContext): Promise<T | undefined> => {
+  if (calledInternally(ctx)) return value;
+  throw new BadRequest('This data can only be manipulated by the server!');
+}
 export const calledInternally = (ctx: HookContext) => {
   return (ctx.params as Params).provider === undefined;
 }
