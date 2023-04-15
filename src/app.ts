@@ -31,9 +31,9 @@ app.use(bodyParser());
 app.configure(swagger({
   specs: {
     info: {
-      title: 'Feathers app with swagger with authentication',
-      version: '1.0.0',
-      description: '...',
+      title: 'Busket Backend',
+      version: '2.0.0',
+      description: `Backend for Busket, a digital & open source shopping list.`,
     },
     components: {
       securitySchemes: {
