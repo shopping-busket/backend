@@ -122,7 +122,7 @@ export type WhitelistedUsersQuery = Static<typeof whitelistedUsersQuerySchema>;
 export const whitelistedUsersQueryValidator = getValidator(whitelistedUsersQuerySchema, queryValidator);
 export const whitelistedUsersQueryResolver = resolve<WhitelistedUsersQuery, HookContext>({
   user: async (value, whitelist, ctx) => {
-    if (ctx.method != 'find') return value;
+    if (ctx.method != 'find' && ctx.method != 'get') return value;
     if (whitelist.listId == null) throw new Error('this shouldn\'t be possible: whitelistedUsersQueryResolver.user.whitelist.listId is null or undefined! check chain!');
 
     const userUUID = (ctx.params as WhitelistedUsersParams).user?.uuid;
@@ -143,5 +143,4 @@ export const whitelistedUsersQueryResolver = resolve<WhitelistedUsersQuery, Hook
     if (whitelistedUsers.includes(userUUID)) return userUUID;
     throw new BadRequest('You are not allowed to access this content! Only the list\'s owner is allowed to query this.');
   },
-
 });
