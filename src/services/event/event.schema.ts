@@ -10,7 +10,7 @@ import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { List } from '../list/list.schema';
 import { EventParams } from './event.class';
-import { Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors';
+import { BadRequest, Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors';
 
 // Main data model schema
 export const eventSchema = Type.Object(
@@ -72,6 +72,17 @@ export const eventDataResolver = resolve<Event, HookContext>({
 
     if (loggedInUser === list.owner || whitelistedUsers.includes(loggedInUser)) return value;
     throw new Forbidden('You are not permitted to access this content!');
+  },
+  eventData: async (value, event, ctx) => {
+    if (!value) throw new BadRequest('eventData shall not be undefined!');
+    const userUUID = (ctx.params as EventParams).user?.uuid;
+    if (!userUUID) throw new NotAuthenticated();
+
+    return {
+      ...value,
+      isoDate: new Date().toISOString(),
+      sender: userUUID,
+    };
   },
 });
 
