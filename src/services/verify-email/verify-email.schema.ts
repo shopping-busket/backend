@@ -5,7 +5,7 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
-import { onlyAllowInternal } from '../../helpers/channelSecurity';
+import { omitMethodsFromRule, onlyAllowInternal } from '../../helpers/channelSecurity';
 import { randomUUID } from 'crypto';
 
 // Main data model schema
@@ -32,6 +32,7 @@ export type VerifyEmailData = Static<typeof verifyEmailDataSchema>;
 export const verifyEmailDataValidator = getValidator(verifyEmailDataSchema, dataValidator);
 export const verifyEmailDataResolver = resolve<VerifyEmail, HookContext>({
   verifySecret: async () => randomUUID(),
+  expiresAt: async (value) => new Date(new Date().getTime() + 15 * 60000).toISOString(),
 });
 
 // Schema for updating existing entries
@@ -55,7 +56,5 @@ export const verifyEmailQuerySchema = Type.Intersect(
 export type VerifyEmailQuery = Static<typeof verifyEmailQuerySchema>;
 export const verifyEmailQueryValidator = getValidator(verifyEmailQuerySchema, queryValidator);
 export const verifyEmailQueryResolver = resolve<VerifyEmailQuery, HookContext>({
-  id: onlyAllowInternal,
-  user: onlyAllowInternal,
-  verifySecret: onlyAllowInternal,
+  id: async (value, verifyEmail, ctx) => omitMethodsFromRule(value, verifyEmail, ctx, onlyAllowInternal, ['get']),
 });

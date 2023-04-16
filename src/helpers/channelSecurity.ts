@@ -30,6 +30,11 @@ export const requireDataToBeObject = <T>(data: T | T[] | Paginated<T>): T => {
   return data as T;
 };
 
+export const omitMethodsFromRule = async <T>(value: T, obj: unknown, ctx: HookContext, rule: (value: T, obj: unknown, ctx: HookContext) => Promise<T | undefined>, omit: string[]): Promise<T | undefined> => {
+  if (omit.includes(ctx.method)) return value;
+  return rule(value, obj, ctx);
+}
+
 export const onlyAllowInternal = async <T>(value: T, obj: unknown, ctx: HookContext): Promise<T | undefined> => {
   if (calledInternally(ctx)) return value;
   throw new BadRequest('This data can only be manipulated by the server!');
