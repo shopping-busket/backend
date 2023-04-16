@@ -11,6 +11,7 @@ import { postgresql } from './postgresql';
 import { authentication } from './authentication';
 import { services } from './services';
 import { channels } from './channels';
+import nodemailer from 'nodemailer';
 
 const swagger = require('feathers-swagger');
 
@@ -74,5 +75,18 @@ app.hooks({
   setup: [],
   teardown: [],
 });
+
+// Setup mailtransporter
+const mailer = app.get('mailer');
+app.set('mailTransporter', nodemailer.createTransport({
+  host: mailer.host,
+  port: 587,
+  secure: false,
+  auth: {
+    user: mailer.address,
+    pass: mailer.password,
+  },
+  from: `"${mailer.name}" <${mailer.address}>`,
+}));
 
 export { app };

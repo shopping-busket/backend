@@ -2,6 +2,7 @@ import type { Static } from '@feathersjs/typebox';
 import { defaultAppConfiguration, getValidator, Type } from '@feathersjs/typebox';
 
 import { dataValidator } from './validators';
+import { SentMessageInfo, Transporter } from 'nodemailer';
 
 export const configurationSchema = Type.Intersect([
   defaultAppConfiguration,
@@ -26,6 +27,8 @@ export const configurationSchema = Type.Intersect([
   }),
 ]);
 
-export type ApplicationConfiguration = Static<typeof configurationSchema>
+export type ApplicationConfiguration = Static<typeof configurationSchema> & {
+  mailTransporter: Transporter<SentMessageInfo>,
+};
 
 export const configurationValidator = getValidator(configurationSchema, dataValidator);
