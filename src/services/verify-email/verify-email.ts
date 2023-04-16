@@ -61,12 +61,13 @@ export const verifyEmail = (app: Application) => {
         const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
         const verifyURL = `${backendURL}/verify-email/0?verifySecret=${data.verifySecret}`;
+        const viewInBrowserURL = `${backendURL}/view-mail?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`;
 
         await app.get('mailTransporter').sendMail({
           to: email,
           subject: 'Verify your Busket Account!',
-          text: `Click here: ${backendURL} to verify your Busket account's email`,
-          html: verifyEmailHTML(verifyURL, bannerImgURL, `${backendURL}/view-mail?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+          text: `Click here: ${viewInBrowserURL} to verify your Busket account's email`,
+          html: verifyEmailHTML(verifyURL, bannerImgURL, viewInBrowserURL),
         });
 
         return context;
