@@ -1,6 +1,5 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication';
-import nodemailer from 'nodemailer';
 
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
@@ -111,34 +110,17 @@ export const whitelistedUsers = (app: Application) => {
           id: data.id,
         });
 
-
-        const mailer = app.get('mailer');
-
-        const transporter = nodemailer.createTransport({
-          host: mailer.host,
-          port: 587,
-          secure: false, // true for 465, false for other ports
-          auth: {
-            user: mailer.address, // generated ethereal user
-            pass: mailer.password, // generated ethereal password
-          },
-        });
-
         const backendProtocol = app.get('ssl') ? 'https' : 'http';
         const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
         const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join/${inviteSecret}/${data.id}`;
 
-        const info = await transporter.sendMail({
-          from: `"${mailer.name}"
-          <${mailer.address}>`,
+        await app.get('mailTransporter').sendMail({
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: `${ownerName} has invited you to their Busket list \"${list.name}\"! Click here to join the list:\n${joinURL}\nor ignore this E-mail!`,
-          html: inviteEmailHTML(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+          html: inviteEmailHTML(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail/0?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
         });
-
-        console.log('Message sent: %s', info.messageId);
 
         return context;
       },
