@@ -9,6 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign('user').references('users.uuid');
 
     table.uuid('verifySecret').notNullable();
+    table.datetime('expiresAt').notNullable();
   });
 }
 

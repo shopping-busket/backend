@@ -22,7 +22,7 @@ export type {
   VerifyEmailPatch,
 } from './services/verify-email/verify-email.shared';
 
-export type { Library, LibraryData, LibraryQuery, LibraryPatch } from './services/library/library.shared';
+export type { Library, LibraryData, LibraryQuery } from './services/library/library.shared';
 
 export type { ViewMail, ViewMailQuery } from './services/view-mail/view-mail.shared';
 
