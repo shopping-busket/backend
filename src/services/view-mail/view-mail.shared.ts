@@ -12,7 +12,7 @@ export type ViewMailClientService = Pick<
 
 export const viewMailPath = 'view-mail';
 
-export const viewMailMethods = ['find'] as const;
+export const viewMailMethods = ['get'] as const;
 
 export const viewMailClient = (client: ClientApplication) => {
   const connection = client.get('connection');

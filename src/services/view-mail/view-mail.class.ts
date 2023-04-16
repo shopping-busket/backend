@@ -1,9 +1,9 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.class.html#custom-services
-import type { Params, ServiceInterface } from '@feathersjs/feathers';
+import type { NullableId, Params, ServiceInterface } from '@feathersjs/feathers';
 
 import type { Application } from '../../declarations';
 import type { ViewMail, ViewMailQuery } from './view-mail.schema';
-import emailHtml from '../whitelisted-users/email';
+import { inviteEmailHTML } from '../../helpers/email';
 
 export type { ViewMail, ViewMailQuery };
 
@@ -19,9 +19,12 @@ export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailPara
   constructor(public options: ViewMailServiceOptions) {
   }
 
-  async find(params?: ServiceParams): Promise<string> {
-    if (!params || !params.query) return 'Error';
-    return emailHtml(params.query.listName, params.query.ownerName, decodeURIComponent(params.query.bannerImgURL), decodeURIComponent(params.query.joinURL), '');
+  async get(id: NullableId, params?: ServiceParams): Promise<string> {
+    if (!params || !params.query || !id) return 'Error';
+
+    if (id === 0) return inviteEmailHTML(params.query.listName, params.query.ownerName, decodeURIComponent(params.query.bannerImgURL), decodeURIComponent(params.query.joinURL), '');
+    // else if (id === 1) return verifyEmailHTML(params.query.);
+    else return 'Email type out of bounds!';
   }
 }
 

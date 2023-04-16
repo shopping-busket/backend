@@ -32,7 +32,6 @@ export const viewMail = (app: Application) => {
         schemaHooks.validateQuery(viewMailQueryValidator),
         schemaHooks.resolveQuery(viewMailQueryResolver),
       ],
-      find: [],
     },
     after: {
       all: [],
