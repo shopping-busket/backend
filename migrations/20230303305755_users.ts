@@ -18,6 +18,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.string('googleId');
     table.string('githubId');
+
+    table.boolean('verifiedEmail').notNullable().defaultTo(false);
   });
 }
 

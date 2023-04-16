@@ -26,6 +26,8 @@ export const userSchema = Type.Object(
 
     googleId: Type.Optional(Type.String()),
     githubId: Type.Optional(Type.String()),
+
+    verifiedEmail: Type.Optional(Type.Boolean()),
   },
   { $id: 'User', additionalProperties: false },
 );
