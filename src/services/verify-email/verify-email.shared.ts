@@ -12,7 +12,7 @@ export type VerifyEmailClientService = Pick<
 
 export const verifyEmailPath = 'verify-email';
 
-export const verifyEmailMethods = ['create', 'remove'] as const;
+export const verifyEmailMethods = ['create', 'remove', 'get'] as const;
 
 export const verifyEmailClient = (client: ClientApplication) => {
   const connection = client.get('connection');

@@ -116,6 +116,7 @@ export const whitelistedUsers = (app: Application) => {
         const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join/${inviteSecret}/${data.id}`;
 
         await app.get('mailTransporter').sendMail({
+          from: app.get('mailFrom'),
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: `${ownerName} has invited you to their Busket list \"${list.name}\"! Click here to join the list:\n${joinURL}\nor ignore this E-mail!`,

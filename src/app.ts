@@ -86,7 +86,7 @@ app.set('mailTransporter', nodemailer.createTransport({
     user: mailer.address,
     pass: mailer.password,
   },
-  from: `"${mailer.name}" <${mailer.address}>`,
 }));
+app.set('mailFrom', `${mailer.name} <${mailer.address}>`);
 
 export { app };

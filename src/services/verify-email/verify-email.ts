@@ -29,6 +29,19 @@ export const verifyEmail = (app: Application) => {
     methods: verifyEmailMethods,
     // You can add additional custom events to be sent to clients here
     events: [],
+    koa: {
+      after: [
+        async (ctx) => {
+          if (ctx.req.method?.toLowerCase() !== 'get') return;
+
+          const { ssl, port, host } = app.get('frontend');
+          const frontend = `${ssl ? 'https' : 'http'}://${host}:${port}`;
+
+          if ((ctx.response.body as string)?.toLowerCase().includes('expired')) return ctx.redirect(`${frontend}/email-verification?expired=true`);
+          ctx.redirect(`${frontend}/email-verification`);
+        },
+      ],
+    },
   });
   // Initialize hooks
   app.service(verifyEmailPath).hooks({
@@ -61,9 +74,10 @@ export const verifyEmail = (app: Application) => {
         const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
         const verifyURL = `${backendURL}/verify-email/0?verifySecret=${data.verifySecret}`;
-        const viewInBrowserURL = `${backendURL}/view-mail?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`;
+        const viewInBrowserURL = `${backendURL}/view-mail/1?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`;
 
         await app.get('mailTransporter').sendMail({
+          from: app.get('mailFrom'),
           to: email,
           subject: 'Verify your Busket Account!',
           text: `Click here: ${viewInBrowserURL} to verify your Busket account's email`,

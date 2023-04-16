@@ -29,6 +29,7 @@ export const configurationSchema = Type.Intersect([
 
 export type ApplicationConfiguration = Static<typeof configurationSchema> & {
   mailTransporter: Transporter<SentMessageInfo>,
+  mailFrom: string,
 };
 
 export const configurationValidator = getValidator(configurationSchema, dataValidator);
