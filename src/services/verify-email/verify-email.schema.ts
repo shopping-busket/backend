@@ -32,7 +32,11 @@ export type VerifyEmailData = Static<typeof verifyEmailDataSchema>;
 export const verifyEmailDataValidator = getValidator(verifyEmailDataSchema, dataValidator);
 export const verifyEmailDataResolver = resolve<VerifyEmail, HookContext>({
   verifySecret: async () => randomUUID(),
-  expiresAt: async (value) => new Date(new Date().getTime() + 15 * 60000).toISOString(),
+  expiresAt: async () => {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() + 15);
+    return date.toISOString();
+  },
 });
 
 // Schema for updating existing entries

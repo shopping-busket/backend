@@ -7,6 +7,8 @@ import type { Application } from '../../declarations';
 import type { VerifyEmail, VerifyEmailData, VerifyEmailPatch, VerifyEmailQuery } from './verify-email.schema';
 import { BadRequest, NotFound } from '@feathersjs/errors';
 import { app } from '../../app';
+import { verifyEmailPath } from './verify-email.shared';
+import { User, userPath } from '../users/users.shared';
 
 export type { VerifyEmail, VerifyEmailData, VerifyEmailPatch, VerifyEmailQuery };
 
@@ -30,14 +32,26 @@ export class VerifyEmailService<ServiceParams extends Params = VerifyEmailParams
     } as Partial<VerifyEmail>).first() as Pick<VerifyEmail, 'id' | 'user' | 'expiresAt'> | undefined;
     if (!verifyEmailEntry) throw new NotFound('No record found with this verifySecret!');
 
+    if (Date.now() >= new Date(verifyEmailEntry.expiresAt).getTime()) {
+      await app.service(verifyEmailPath).remove(verifyEmailEntry.id);
+      await app.service(verifyEmailPath).create({
+        user: verifyEmailEntry?.user,
+      });
 
+      return 'Expired! We sent you a new email with a new URL!';
+    }
 
-    // await app.service(verifyEmailPath).remove(verifyEmailEntry.id);
+    const { id: userId } = await knex('users').select('id').where({
+      uuid: verifyEmailEntry.user,
+    } as Partial<User>).first() as Pick<User, 'id'> | undefined ?? { id: null };
+    if (!userId) throw new NotFound('User not found!');
 
-    // const user = await knex('');
+    await app.service(userPath).patch(userId, {
+      verifiedEmail: true,
+    } as Partial<User>);
 
-    // console.log('Hello with uuid', params.query.verifySecret);
-    return 'Loading...';
+    await app.service(verifyEmailPath).remove(verifyEmailEntry.id);
+    return 'Verified!';
   }
 }
 
