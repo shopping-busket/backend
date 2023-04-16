@@ -7,7 +7,7 @@ import { passwordHash } from '@feathersjs/authentication-local';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
-import { onlyAllowInternal } from '../../helpers/channelSecurity';
+import { onlyAllowInternalValue } from '../../helpers/channelSecurity';
 
 // Main data model schema
 export const userSchema = Type.Object(
@@ -74,7 +74,7 @@ export const userDataResolver = resolve<User, HookContext>({
     // Return the full avatar URL
     return `https://gravatar.com/avatar/${hash}?s=60&d=monsterid`;
   },
-  verifiedEmail: onlyAllowInternal<boolean | undefined>,
+  verifiedEmail: onlyAllowInternalValue<boolean | undefined>,
 });
 
 // Schema for updating existing entries
@@ -85,7 +85,7 @@ export type UserPatch = Static<typeof userPatchSchema>
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator);
 export const userPatchResolver = resolve<User, HookContext>({
   password: passwordHash({ strategy: 'local' }),
-  verifiedEmail: onlyAllowInternal<boolean | undefined>,
+  verifiedEmail: onlyAllowInternalValue<boolean | undefined>,
 });
 
 // Schema for allowed query properties

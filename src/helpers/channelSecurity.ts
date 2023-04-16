@@ -35,6 +35,11 @@ export const omitMethodsFromRule = async <T>(value: T, obj: unknown, ctx: HookCo
   return rule(value, obj, ctx);
 }
 
+export const onlyAllowInternalValue = async <T>(value: T, obj: unknown, ctx: HookContext): Promise<T | undefined> => {
+  if (value === undefined) return value;
+  return onlyAllowInternal(value, obj, ctx);
+}
+
 export const onlyAllowInternal = async <T>(value: T, obj: unknown, ctx: HookContext): Promise<T | undefined> => {
   if (calledInternally(ctx)) return value;
   throw new BadRequest('This data can only be manipulated by the server!');

@@ -4,8 +4,6 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
-  List,
-  ListData,
   listDataResolver,
   listDataValidator,
   listExternalResolver,
@@ -17,11 +15,10 @@ import {
 } from './list.schema';
 
 import type { Application, HookContext } from '../../declarations';
-import { getOptions, ListParams, ListService } from './list.class';
+import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
 import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
-import { FeathersService } from '@feathersjs/feathers';
-import { addToLibrary } from '../../helpers/libraryHelper';
+import { addToLibrary } from '../../helpers/serviceRequestHelper';
 
 export * from './list.class';
 export * from './list.schema';
