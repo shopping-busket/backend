@@ -6,6 +6,7 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 import { onlyAllowInternal } from '../../helpers/channelSecurity';
+import { randomUUID } from 'crypto';
 
 // Main data model schema
 export const verifyEmailSchema = Type.Object(
@@ -28,7 +29,9 @@ export const verifyEmailDataSchema = Type.Pick(verifyEmailSchema, ['user', 'veri
 });
 export type VerifyEmailData = Static<typeof verifyEmailDataSchema>;
 export const verifyEmailDataValidator = getValidator(verifyEmailDataSchema, dataValidator);
-export const verifyEmailDataResolver = resolve<VerifyEmail, HookContext>({});
+export const verifyEmailDataResolver = resolve<VerifyEmail, HookContext>({
+  verifySecret: async () => randomUUID(),
+});
 
 // Schema for updating existing entries
 export const verifyEmailPatchSchema = Type.Partial(verifyEmailSchema, {

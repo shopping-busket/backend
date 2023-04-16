@@ -62,9 +62,7 @@ export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({
   password: passwordHash({ strategy: 'local' }),
-  uuid: async () => {
-    return randomUUID();
-  },
+  uuid: async () => randomUUID(),
   avatarURI: async (value, user) => {
     // If the user passed an avatar image, use it
     if (value !== undefined) {
