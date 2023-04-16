@@ -4,6 +4,7 @@ import { authenticate } from '@feathersjs/authentication';
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  User,
   userDataResolver,
   userDataValidator,
   userExternalResolver,
@@ -14,9 +15,10 @@ import {
   userResolver,
 } from './users.schema';
 
-import type { Application } from '../../declarations';
+import type { Application, HookContext } from '../../declarations';
 import { getOptions, UserService } from './users.class';
 import { userMethods, userPath } from './users.shared';
+import { verifyEmailPath } from '../verify-email/verify-email.shared';
 
 export * from './users.class';
 export * from './users.schema';
@@ -51,6 +53,17 @@ export const user = (app: Application) => {
     },
     after: {
       all: [],
+      create: [
+        async (ctx: HookContext): Promise<void> => {
+          const user = ctx.result as User;
+          if (!user) throw new Error('no ctx.result in user.hooks.after.create');
+          if (!user.uuid) throw new Error('user has no uuid in user.hooks.after.create');
+
+          await app.service(verifyEmailPath).create({
+            user: user.uuid,
+          });
+        },
+      ],
     },
     error: {
       all: [],
