@@ -25,7 +25,7 @@ export const verifyEmailResolver = resolve<VerifyEmail, HookContext>({});
 export const verifyEmailExternalResolver = resolve<VerifyEmail, HookContext>({});
 
 // Schema for creating new entries
-export const verifyEmailDataSchema = Type.Pick(verifyEmailSchema, ['user', 'verifySecret', 'expiresAt'], {
+export const verifyEmailDataSchema = Type.Pick(verifyEmailSchema, ['user'], {
   $id: 'VerifyEmailData',
 });
 export type VerifyEmailData = Static<typeof verifyEmailDataSchema>;
