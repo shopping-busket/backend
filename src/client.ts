@@ -24,7 +24,7 @@ export type {
 
 export type { Library, LibraryData, LibraryQuery } from './services/library/library.shared';
 
-export type { ViewMail, ViewMailQuery } from './services/view-mail/view-mail.shared';
+export type { ViewMailInvite, ViewMailInviteQuery } from './services/view-mail/view-mail.shared';
 
 export type {
   WhitelistedUsers,

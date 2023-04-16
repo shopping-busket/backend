@@ -2,11 +2,12 @@
 
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
-import { viewMailQueryResolver, viewMailQueryValidator, viewMailResolver } from './view-mail.schema';
+import { viewMailInviteQueryValidator, viewMailVerificationQueryValidator } from './view-mail.schema';
 
 import type { Application } from '../../declarations';
 import { getOptions, ViewMailService } from './view-mail.class';
 import { viewMailMethods, viewMailPath } from './view-mail.shared';
+import { BadRequest } from '@feathersjs/errors';
 
 export * from './view-mail.class';
 export * from './view-mail.schema';
@@ -22,22 +23,17 @@ export const viewMail = (app: Application) => {
   });
   // Initialize hooks
   app.service(viewMailPath).hooks({
-    around: {
-      all: [
-        schemaHooks.resolveResult(viewMailResolver),
-      ],
-    },
     before: {
-      all: [
-        schemaHooks.validateQuery(viewMailQueryValidator),
-        schemaHooks.resolveQuery(viewMailQueryResolver),
+      get: [
+        async (ctx) => {
+          const id = typeof ctx.id === 'string' ? parseInt(ctx.id) : ctx.id;
+          if (id === undefined || Number.isNaN(id)) throw new BadRequest('id cannot be undefined/NaN');
+          ctx.id = id;
+
+          if (ctx.id === 0) return await (await schemaHooks.validateQuery(viewMailInviteQueryValidator))(ctx);
+          else if (ctx.id === 1) return await (await schemaHooks.validateQuery(viewMailVerificationQueryValidator))(ctx);
+        },
       ],
-    },
-    after: {
-      all: [],
-    },
-    error: {
-      all: [],
     },
   });
 };

@@ -1,13 +1,11 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema';
 import type { Static } from '@feathersjs/typebox';
 import { getValidator, Type } from '@feathersjs/typebox';
 
-import type { HookContext } from '../../declarations';
 import { queryValidator } from '../../validators';
 
 // Main data model schema
-export const viewMailSchema = Type.Object(
+export const viewMailInviteSchema = Type.Object(
   {
     listId: Type.String({ format: 'uuid' }),
     listName: Type.String(),
@@ -16,12 +14,24 @@ export const viewMailSchema = Type.Object(
     bannerImgURL: Type.String(),
     $select: Type.Optional(Type.Any()),
   },
-  { $id: 'ViewMail', additionalProperties: false },
+  { $id: 'ViewMailInvite', additionalProperties: false },
 );
-export type ViewMail = Static<typeof viewMailSchema>;
-export const viewMailResolver = resolve<ViewMail, HookContext>({});
+
+export const viewMailVerificationSchema = Type.Object(
+  {
+      verifyURL: Type.String(),
+      bannerImgURL: Type.String(),
+      $select: Type.Optional(Type.Any()),
+  },
+  { $id: 'ViewMailVerification', additionalProperties: false },
+);
+
+
+export type ViewMailInvite = Static<typeof viewMailInviteSchema>;
+export type ViewMailVerification = Static<typeof viewMailVerificationSchema>;
 
 // Schema for allowed query properties
-export type ViewMailQuery = Static<typeof viewMailSchema>;
-export const viewMailQueryValidator = getValidator(viewMailSchema, queryValidator);
-export const viewMailQueryResolver = resolve<ViewMailQuery, HookContext>({});
+export type ViewMailInviteQuery = ViewMailInvite;
+export type ViewMailVerificationQuery = ViewMailVerification;
+export const viewMailInviteQueryValidator = getValidator(viewMailInviteSchema, queryValidator);
+export const viewMailVerificationQueryValidator = getValidator(viewMailVerificationSchema, queryValidator);
