@@ -4,13 +4,13 @@ import type { KnexAdapterOptions, KnexAdapterParams } from '@feathersjs/knex';
 import { KnexService } from '@feathersjs/knex';
 
 import type { Application } from '../../declarations';
-import type { VerifyEmail, VerifyEmailData, VerifyEmailPatch, VerifyEmailQuery } from './verify-email.schema';
+import type { VerifyEmail, VerifyEmailData, VerifyEmailQuery } from './verify-email.schema';
 import { BadRequest, NotFound } from '@feathersjs/errors';
 import { app } from '../../app';
 import { verifyEmailPath } from './verify-email.shared';
 import { User, userPath } from '../users/users.shared';
 
-export type { VerifyEmail, VerifyEmailData, VerifyEmailPatch, VerifyEmailQuery };
+export type { VerifyEmail, VerifyEmailData, VerifyEmailQuery };
 
 export interface VerifyEmailParams extends KnexAdapterParams<VerifyEmailQuery> {
 }
@@ -19,8 +19,7 @@ export interface VerifyEmailParams extends KnexAdapterParams<VerifyEmailQuery> {
 export class VerifyEmailService<ServiceParams extends Params = VerifyEmailParams> extends KnexService<
   string,
   VerifyEmailData,
-  VerifyEmailParams,
-  VerifyEmailPatch
+  VerifyEmailParams
 > {
   async get(_: Id, params?: VerifyEmailParams): Promise<string> {
     if (!params) throw new BadRequest('Params have to be present!');

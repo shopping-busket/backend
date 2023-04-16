@@ -19,10 +19,7 @@ export const verifyEmailSchema = Type.Object(
   { $id: 'VerifyEmail', additionalProperties: false },
 );
 export type VerifyEmail = Static<typeof verifyEmailSchema>;
-export const verifyEmailValidator = getValidator(verifyEmailSchema, dataValidator);
 export const verifyEmailResolver = resolve<VerifyEmail, HookContext>({});
-
-export const verifyEmailExternalResolver = resolve<VerifyEmail, HookContext>({});
 
 // Schema for creating new entries
 export const verifyEmailDataSchema = Type.Pick(verifyEmailSchema, ['user'], {
@@ -38,14 +35,6 @@ export const verifyEmailDataResolver = resolve<VerifyEmail, HookContext>({
     return date.toISOString();
   },
 });
-
-// Schema for updating existing entries
-export const verifyEmailPatchSchema = Type.Partial(verifyEmailSchema, {
-  $id: 'VerifyEmailPatch',
-});
-export type VerifyEmailPatch = Static<typeof verifyEmailPatchSchema>;
-export const verifyEmailPatchValidator = getValidator(verifyEmailPatchSchema, dataValidator);
-export const verifyEmailPatchResolver = resolve<VerifyEmail, HookContext>({});
 
 // Schema for allowed query properties
 export const verifyEmailQueryProperties = Type.Pick(verifyEmailSchema, ['id', 'user', 'verifySecret']);

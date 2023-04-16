@@ -5,8 +5,6 @@ import {
   VerifyEmail,
   verifyEmailDataResolver,
   verifyEmailDataValidator,
-  verifyEmailPatchResolver,
-  verifyEmailPatchValidator,
   verifyEmailQueryResolver,
   verifyEmailQueryValidator,
   verifyEmailResolver,
@@ -36,7 +34,6 @@ export const verifyEmail = (app: Application) => {
   app.service(verifyEmailPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
         schemaHooks.resolveResult(verifyEmailResolver),
       ],
     },
@@ -45,20 +42,12 @@ export const verifyEmail = (app: Application) => {
         schemaHooks.validateQuery(verifyEmailQueryValidator),
         schemaHooks.resolveQuery(verifyEmailQueryResolver),
       ],
-      find: [],
-      get: [],
       create: [
         schemaHooks.validateData(verifyEmailDataValidator),
         schemaHooks.resolveData(verifyEmailDataResolver),
       ],
-      patch: [
-        schemaHooks.validateData(verifyEmailPatchValidator),
-        schemaHooks.resolveData(verifyEmailPatchResolver),
-      ],
-      remove: [],
     },
     after: {
-      all: [],
       async create(context: HookContext): Promise<HookContext> {
         const data = context.result as VerifyEmail;
         const knex = app.get('postgresqlClient');
@@ -82,9 +71,6 @@ export const verifyEmail = (app: Application) => {
 
         return context;
       },
-    },
-    error: {
-      all: [],
     },
   });
 };
