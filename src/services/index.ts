@@ -1,3 +1,4 @@
+import { verifyEmail } from './verify-email/verify-email';
 import { library } from './library/library';
 import { viewMail } from './view-mail/view-mail';
 import { whitelistedUsers } from './whitelisted-users/whitelisted-users';
@@ -8,6 +9,7 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(verifyEmail);
   app.configure(library);
   app.configure(viewMail);
   app.configure(whitelistedUsers);

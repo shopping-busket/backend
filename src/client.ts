@@ -2,11 +2,10 @@
 import type { Application, TransportConnection } from '@feathersjs/feathers';
 import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
-
-import { libraryClient } from './services/library/library.shared';
-export type { Library, LibraryData, LibraryQuery, LibraryPatch } from './services/library/library.shared';
-
 import authenticationClient from '@feathersjs/authentication-client';
+
+import { verifyEmailClient } from './services/verify-email/verify-email.shared';
+import { libraryClient } from './services/library/library.shared';
 
 import { viewMailClient } from './services/view-mail/view-mail.shared';
 
@@ -15,6 +14,15 @@ import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted
 import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
+
+export type {
+  VerifyEmail,
+  VerifyEmailData,
+  VerifyEmailQuery,
+  VerifyEmailPatch,
+} from './services/verify-email/verify-email.shared';
+
+export type { Library, LibraryData, LibraryQuery, LibraryPatch } from './services/library/library.shared';
 
 export type { ViewMail, ViewMailQuery } from './services/view-mail/view-mail.shared';
 
@@ -63,5 +71,6 @@ export const createClient = <Configuration = any>(
   client.configure(whitelistedUsersClient);
   client.configure(viewMailClient);
   client.configure(libraryClient);
+  client.configure(verifyEmailClient);
   return client;
 };
