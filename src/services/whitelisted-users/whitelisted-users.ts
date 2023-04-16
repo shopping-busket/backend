@@ -22,7 +22,7 @@ import { whitelistedUsersMethods, whitelistedUsersPath } from './whitelisted-use
 import { HookContext, Paginated } from '@feathersjs/feathers';
 import { List } from '../list/list.schema';
 import { User } from '../users/users.schema';
-import emailHtml from './email';
+import { inviteEmailHTML } from '../../helpers/email';
 import { randomUUID } from 'crypto';
 import { requireDataToBeObject } from '../../helpers/channelSecurity';
 import { Library } from '../library/library.schema';
@@ -135,7 +135,7 @@ export const whitelistedUsers = (app: Application) => {
           to: data.inviteEmail,
           subject: '🛍️🛒 You have been invited to a Busket list!',
           text: `${ownerName} has invited you to their Busket list \"${list.name}\"! Click here to join the list:\n${joinURL}\nor ignore this E-mail!`,
-          html: emailHtml(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+          html: inviteEmailHTML(list.name, ownerName ?? 'Error', bannerImgURL, joinURL, `${backendURL}/view-mail?listId=${data.listId}&listName=${list.name}&ownerName=${ownerName ?? 'Error'}&joinURL=${encodeURIComponent(joinURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
         });
 
         console.log('Message sent: %s', info.messageId);
