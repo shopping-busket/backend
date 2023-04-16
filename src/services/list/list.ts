@@ -18,7 +18,7 @@ import type { Application, HookContext } from '../../declarations';
 import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
 import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
-import { addToLibrary } from '../../helpers/serviceRequestHelper';
+import { addToLibrary } from '../../helpers/libraryHelper';
 
 export * from './list.class';
 export * from './list.schema';
