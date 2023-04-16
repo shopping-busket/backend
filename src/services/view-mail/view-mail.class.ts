@@ -19,8 +19,10 @@ export class ViewMailService<ServiceParams extends ViewMailParams = ViewMailPara
   constructor(public options: ViewMailServiceOptions) {
   }
 
-  async get(id: NullableId, params?: ServiceParams): Promise<string> {
-    if (!params || !params.query || !id) return 'Error';
+  async get(_id: NullableId, params?: ServiceParams): Promise<string> {
+    if (!params || !params.query || !_id) return 'Error';
+    const id = typeof _id === 'string' ? parseInt(_id) : _id;
+    if (Number.isNaN(id)) return 'id is not a parseable number!';
 
     if (id === 0) return inviteEmailHTML(params.query.listName, params.query.ownerName, decodeURIComponent(params.query.bannerImgURL), decodeURIComponent(params.query.joinURL), '');
     // else if (id === 1) return verifyEmailHTML(params.query.);
