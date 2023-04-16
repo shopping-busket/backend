@@ -2,6 +2,7 @@
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  VerifyEmail,
   verifyEmailDataResolver,
   verifyEmailDataValidator,
   verifyEmailPatchResolver,
@@ -14,6 +15,10 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, VerifyEmailService } from './verify-email.class';
 import { verifyEmailMethods, verifyEmailPath } from './verify-email.shared';
+import { HookContext } from '@feathersjs/feathers';
+import { User } from '../users/users.schema';
+import { NotFound } from '@feathersjs/errors';
+import { verifyEmailHTML } from '../../helpers/email';
 
 export * from './verify-email.class';
 export * from './verify-email.schema';
@@ -54,6 +59,29 @@ export const verifyEmail = (app: Application) => {
     },
     after: {
       all: [],
+      async create(context: HookContext): Promise<HookContext> {
+        const data = context.result as VerifyEmail;
+        const knex = app.get('postgresqlClient');
+
+        const { email } = await knex('users').select('email').where({
+          uuid: data.user,
+        } as Partial<User>).first() as Pick<User, 'email'> | undefined ?? { email: null };
+        if (!email) throw new NotFound('unable to send email because no entry was found in users table');
+
+        const backendProtocol = app.get('ssl') ? 'https' : 'http';
+        const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
+        const bannerImgURL = `${backendURL}/img/banner.png`;
+        const verifyURL = `${backendURL}/verify-email/0?verifySecret=${data.verifySecret}`;
+
+        await app.get('mailTransporter').sendMail({
+          to: email,
+          subject: 'Verify your Busket Account!',
+          text: `Click here: ${backendURL} to verify your Busket account's email`,
+          html: verifyEmailHTML(verifyURL, bannerImgURL, `${backendURL}/view-mail?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`),
+        });
+
+        return context;
+      },
     },
     error: {
       all: [],
