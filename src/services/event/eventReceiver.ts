@@ -1,25 +1,7 @@
 import { EntryList, IShoppingList, IShoppingListItem, ShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { BadRequest, NotFound } from '@feathersjs/errors';
 import { Knex } from 'knex';
-
-export interface Event {
-  event: EventType,
-  entryId: string,
-  state: {
-    name: string,
-    /**
-     * @deprecated
-     */
-    done?: boolean,
-    markAsDone?: boolean,
-    aboveEntry?: string,
-    belowEntry?: string,
-    index?: number,
-    oldIndex?: number,
-    newIndex?: number,
-  },
-  isoDate: string,
-}
+import { type EventData as Event } from '../../shoppinglist/events';
 
 export interface EventData {
   event: Event,
@@ -165,11 +147,12 @@ export class EventReceiver {
     if (event.state.oldIndex == undefined || event.state.newIndex == undefined) return Promise.reject('Missing parameters!');
 
     entries.forEach((t: IShoppingListItem) => {
-      if (t.id === event.entryId) {
+      if (t.id === event.entryId && !found) {
         if (event.state.oldIndex != null && event.state.newIndex != null) {
-          const element = entries[event.state.oldIndex];
+          const entry = entries[event.state.oldIndex];
+
           entries.splice(event.state.oldIndex, 1);
-          entries.splice(event.state.newIndex, 0, element);
+          entries.splice(event.state.newIndex, 0, entry);
           found = true;
         } else {
           throw new BadRequest('Missing parameters! oldIndex, newIndex');
