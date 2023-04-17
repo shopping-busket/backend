@@ -1,3 +1,7 @@
+# public dir
+public/*
+!public/img/*.*
+
 # yarn
 .pnp.*
 .yarn/*
