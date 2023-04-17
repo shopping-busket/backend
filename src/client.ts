@@ -19,7 +19,6 @@ export type {
   VerifyEmail,
   VerifyEmailData,
   VerifyEmailQuery,
-  VerifyEmailPatch,
 } from './services/verify-email/verify-email.shared';
 
 export type { Library, LibraryData, LibraryQuery } from './services/library/library.shared';
