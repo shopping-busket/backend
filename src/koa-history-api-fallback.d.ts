@@ -1,0 +1,1 @@
+declare module 'koa-history-api-fallback';
