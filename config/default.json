@@ -1,5 +1,4 @@
 {
-  "port": 3030,
   "public": "./public/",
   "origins": [
     "http://localhost:3030"
@@ -13,7 +12,6 @@
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "6rjRondEoTEX4HwAfZnyTRU0VVV72bK0",
     "authStrategies": [
       "jwt",
       "local"

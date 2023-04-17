@@ -6,6 +6,7 @@
   },
   "ssl": false,
   "host": "localhost",
+  "port": 3030,
   "postgresql": {
     "connection": "postgres://USERNAME:PASSWORD@HOST:5432/DATABASE"
   },
@@ -13,5 +14,8 @@
     "host": "mail.host.at",
     "address": "mail@server.at",
     "password": "PASSWORD"
+  },
+  "authentication": {
+    "secret": "32 CHAR AUTHENTICATION SECRET"
   }
 }
