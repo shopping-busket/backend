@@ -28,8 +28,6 @@ app.configure(configuration(configurationValidator));
 
 // Set up Koa middleware
 app.use(cors());
-app.use(historyMiddleware);
-app.use(serveStatic(app.get('public')));
 app.use(errorHandler());
 app.use(parseAuthentication());
 app.use(bodyParser());
@@ -67,6 +65,9 @@ app.configure(channels);
 app.configure(postgresql);
 app.configure(authentication);
 app.configure(services);
+
+app.use(historyMiddleware);
+app.use(serveStatic(app.get('public')));
 
 // Register hooks that run on all service methods
 app.hooks({
