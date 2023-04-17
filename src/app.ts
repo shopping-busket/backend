@@ -12,16 +12,23 @@ import { authentication } from './authentication';
 import { services } from './services';
 import { channels } from './channels';
 import nodemailer from 'nodemailer';
+import historyApiFallback from 'koa-history-api-fallback';
 
 const swagger = require('feathers-swagger');
 
 const app: Application = koa(feathers());
+
+const historyMiddleware = historyApiFallback({
+  verbose: true,
+  logger: console.log.bind(console),
+});
 
 // Load our app configuration (see config/ folder)
 app.configure(configuration(configurationValidator));
 
 // Set up Koa middleware
 app.use(cors());
+app.use(historyMiddleware);
 app.use(serveStatic(app.get('public')));
 app.use(errorHandler());
 app.use(parseAuthentication());
