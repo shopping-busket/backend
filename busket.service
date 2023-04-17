@@ -1,0 +1,24 @@
+[Unit]
+Description=Service for Busket
+Requires=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=yarn start
+WorkingDirectory=/home/ilja/busket/backend
+Restart=on-failure
+# Environment=NODE_ENV=production
+
+LimitNOFILE=infinity
+LimitCORE=infinity
+StandardInput=null
+StandardOutput=journal
+StandardError=journal
+Restart=always
+SyslogIdentifier=busket
+PIDFile=/run/busket.pid
+User=ilja
+
+[Install]
+WantedBy=multi-user.target
