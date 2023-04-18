@@ -5,6 +5,7 @@
 # backend/
 #  ↳ update.sh
 # web/
+cd "${0%/*}" || exit
 cd ..
 
 pull() {
@@ -40,3 +41,5 @@ pull "backend"
 pull "web"
 compile_frontend
 flush_copy_frontend
+
+echo "Done! Start service using 'systemctl start busket'"
