@@ -8,7 +8,7 @@ Type=simple
 ExecStart=yarn start
 WorkingDirectory=/home/ilja/busket/backend
 Restart=on-failure
-# Environment=NODE_ENV=production
+Environment=NODE_ENV=production
 
 LimitNOFILE=infinity
 LimitCORE=infinity
