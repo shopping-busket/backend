@@ -71,7 +71,7 @@ export const verifyEmail = (app: Application) => {
         if (!email) throw new NotFound('unable to send email because no entry was found in users table');
 
         const withPort = (port: number | string) => {
-          if (process.env.NODE_ENV !== 'development') return '';
+          if (process.env.NODE_ENV === 'production') return '';
           return `:${port}`;
         }
 

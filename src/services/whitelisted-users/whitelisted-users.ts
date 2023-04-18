@@ -111,7 +111,7 @@ export const whitelistedUsers = (app: Application) => {
         });
 
         const withPort = (port: number | string) => {
-          if (process.env.NODE_ENV !== 'development') return '';
+          if (process.env.NODE_ENV === 'production') return '';
           return `:${port}`;
         }
 
