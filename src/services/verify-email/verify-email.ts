@@ -70,8 +70,13 @@ export const verifyEmail = (app: Application) => {
         } as Partial<User>).first() as Pick<User, 'email'> | undefined ?? { email: null };
         if (!email) throw new NotFound('unable to send email because no entry was found in users table');
 
+        const withPort = (port: number | string) => {
+          if (process.env.NODE_ENV !== 'development') return '';
+          return `:${port}`;
+        }
+
         const backendProtocol = app.get('ssl') ? 'https' : 'http';
-        const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
+        const backendURL = `${backendProtocol}://${app.get('host')}${withPort(app.get('port'))}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
         const verifyURL = `${backendURL}/verify-email/0?verifySecret=${data.verifySecret}`;
         const viewInBrowserURL = `${backendURL}/view-mail/1?verifyURL=${encodeURIComponent(verifyURL)}&bannerImgURL=${encodeURIComponent(bannerImgURL)}`;

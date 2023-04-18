@@ -110,10 +110,15 @@ export const whitelistedUsers = (app: Application) => {
           id: data.id,
         });
 
+        const withPort = (port: number | string) => {
+          if (process.env.NODE_ENV !== 'development') return '';
+          return `:${port}`;
+        }
+
         const backendProtocol = app.get('ssl') ? 'https' : 'http';
-        const backendURL = `${backendProtocol}://${app.get('host')}:${app.get('port')}`;
+        const backendURL = `${backendProtocol}://${app.get('host')}${withPort(app.get('port'))}`;
         const bannerImgURL = `${backendURL}/img/banner.png`;
-        const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}:${frontend.port}/me/list/${data.listId}/join/${inviteSecret}/${data.id}`;
+        const joinURL = `${frontend.ssl ? 'https' : 'http'}://${frontend.host}${withPort(frontend.port)}/me/list/${data.listId}/join/${inviteSecret}/${data.id}`;
 
         await app.get('mailTransporter').sendMail({
           from: app.get('mailFrom'),
