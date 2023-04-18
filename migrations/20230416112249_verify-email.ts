@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id');
 
     table.uuid('user').notNullable();
-    table.foreign('user').references('users.uuid');
+    table.foreign('user').references('users.uuid').onDelete('CASCADE').onUpdate('CASCADE');
 
     table.uuid('verifySecret').notNullable();
     table.datetime('expiresAt').notNullable();
