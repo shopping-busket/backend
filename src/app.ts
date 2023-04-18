@@ -1,7 +1,7 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/application.html
 import { feathers } from '@feathersjs/feathers';
 import configuration from '@feathersjs/configuration';
-import { bodyParser, cors, errorHandler, koa, parseAuthentication, rest, serveStatic } from '@feathersjs/koa';
+import { bodyParser, cors, koa, parseAuthentication, rest, serveStatic } from '@feathersjs/koa';
 import socketio from '@feathersjs/socketio';
 
 import { configurationValidator } from './configuration';
@@ -38,10 +38,10 @@ app.use(async (ctx: FeathersKoaContext, next: () => Promise<any>) => {
         typeof error.toJSON === 'function'
           ? error.toJSON()
           : {
-            message: error.message
+            message: error.message,
           };
     });
-  }
+  },
 );
 app.use(parseAuthentication());
 app.use(bodyParser());
@@ -66,7 +66,7 @@ app.configure(swagger({
     security: [{ BearerAuth: [] }],
   },
   ui: swagger.swaggerUI({ docsPath: '/docs' }),
-}))
+}));
 app.configure(rest());
 app.configure(
   socketio({
@@ -110,5 +110,7 @@ app.set('mailTransporter', nodemailer.createTransport({
   },
 }));
 app.set('mailFrom', `${mailer.name} <${mailer.address}>`);
+
+if (!app.get('verifyEmails') && process.env.NODE_ENV === 'production') console.warn('verifyEmails is set to false! This means that the backend won\'t require users to have verified their emails. It is not recommended to have this disabled in production!');
 
 export { app };
