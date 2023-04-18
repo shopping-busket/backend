@@ -75,8 +75,7 @@ export const eventDataResolver = resolve<Event, HookContext>({
   },
   eventData: async (value, event, ctx) => {
     if (!value) throw new BadRequest('eventData shall not be undefined!');
-    const userUUID = (ctx.params as EventParams).user?.uuid;
-    if (!userUUID) throw new NotAuthenticated();
+    if (value.state.name.trim().length <= 0) throw new BadRequest('eventData.state.name must include more than 0 non-whitespace characters!');
 
     return {
       ...value,
