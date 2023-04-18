@@ -8,6 +8,7 @@ import { passwordHash } from '@feathersjs/authentication-local';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 import { onlyAllowInternalValue } from '../../helpers/channelSecurity';
+import { app } from '../../app';
 
 // Main data model schema
 export const userSchema = Type.Object(
@@ -74,7 +75,10 @@ export const userDataResolver = resolve<User, HookContext>({
     // Return the full avatar URL
     return `https://gravatar.com/avatar/${hash}?s=60&d=monsterid`;
   },
-  verifiedEmail: onlyAllowInternalValue<boolean | undefined>,
+  verifiedEmail: async (value, users, ctx) => {
+    if (!app.get('verifyEmails')) return true;
+    return onlyAllowInternalValue<boolean | undefined>(value, users, ctx);
+  },
 });
 
 // Schema for updating existing entries

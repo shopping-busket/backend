@@ -58,6 +58,7 @@ export const user = (app: Application) => {
           const user = ctx.result as User;
           if (!user) throw new Error('no ctx.result in user.hooks.after.create');
           if (!user.uuid) throw new Error('user has no uuid in user.hooks.after.create');
+          if (!app.get('verifyEmails')) return;
 
           await app.service(verifyEmailPath).create({
             user: user.uuid,

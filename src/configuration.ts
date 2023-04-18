@@ -19,6 +19,8 @@ export const configurationSchema = Type.Intersect([
       password: Type.String(),
     }),
 
+    verifyEmails: Type.Boolean(),
+
     frontend: Type.Object({
       ssl: Type.Boolean(),
       host: Type.String(),

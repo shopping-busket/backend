@@ -17,5 +17,6 @@
   },
   "authentication": {
     "secret": "32 CHAR AUTHENTICATION SECRET"
-  }
+  },
+  "verifyEmails": false
 }
