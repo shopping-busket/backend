@@ -13,6 +13,8 @@ import { services } from './services';
 import { channels } from './channels';
 import nodemailer from 'nodemailer';
 import historyApiFallback from 'koa-history-api-fallback';
+import { FeathersKoaContext } from '@feathersjs/koa/src/declarations';
+import { FeathersError } from '@feathersjs/errors';
 
 const swagger = require('feathers-swagger');
 
@@ -28,7 +30,19 @@ app.configure(configuration(configurationValidator));
 
 // Set up Koa middleware
 app.use(cors());
-app.use(errorHandler());
+app.use(async (ctx: FeathersKoaContext, next: () => Promise<any>) => {
+    // Errors any error besides service not found
+    await next().catch((error: any) => {
+      ctx.response.status = error instanceof FeathersError ? error.code : 500;
+      ctx.body =
+        typeof error.toJSON === 'function'
+          ? error.toJSON()
+          : {
+            message: error.message
+          };
+    });
+  }
+);
 app.use(parseAuthentication());
 app.use(bodyParser());
 
