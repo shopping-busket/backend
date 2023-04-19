@@ -11,7 +11,7 @@ import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { ListParams } from './list.class';
 import { randomUUID } from 'crypto';
-import { onlyAllowInternal } from '../../helpers/channelSecurity';
+import { onlyAllowInternalValue } from '../../helpers/channelSecurity';
 
 
 const entryProperties = Type.Object({
@@ -78,8 +78,8 @@ export const listPatchResolver = resolve<List, HookContext>({
   name: checkIfOwner<string>,
   description: checkIfOwner<string>,
   backgroundURI: checkIfOwner<string>,
-  entries: onlyAllowInternal<any>,
-  checkedEntries: onlyAllowInternal<any>,
+  entries: onlyAllowInternalValue<any>,
+  checkedEntries: onlyAllowInternalValue<any>,
 });
 
 // Schema for allowed query properties
