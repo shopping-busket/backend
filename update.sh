@@ -12,7 +12,7 @@ COLOR_ERROR="\u001b[38;5;124m"
 COLOR_RESET="\u001b[0m"
 TAG="${COLOR_CYAN}[update.sh]$COLOR_RESET"
 
-cd "${0%/*}" || exit 1
+cd "${0%/*}" || fatal "Failed to cd into script dir!"
 cd ..
 
 if [ "$(id -u)" -eq 0 ]; then
@@ -20,25 +20,30 @@ if [ "$(id -u)" -eq 0 ]; then
   exit 2
 fi
 
+PROC=$$
+trap "exit 1" SIGUSR1
+fatal() {
+  echo -e "$TAG ${COLOR_ERROR}Fatal: $*${COLOR_RESET}" >&2
+  kill -10 $PROC
+}
+
 pull() {
   echo -e "$TAG Pulling $1..."
-  if cd "$1" || exit 1 && git pull; then
+  if cd "$1" || fatal "cd $1 failed!" && git pull; then
     echo -e "$TAG git pull $1: OK"
     cd ..
   else
-    echo -e "$TAG git pull $1: Failed!"
-    exit 1
+    fatal "git pull $1: Failed!"
   fi
 }
 
 compile_frontend() {
   echo "Compiling frontend..."
   (
-    cd "web" || exit 1
+    cd "web" || fatal "Failed to cd into web"
     rm -rf "dist/"*
     if ! yarn build; then
-      echo -e "${COLOR_ERROR}Error: Failed to compile frontend!${COLOR_RESET}"
-      exit 1
+      fatal "Failed to compile frontend!"
     fi
   )
 }
@@ -54,10 +59,9 @@ flush_copy_frontend() {
 compile_backend() {
   echo -e "$TAG Compiling backend..."
   (
-    cd "backend" || exit 1
+    cd "backend" || fatal "Failed to cd into backend!"
     if ! yarn compile; then
-      echo -e "${COLOR_ERROR}Error: Failed to compile backend!${COLOR_RESET}"
-      exit 1
+      fatal "Failed to compile backend!"
     fi
   )
 }
