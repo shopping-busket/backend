@@ -8,34 +8,38 @@
 
 COLOR_CYAN="\u001b[38;5;4m"
 COLOR_WARN="\u001b[38;5;220m"
+COLOR_ERROR="\u001b[38;5;124m"
 COLOR_RESET="\u001b[0m"
 TAG="${COLOR_CYAN}[update.sh]$COLOR_RESET"
 
-cd "${0%/*}" || exit
+cd "${0%/*}" || exit 1
 cd ..
 
 if [ "$(id -u)" -eq 0 ]; then
   echo -e "$TAG ${COLOR_WARN}WARNING: This program shall not be run with root. Exiting!$COLOR_RESET"
-  exit
+  exit 2
 fi
 
 pull() {
   echo -e "$TAG Pulling $1..."
-  if cd "$1" || exit && git pull; then
+  if cd "$1" || exit 1 && git pull; then
     echo -e "$TAG git pull $1: OK"
     cd ..
   else
     echo -e "$TAG git pull $1: Failed!"
-    exit
+    exit 1
   fi
 }
 
 compile_frontend() {
   echo "Compiling frontend..."
   (
-    cd "web" || exit
+    cd "web" || exit 1
     rm -rf "dist/"*
-    yarn build
+    if ! yarn build; then
+      echo -e "${COLOR_ERROR}Error: Failed to compile frontend!${COLOR_RESET}"
+      exit 1
+    fi
   )
 }
 
@@ -50,8 +54,11 @@ flush_copy_frontend() {
 compile_backend() {
   echo -e "$TAG Compiling backend..."
   (
-    cd "backend" || exit
-    yarn compile
+    cd "backend" || exit 1
+    if ! yarn compile; then
+      echo -e "${COLOR_ERROR}Error: Failed to compile backend!${COLOR_RESET}"
+      exit 1
+    fi
   )
 }
 
