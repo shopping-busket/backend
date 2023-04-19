@@ -29,11 +29,11 @@ fatal() {
 
 pull() {
   echo -e "$TAG Pulling $1..."
-  if cd "$1" || fatal "cd $1 failed!" && git pull; then
-    echo -e "$TAG git pull $1: OK"
+  if cd "$1" || fatal "cd $1 failed!" && git pull --recurse-submodules; then
+    echo -e "$TAG git pull --recurse-submodules $1: OK"
     cd ..
   else
-    fatal "git pull $1: Failed!"
+    fatal "git pull --recurse-submodules $1: Failed!"
   fi
 }
 
