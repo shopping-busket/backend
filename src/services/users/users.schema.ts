@@ -14,13 +14,13 @@ import { app } from '../../app';
 export const userSchema = Type.Object(
   {
     id: Type.Number(),
-    uuid: Type.Optional(Type.String({ format: 'uuid' })),
+    uuid: Type.String({ format: 'uuid' }),
 
     email: Type.String({ format: 'email' }),
-    password: Type.Optional(Type.String()),
+    password: Type.String(),
 
-    fullName: Type.Optional(Type.String()),
-    avatarURI: Type.Optional(Type.String()),
+    fullName: Type.String(),
+    avatarURI: Type.String(),
 
     preferredLanguage: Type.Optional(Type.String({ default: 'en' })),
     prefersDarkMode: Type.Optional(Type.Boolean({ default: false })),
@@ -49,7 +49,6 @@ export const userDataSchema = Type.Pick(
     'email',
     'password',
     'fullName',
-    'avatarURI',
     'preferredLanguage',
     'prefersDarkMode',
     'prefersMiniDrawer',
@@ -64,6 +63,9 @@ export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({
   password: passwordHash({ strategy: 'local' }),
   uuid: async () => randomUUID(),
+  fullName: async (value) => {
+    if (value && value.length > 0) return value;
+  },
   avatarURI: async (value, user) => {
     // If the user passed an avatar image, use it
     if (value !== undefined) {
