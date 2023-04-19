@@ -38,7 +38,7 @@ pull() {
 }
 
 compile_frontend() {
-  echo "Compiling frontend..."
+  echo -e "$TAG Compiling frontend..."
   (
     cd "web" || fatal "Failed to cd into web"
     rm -rf "dist/"*
