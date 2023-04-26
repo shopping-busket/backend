@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0'>
+  <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+  <title>Busket</title>
+</head>
+<body>
+<div class='fake-nav'>
+  <div class='brand'>Busket</div>
+</div>
+
+<main>
+  <div class='card'>
+    <div class='title'>Maintenance</div>
+    <div class='subtitle'>Error 503</div>
+    <article lang='en'>
+      Busket is currently undergoing maintenance and won't be reachable for some time. This includes the web- and mobile app. Please try again later, or, if
+      the problem persists contact us.
+    </article>
+  </div>
+</main>
+
+
+</body>
+
+<style>
+    .fake-nav {
+        background: #01916d;
+        height: 4rem;
+        width: 100vw;
+
+        display: flex;
+        align-items: center;
+        padding-left: 2rem;
+
+        user-select: none;
+    }
+
+    .fake-nav > .brand {
+        font-size: 1.2rem;
+    }
+
+    body {
+        font-family: Roboto, Arial, sans-serif;
+        padding: 0;
+        margin: 0;
+    }
+
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    body > main > .card {
+        width: 500px;
+        border: 1px solid grey;
+        border-radius: 10px;
+        padding: 0.75rem;
+    }
+
+    body > .card {
+        width: 500px;
+        border: 1px solid grey;
+        border-radius: 10px;
+        padding: 0.7rem;
+    }
+
+    body > main > .card > .title {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    body > main > .card > .subtitle {
+        opacity: 0.7;
+        margin-bottom: 7px;
+    }
+</style>
+</html>
