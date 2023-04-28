@@ -5,7 +5,7 @@ import type { Application } from '../../declarations';
 import type { Event, EventData, EventPatch, EventQuery } from './event.schema';
 import { EventReceiver } from './eventReceiver';
 import { app } from '../../app';
-import { Forbidden, NotFound } from '@feathersjs/errors';
+import { BadRequest, Forbidden, NotFound } from '@feathersjs/errors';
 import { IShoppingList } from '../../shoppinglist/ShoppingList';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { EventType } from '../../shoppinglist/events';
@@ -31,7 +31,7 @@ export class EventService<ServiceParams extends EventParams = EventParams>
   async create(dataArray: EventData, params: ServiceParams): Promise<Event>
   async create(dataArray: EventData[], params: ServiceParams): Promise<Event[]>
   async create(dataArray: EventData | EventData[], params: ServiceParams): Promise<Event | Event[]> {
-    if (!Array.isArray(dataArray)) return dataArray;
+    if (!Array.isArray(dataArray)) throw new BadRequest('dataArray should be type of array!');
     const knex = app.get('postgresqlClient');
 
     for (const data of dataArray) {
