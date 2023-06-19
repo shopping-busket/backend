@@ -1,4 +1,4 @@
-import { EntryList, IShoppingList, IShoppingListItem, ShoppingListItem } from '../../shoppinglist/ShoppingList';
+import { EntryList, IShoppingList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { BadRequest, NotFound } from '@feathersjs/errors';
 import { Knex } from 'knex';
 import { type EventData as Event } from '../../shoppinglist/events';
@@ -29,20 +29,22 @@ export interface RawEventData {
   eventData: Event,
 }
 
+export interface EntryStateUpdate {
+  entries?: Record<string, any>,
+  checkedEntries?: Record<string, any>,
+}
+
 export type NewEntryState = {
-  update: {
-    entries?: Record<string, any>,
-    checkedEntries?: Record<string, any>,
-  },
+  update: EntryStateUpdate,
   found: boolean,
 };
 export type NewEntryStateAsync = Promise<NewEntryState>;
 
 export interface FoundEntry {
   foundIn: EntryList,
-  foundObj: ShoppingListItem[],
+  foundObj: IShoppingListItem[],
   index: number,
-  entry: FoundEntry
+  entry: IShoppingListItem
 }
 
 export class EventReceiver {
@@ -95,24 +97,21 @@ export class EventReceiver {
   }
 
   async modifyEntryState(eventData: EventData, key: string, val: boolean | string): NewEntryStateAsync {
-    const { event, entries } = eventData;
-    entries.find((t: IShoppingListItem) => t.id === event.entryId);
+    const { event, entries, checkedEntries } = eventData;
+    const foundEntry = this.globalFind(entries, checkedEntries ?? [], (t: IShoppingListItem) => t.id === event.entryId) ?? null;
 
     let found = false;
-    let updated = {};
-    for (let i = 0; i < entries.length; i++) {
-      const entry: IShoppingListItem = entries[i];
-
-      if (entry.id === event.entryId) {
-        if (key === 'name' && typeof val === 'string') {
-          entry.name = val;
-        } else if (typeof val === 'boolean') {
-          return Promise.reject('Deprecation Warn: Action skipped because modifying entry.done is now deprecated. Put it in the checkedEntries list instead.');
-        }
-
-        found = true;
-        updated = { entries };
+    let updated: Partial<EntryStateUpdate> = {};
+    if (foundEntry != null) {
+      if (key === 'name' && typeof val === 'string') {
+        foundEntry.foundObj[foundEntry.index].name = val;
+      } else if (typeof val === 'boolean') {
+        return Promise.reject('Deprecation Warn: Action skipped because modifying entry.done is now deprecated. Put it in the checkedEntries list instead.');
       }
+
+      found = true;
+      updated = { entries };
+      updated[foundEntry.foundIn] = foundEntry.foundObj
     }
 
     return {
@@ -205,16 +204,16 @@ export class EventReceiver {
     await this.postgresClient('list').where('listid', '=', this.currentList.listid).update(newState.update).catch(console.log);
   }
 
-  private globalFind(entries: IShoppingListItem[], checkedEntries: IShoppingListItem[], predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | undefined {
+  private globalFind(entries: IShoppingListItem[], checkedEntries: IShoppingListItem[], predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | null {
     let index = -1;
-    let entry;
+    let foundEntry: FoundEntry | null = null;
     const d = {
       entries,
       checkedEntries,
     };
 
-    ['entries', 'checkedEntries'].every((k: string) => {
-      entry = d[k as EntryList].find((_v, _i, _obj) => {
+    (['entries', 'checkedEntries'] as EntryList[]).every((k) => {
+      let entry = d[k as EntryList].find((_v, _i, _obj) => {
         const condition = predicate(_v, _i, _obj, k as EntryList);
         if (condition) index = _i;
 
@@ -222,11 +221,15 @@ export class EventReceiver {
       }) as IShoppingListItem;
 
       if (entry === undefined) return true;
-      (entry as unknown as FoundEntry).index = index;
-      (entry as unknown as FoundEntry).foundIn = k as EntryList;
+      foundEntry = {
+        entry,
+        index,
+        foundIn: k,
+        foundObj: k === 'entries' ? entries : checkedEntries,
+      }
       return false;
     });
 
-    return entry;
+    return foundEntry;
   }
 }
