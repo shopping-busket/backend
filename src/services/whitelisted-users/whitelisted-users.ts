@@ -45,7 +45,7 @@ export const whitelistedUsers = (app: Application) => {
     return app.channel(app.channels).filter(conn => conn.user.uuid === requireDataToBeObject(whitelistedUser).user);
   });
 
-  // Publish patched to list owner
+  // Publish patched to list owner & patched client
   app.service(whitelistedUsersPath).publish('patched', async (_whitelistedUser: WhitelistedUsers | WhitelistedUsers[] | Paginated<WhitelistedUsers>) => {
     const knex = app.get('postgresqlClient');
     const whitelisted = requireDataToBeObject(_whitelistedUser);
