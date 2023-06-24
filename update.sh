@@ -67,8 +67,8 @@ compile_backend() {
 }
 
 copy_error_pages() {
-  echo -e "$TAG Copying nginx-error-pages to /home/www/hosts/busket.bux.at/"
-  cp "nginx-error-pages/" "/home/www/hosts/busket.bux.at/"
+  echo -e "$TAG Enter password for action: copy nginx-error-pages to /home/www/hosts/busket.bux.at/"
+  sudo cp -r "nginx-error-pages/" "/home/www/hosts/busket.bux.at/"
 }
 
 pull "backend"
