@@ -51,8 +51,6 @@ export class EventService<ServiceParams extends EventParams = EventParams>
         if (!canEditEntries) throw new Forbidden('You are not allowed to edit ANY entry data. DELETE_ENTRY is part of this!');
         if (data.eventData.event === EventType.DELETE_ENTRY && !canDeleteEntries) throw new Forbidden('You are not allowed to emit events of type DELETE_ENTRY!');
       }
-
-      const newState = (await this.eventReceiver.receive({ event: data.eventData, list }));
       // await this.eventReceiver.applyUpdateIfFound(newState);
     }
 
