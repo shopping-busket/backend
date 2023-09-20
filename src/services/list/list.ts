@@ -66,8 +66,10 @@ export const list = (app: Application) => {
         return ctx;
       }],
       create: [async (ctx: HookContext<ListService>) => {
+        if (ctx.result === undefined) return;
         const data = _.castArray(ctx.result);
         await Promise.all(data.map(d => addToLibrary(requireDataToBeObject(d)?.owner ?? 'Error', requireDataToBeObject(d)?.listid ?? 'Error')));
+        if (data && data.length == 1) ctx.result = _.clone(data[0]);
       }],
     },
     error: {
