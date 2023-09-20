@@ -3,7 +3,7 @@ import type { Params, ServiceInterface } from '@feathersjs/feathers';
 
 import type { Application } from '../../declarations';
 import type { Event, EventData, EventPatch, EventQuery } from './event.schema';
-import { EventReceiver } from './eventReceiver';
+import { EventReceiver } from './eventReceiver-fix2';
 import { app } from '../../app';
 import { BadRequest, Forbidden, NotFound } from '@feathersjs/errors';
 import { IShoppingList } from '../../shoppinglist/ShoppingList';
@@ -53,7 +53,7 @@ export class EventService<ServiceParams extends EventParams = EventParams>
       }
 
       const newState = (await this.eventReceiver.receive({ event: data.eventData, list }));
-      await this.eventReceiver.applyUpdateIfFound(newState);
+      // await this.eventReceiver.applyUpdateIfFound(newState);
     }
 
     return dataArray;
