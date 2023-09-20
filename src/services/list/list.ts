@@ -59,8 +59,8 @@ export const list = (app: Application) => {
 
         const result: ServerInternalList[] = (Array.isArray(ctx.result) ? ctx.result : [ctx.result]) as unknown as ServerInternalList[];
         ctx.result = result.map(r => {
-          r.entries = (r.entries as ServerInternalItems).items;
-          r.checkedEntries = (r.checkedEntries as ServerInternalItems).items;
+          if (r.entries && (r.entries as ServerInternalItems).items) r.entries = (r.entries as ServerInternalItems).items;
+          if (r.checkedEntries && (r.checkedEntries as ServerInternalItems).items) r.checkedEntries = (r.checkedEntries as ServerInternalItems).items;
           return r;
         });
         return ctx;
