@@ -12,8 +12,8 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name').notNullable();
     table.string('description');
 
-    table.specificType('entries', 'JSON[]');
-    table.specificType('checkedEntries', 'JSON[]');
+    table.specificType('entries', 'JSONB[]'); // [{ items: [] }]
+    table.specificType('checkedEntries', 'JSONB[]');
 
     table.string('backgroundURI').nullable();
   });
