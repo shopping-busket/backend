@@ -12,6 +12,8 @@ import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema'
 import { ListParams } from './list.class';
 import { randomUUID } from 'crypto';
 import { onlyAllowInternalValue } from '../../helpers/channelSecurity';
+import { IShoppingListItem } from '../../shoppinglist/ShoppingList';
+import _ from 'lodash';
 
 
 const entryProperties = Type.Object({
@@ -49,9 +51,16 @@ export const listDataSchema = Type.Pick(listSchema, ['name', 'description', 'ent
 });
 export type ListData = Static<typeof listDataSchema>
 export const listDataValidator = getValidator(listDataSchema, dataValidator);
+/*export const internalListDataSchema = Type.Intersect([
+  listSchema,
+  serverInternalEntryProperties,
+]);*/
+// type InternalListDataSchema = Static<typeof internalListDataSchema>;
 export const listDataResolver = resolve<List, HookContext>({
   listid: async () => randomUUID(),
   owner: async (value, list, ctx) => (ctx.params as ListParams).user?.uuid,
+  entries: async (value) => ({ items: _.castArray(value) } as unknown as IShoppingListItem[]),
+  checkedEntries: async (value) => ({ items: _.castArray(value) } as unknown as IShoppingListItem[])
 });
 
 // Schema for updating existing entries
@@ -92,7 +101,7 @@ export const listQuerySchema = Type.Intersect(
   ],
   { additionalProperties: false },
 );
-export type ListQuery = Static<typeof listQuerySchema>
+export type ListQuery = Static<typeof listQuerySchema>;
 export const listQueryValidator = getValidator(listQuerySchema, queryValidator);
 export const listQueryResolver = resolve<ListQuery, HookContext>({
   id: async (value, shoppingList, context) => {

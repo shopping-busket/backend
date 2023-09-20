@@ -63,6 +63,7 @@
     "@feathersjs/socketio": "5.0.1",
     "@feathersjs/transport-commons": "5.0.1",
     "@feathersjs/typebox": "5.0.1",
+    "@types/lodash": "^4.14.198",
     "@types/nodemailer": "^6.4.7",
     "feathers-swagger": "^3.0.0",
     "knex": "^2.4.2",

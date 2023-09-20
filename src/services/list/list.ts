@@ -20,6 +20,7 @@ import { listMethods, listPath } from './list.shared';
 import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
 import { addToLibrary } from '../../helpers/libraryHelper';
 import { ServerInternalItems, ServerInternalList } from '../event/eventReceiver-fix2';
+import _ from 'lodash';
 
 export * from './list.class';
 export * from './list.schema';
@@ -56,7 +57,6 @@ export const list = (app: Application) => {
     },
     after: {
       all: [async (ctx: HookContext<ListService>) => {
-
         const result: ServerInternalList[] = (Array.isArray(ctx.result) ? ctx.result : [ctx.result]) as unknown as ServerInternalList[];
         ctx.result = result.map(r => {
           if (r.entries && (r.entries as ServerInternalItems).items) r.entries = (r.entries as ServerInternalItems).items;
@@ -66,7 +66,8 @@ export const list = (app: Application) => {
         return ctx;
       }],
       create: [async (ctx: HookContext<ListService>) => {
-        await addToLibrary(requireDataToBeObject(ctx.result)?.owner ?? 'Error', requireDataToBeObject(ctx.result)?.listid ?? 'Error');
+        const data = _.castArray(ctx.result);
+        await Promise.all(data.map(d => addToLibrary(requireDataToBeObject(d)?.owner ?? 'Error', requireDataToBeObject(d)?.listid ?? 'Error')));
       }],
     },
     error: {

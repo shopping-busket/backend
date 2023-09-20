@@ -1,6 +1,7 @@
 import { EntryList, IShoppingList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { Knex } from 'knex';
 import { type EventData as Event } from '../../shoppinglist/events';
+import { List } from '../list/list.schema';
 
 export interface EventData {
   event: Event,
@@ -44,6 +45,10 @@ export interface FoundEntry {
   index: number,
   entry: IShoppingListItem
 }
+
+export type ServerInternalItems = { items: IShoppingListItem[] };
+export type ServerInternalEntryLists = { entries: ServerInternalItems, checkedEntries: ServerInternalItems };
+export type ServerInternalList = List | List & ServerInternalEntryLists;
 
 export class EventReceiver {
   private postgresClient: Knex<any, any>;
@@ -97,11 +102,11 @@ export class EventReceiver {
   public async createEntry(eventData: EventData, isCheckedEntry?: boolean): Promise<EventData> {
     const col = isCheckedEntry ? 'checkedEntries' : 'entries';
     // update list set "entries" = jsonb_insert("entries", '{items,0}', '{"name": "test2"}'::jsonb) where id = 0;
-    console.log(await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
+    await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
       col,
       listId: eventData.listId,
       data: { id: eventData.event.entryId, ...eventData.event.state },
-    }));
+    });
     return eventData;
     // return this.generateEntryChanges(entries, true, isCheckedEntry);
   }
