@@ -19,6 +19,7 @@ import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
 import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
 import { addToLibrary } from '../../helpers/libraryHelper';
+import { ServerInternalItems, ServerInternalList } from '../event/eventReceiver-fix2';
 
 export * from './list.class';
 export * from './list.schema';
@@ -54,7 +55,16 @@ export const list = (app: Application) => {
       remove: [],
     },
     after: {
-      all: [],
+      all: [async (ctx: HookContext<ListService>) => {
+
+        const result: ServerInternalList[] = (Array.isArray(ctx.result) ? ctx.result : [ctx.result]) as unknown as ServerInternalList[];
+        ctx.result = result.map(r => {
+          r.entries = (r.entries as ServerInternalItems).items;
+          r.checkedEntries = (r.checkedEntries as ServerInternalItems).items;
+          return r;
+        });
+        return ctx;
+      }],
       create: [async (ctx: HookContext<ListService>) => {
         await addToLibrary(requireDataToBeObject(ctx.result)?.owner ?? 'Error', requireDataToBeObject(ctx.result)?.listid ?? 'Error');
       }],
