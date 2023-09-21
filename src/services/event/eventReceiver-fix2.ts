@@ -1,18 +1,8 @@
-import { EntryList, IShoppingList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
+import { EntryList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { Knex } from 'knex';
-import { type EventData as Event } from '../../shoppinglist/events';
+import { EventData } from './event.schema';
 import { List } from '../list/list.schema';
 
-export interface EventData {
-  event: Event,
-  list?: IShoppingList,
-  listId?: string,
-}
-
-export interface EventReceiverData {
-  event: Event,
-  list: IShoppingList,
-}
 
 export enum EventType {
   MOVE_ENTRY = 'MOVE_ENTRY',
@@ -57,7 +47,7 @@ export class EventReceiver {
     this.postgresClient = postgresClient;
   }
 
-  public async receive({ event, list }: EventReceiverData): Promise<EventData> {
+  public async receive(data: EventData): Promise<EventData> {
     /*
     if (event.event === EventType.MARK_ENTRY_TODO || event.event == EventType.MARK_ENTRY_DONE) {
       return await this.markEntryAsDone({
@@ -72,19 +62,16 @@ export class EventReceiver {
 
     // console.log(await this.postgresClient.raw("select entries '\\?' 'items' from list;"));
 
-    const eventData: EventData = { event, listId: list.listid };
-    switch (event.event) {
+    switch (data.eventData.event) {
     case EventType.CREATE_ENTRY:
-      return await this.createEntry(eventData);
+      return await this.createEntry(data);
 
     case EventType.MOVE_ENTRY:
       // return await this.moveEntry(eventData);
       break;
 
     case EventType.DELETE_ENTRY:
-      break;
-
-//      return await this.deleteEntry(eventData);
+      return await this.deleteEntry(data);
 
     case EventType.CHANGED_ENTRY_NAME:
       break;
@@ -96,18 +83,26 @@ export class EventReceiver {
       break;
     }
 
-    return eventData;
+    return data;
   }
 
-  public async createEntry(eventData: EventData, isCheckedEntry?: boolean): Promise<EventData> {
+  public async createEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
     const col = isCheckedEntry ? 'checkedEntries' : 'entries';
-    // update list set "entries" = jsonb_insert("entries", '{items,0}', '{"name": "test2"}'::jsonb) where id = 0;
     await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
       col,
-      listId: eventData.listId,
-      data: { id: eventData.event.entryId, ...eventData.event.state },
+      listId: data.listid,
+      data: { id: data.eventData.entryId, ...data.eventData.state },
     });
-    return eventData;
-    // return this.generateEntryChanges(entries, true, isCheckedEntry);
+    return data;
+  }
+
+  public async deleteEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
+    const col = isCheckedEntry ? 'checkedEntries' : 'entries';
+    await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
+      col,
+      listId: data.listid,
+      entryId: data.eventData.entryId,
+    });
+    return data;
   }
 }
