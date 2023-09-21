@@ -66,11 +66,17 @@ compile_backend() {
   )
 }
 
+copy_error_pages() {
+  echo -e "$TAG Enter password for action: copy nginx-error-pages to /home/www/hosts/busket.bux.at/"
+  sudo cp -r "nginx-error-pages/" "/home/www/hosts/busket.bux.at/"
+}
+
 pull "backend"
 pull "web"
 compile_frontend
 flush_copy_frontend
 compile_backend
+copy_error_pages
 
 echo -e "$TAG Done! Enter password to start via systemctl"
 sudo systemctl restart busket
