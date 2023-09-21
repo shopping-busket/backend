@@ -52,8 +52,6 @@ export class EventReceiver {
       return this.markEntryAs(data, data.eventData.event == EventType.MARK_ENTRY_DONE);
     }
 
-    // console.log(await this.postgresClient.raw("select entries '\\?' 'items' from list;"));
-
     switch (data.eventData.event) {
     case EventType.CREATE_ENTRY:
       return this.createEntry(data);
@@ -66,9 +64,7 @@ export class EventReceiver {
       return this.deleteEntry(data);
 
     case EventType.CHANGED_ENTRY_NAME:
-      break;
-
-      //    return await this.renameEntry(eventData);
+      return this.renameEntry(data);
 
     default:
       await Promise.reject('Received unknown event type!');
@@ -102,6 +98,15 @@ export class EventReceiver {
     await this.createEntry(data, markAsDone);
     this.postgresClient.raw('COMMIT;');
     return data;
+  }
+
+  public async renameEntry(data: EventData) {
+    return this.postgresClient.raw('update list set :col: = jsonb_set(:col:::jsonb, (\'{items,\' || (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int || \',name}\')::text[], \':name:\'::jsonb) where listid = :listId;', {
+      entryId: data.eventData.entryId,
+      col: this.getListByCheckedState(false),
+      listId: data.listid,
+      name: data.eventData.state.name,
+    }).debug(true);
   }
 
   private getListByCheckedState(checked: boolean) {
