@@ -2,6 +2,7 @@ import { EntryList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { Knex } from 'knex';
 import { EventData } from './event.schema';
 import { List } from '../list/list.schema';
+import { NotImplemented } from '@feathersjs/errors';
 
 
 export enum EventType {
@@ -83,6 +84,10 @@ export class EventReceiver {
     return data;
   }
 
+  private getListByCheckedState(checked: boolean) {
+    return checked ? 'checkedEntries' : 'entries';
+  }
+
   public async deleteEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
     await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
       col: this.getListByCheckedState(isCheckedEntry ?? true),
@@ -100,7 +105,7 @@ export class EventReceiver {
     return data;
   }
 
-  public async renameEntry(data: EventData) {
+  public async renameEntry(data: EventData): Promise<EventData> {
     return this.postgresClient.raw('update list set :col: = jsonb_set(:col:::jsonb, (\'{items,\' || (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int || \',name}\')::text[], \':name:\'::jsonb) where listid = :listId;', {
       entryId: data.eventData.entryId,
       col: this.getListByCheckedState(false),
@@ -109,7 +114,7 @@ export class EventReceiver {
     }).debug(true);
   }
 
-  private getListByCheckedState(checked: boolean) {
-    return checked ? 'checkedEntries' : 'entries';
+  public async moveEntry(data: EventData): Promise<EventData> {
+    throw new NotImplemented();
   }
 }
