@@ -79,7 +79,6 @@ export class EventReceiver {
   }
 
   public async createEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
-    const col = isCheckedEntry ? 'checkedEntries' : 'entries';
     await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
       col: this.getListByCheckedState(isCheckedEntry ?? false),
       listId: data.listid,
