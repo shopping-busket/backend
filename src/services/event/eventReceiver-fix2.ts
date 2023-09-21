@@ -48,30 +48,22 @@ export class EventReceiver {
   }
 
   public async receive(data: EventData): Promise<EventData> {
-    /*
-    if (event.event === EventType.MARK_ENTRY_TODO || event.event == EventType.MARK_ENTRY_DONE) {
-      return await this.markEntryAsDone({
-        event,
-        entries,
-        checkedEntries,
-        list,
-        listId: list.listid,
-      }, event.event == EventType.MARK_ENTRY_DONE);
+    if (data.eventData.event === EventType.MARK_ENTRY_TODO || data.eventData.event == EventType.MARK_ENTRY_DONE) {
+      return this.markEntryAs(data, data.eventData.event == EventType.MARK_ENTRY_DONE);
     }
-     */
 
     // console.log(await this.postgresClient.raw("select entries '\\?' 'items' from list;"));
 
     switch (data.eventData.event) {
     case EventType.CREATE_ENTRY:
-      return await this.createEntry(data);
+      return this.createEntry(data);
 
     case EventType.MOVE_ENTRY:
       // return await this.moveEntry(eventData);
       break;
 
     case EventType.DELETE_ENTRY:
-      return await this.deleteEntry(data);
+      return this.deleteEntry(data);
 
     case EventType.CHANGED_ENTRY_NAME:
       break;
@@ -89,20 +81,31 @@ export class EventReceiver {
   public async createEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
     const col = isCheckedEntry ? 'checkedEntries' : 'entries';
     await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
-      col,
+      col: this.getListByCheckedState(isCheckedEntry ?? false),
       listId: data.listid,
-      data: { id: data.eventData.entryId, ...data.eventData.state },
+      data: { id: data.eventData.entryId, name: data.eventData.state.name },
     });
     return data;
   }
 
   public async deleteEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
-    const col = isCheckedEntry ? 'checkedEntries' : 'entries';
     await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
-      col,
+      col: this.getListByCheckedState(isCheckedEntry ?? true),
       listId: data.listid,
       entryId: data.eventData.entryId,
     });
     return data;
+  }
+
+  public async markEntryAs(data: EventData, markAsDone: boolean): Promise<EventData> {
+    this.postgresClient.raw('BEGIN;');
+    await this.deleteEntry(data, !markAsDone);
+    await this.createEntry(data, markAsDone);
+    this.postgresClient.raw('COMMIT;');
+    return data;
+  }
+
+  private getListByCheckedState(checked: boolean) {
+    return checked ? 'checkedEntries' : 'entries';
   }
 }
