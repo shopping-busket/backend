@@ -5,7 +5,7 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
-import { EventType } from './eventReceiver';
+import { EventType } from './eventReceiver-fix2';
 import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { List } from '../list/list.schema';

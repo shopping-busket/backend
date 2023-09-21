@@ -1,19 +1,9 @@
-import { EntryList, IShoppingList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
-import { BadRequest, NotFound } from '@feathersjs/errors';
+import { EntryList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { Knex } from 'knex';
-import { type EventData as Event } from '../../shoppinglist/events';
+import { EventData } from './event.schema';
+import { List } from '../list/list.schema';
+import { NotImplemented } from '@feathersjs/errors';
 
-export interface EventData {
-  event: Event,
-  entries: IShoppingListItem[],
-  checkedEntries?: IShoppingListItem[],
-  list?: IShoppingList
-}
-
-export interface EventReceiverData {
-  event: Event,
-  list: IShoppingList,
-}
 
 export enum EventType {
   MOVE_ENTRY = 'MOVE_ENTRY',
@@ -47,189 +37,84 @@ export interface FoundEntry {
   entry: IShoppingListItem
 }
 
+export type ServerInternalItems = { items: IShoppingListItem[] };
+export type ServerInternalEntryLists = { entries: ServerInternalItems, checkedEntries: ServerInternalItems };
+export type ServerInternalList = List | List & ServerInternalEntryLists;
+
 export class EventReceiver {
-  private currentList: IShoppingList | null = null;
   private postgresClient: Knex<any, any>;
 
   constructor(postgresClient: Knex<any, any>) {
     this.postgresClient = postgresClient;
   }
 
-  public async receive({ event, list }: EventReceiverData): NewEntryStateAsync {
-    const entries = list.entries;
-    const checkedEntries = list.checkedEntries;
-    this.currentList = list;
-
-    if (event.event === EventType.MARK_ENTRY_TODO || event.event == EventType.MARK_ENTRY_DONE) {
-      return await this.markEntryAsDone({
-        event,
-        entries,
-        checkedEntries,
-        list,
-      }, event.event == EventType.MARK_ENTRY_DONE);
+  public async receive(data: EventData): Promise<EventData> {
+    if (data.eventData.event === EventType.MARK_ENTRY_TODO || data.eventData.event == EventType.MARK_ENTRY_DONE) {
+      return this.markEntryAs(data, data.eventData.event == EventType.MARK_ENTRY_DONE);
     }
 
-    const eventData: EventData = { event, entries, checkedEntries };
-    let res: NewEntryState = { found: false, update: {} };
-    switch (event.event) {
+    switch (data.eventData.event) {
     case EventType.CREATE_ENTRY:
-      res = await this.createEntry(eventData);
-      break;
+      return this.createEntry(data);
 
     case EventType.MOVE_ENTRY:
-      res = await this.moveEntry(eventData);
+      // return await this.moveEntry(eventData);
       break;
 
     case EventType.DELETE_ENTRY:
-      res = await this.deleteEntry(eventData);
-      break;
+      return this.deleteEntry(data);
 
     case EventType.CHANGED_ENTRY_NAME:
-      res = await this.renameEntry(eventData);
-      break;
+      return this.renameEntry(data);
 
     default:
       await Promise.reject('Received unknown event type!');
       break;
     }
 
-    return res;
+    return data;
   }
 
-  async modifyEntryState(eventData: EventData, key: string, val: boolean | string): NewEntryStateAsync {
-    const { event, entries, checkedEntries } = eventData;
-    const foundEntry = this.globalFind(entries, checkedEntries ?? [], (t: IShoppingListItem) => t.id === event.entryId) ?? null;
-
-    let found = false;
-    let updated: Partial<EntryStateUpdate> = {};
-    if (foundEntry != null) {
-      if (key === 'name' && typeof val === 'string') {
-        foundEntry.foundObj[foundEntry.index].name = val;
-      } else if (typeof val === 'boolean') {
-        return Promise.reject('Deprecation Warn: Action skipped because modifying entry.done is now deprecated. Put it in the checkedEntries list instead.');
-      }
-
-      found = true;
-      updated = { entries };
-      updated[foundEntry.foundIn] = foundEntry.foundObj
-    }
-
-    return {
-      found,
-      update: updated,
-    };
-  }
-
-  public generateEntryChanges(entries: IShoppingListItem[], found: boolean, isCheckedEntry?: boolean): NewEntryState {
-    const changes: NewEntryState = {
-      update: {},
-      found,
-    };
-
-    if (isCheckedEntry != null && isCheckedEntry) {
-      changes.update.checkedEntries = entries;
-    } else {
-      changes.update.entries = entries;
-    }
-
-    return changes;
-  }
-
-  public createEntry({ event, entries }: EventData, isCheckedEntry?: boolean): NewEntryState {
-    entries.unshift({ id: event.entryId, ...event.state });
-
-    return this.generateEntryChanges(entries, true, isCheckedEntry);
-  }
-
-  public async moveEntry({ event, entries }: EventData): NewEntryStateAsync {
-    let found = false;
-    if (event.state.oldIndex == undefined || event.state.newIndex == undefined) return Promise.reject('Missing parameters!');
-
-    entries.forEach((t: IShoppingListItem) => {
-      if (t.id === event.entryId && !found) {
-        if (event.state.oldIndex != null && event.state.newIndex != null) {
-          const entry = entries[event.state.oldIndex];
-
-          entries.splice(event.state.oldIndex, 1);
-          entries.splice(event.state.newIndex, 0, entry);
-          found = true;
-        } else {
-          throw new BadRequest('Missing parameters! oldIndex, newIndex');
-        }
-      }
+  public async createEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
+    await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
+      col: this.getListByCheckedState(isCheckedEntry ?? false),
+      listId: data.listid,
+      data: { id: data.eventData.entryId, name: data.eventData.state.name },
     });
-    if (!found) await Promise.reject('Can\'t find item! Wrong id.');
-
-    return { found, update: { entries } };
+    return data;
   }
 
-  public async deleteEntry(eventData: EventData): NewEntryStateAsync {
-    if (!eventData.checkedEntries) return Promise.reject('checkedEntries not loaded');
-
-    let found = false;
-    const foundEntry = this.globalFind(eventData.entries, eventData.checkedEntries, (t) => t.id === eventData.event.entryId);
-    if (foundEntry == null) return Promise.reject('Item not found!');
-
-    eventData[foundEntry.foundIn]?.splice(foundEntry.index, 1);
-    found = true;
-
-    return this.generateEntryChanges(eventData[foundEntry.foundIn as 'entries'], found, foundEntry.foundIn == 'checkedEntries' || false);
+  private getListByCheckedState(checked: boolean) {
+    return checked ? 'checkedEntries' : 'entries';
   }
 
-  public async renameEntry(eventData: EventData): NewEntryStateAsync {
-    return this.modifyEntryState(eventData, 'name', eventData.event.state.name);
-  }
-
-  public async markEntryAsDone({ event, entries, checkedEntries }: EventData, markAsDone: boolean): NewEntryStateAsync {
-    if (!checkedEntries) return Promise.reject('checkedEntries is null or undefined!');
-
-    if (markAsDone) {
-      await this.applyUpdateIfFound(await this.deleteEntry({ event, entries, checkedEntries }));
-      return this.createEntry({ event, entries: checkedEntries }, true);
-    }
-
-    await this.applyUpdateIfFound(await this.deleteEntry({ entries, checkedEntries, event }));
-    return this.createEntry({ event, entries }, false);
-  }
-
-  public async applyUpdateIfFound(newState: NewEntryState) {
-    if (newState.found) {
-      return this.applyUpdate(newState);
-    }
-    throw new NotFound('Item not found');
-  }
-
-  public async applyUpdate(newState: NewEntryState): Promise<void> {
-    if (!this.currentList) return;
-    await this.postgresClient('list').where('listid', '=', this.currentList.listid).update(newState.update).catch(console.log);
-  }
-
-  private globalFind(entries: IShoppingListItem[], checkedEntries: IShoppingListItem[], predicate: (value: IShoppingListItem, index: number, obj: IShoppingListItem[], foundInList: EntryList) => unknown): FoundEntry | null {
-    let index = -1;
-    let foundEntry: FoundEntry | null = null;
-    const d = {
-      entries,
-      checkedEntries,
-    };
-
-    (['entries', 'checkedEntries'] as EntryList[]).every((k) => {
-      let entry = d[k as EntryList].find((_v, _i, _obj) => {
-        const condition = predicate(_v, _i, _obj, k as EntryList);
-        if (condition) index = _i;
-
-        return condition;
-      }) as IShoppingListItem;
-
-      if (entry === undefined) return true;
-      foundEntry = {
-        entry,
-        index,
-        foundIn: k,
-        foundObj: k === 'entries' ? entries : checkedEntries,
-      }
-      return false;
+  public async deleteEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
+    await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
+      col: this.getListByCheckedState(isCheckedEntry ?? true),
+      listId: data.listid,
+      entryId: data.eventData.entryId,
     });
+    return data;
+  }
 
-    return foundEntry;
+  public async markEntryAs(data: EventData, markAsDone: boolean): Promise<EventData> {
+    this.postgresClient.raw('BEGIN;');
+    await this.deleteEntry(data, !markAsDone);
+    await this.createEntry(data, markAsDone);
+    this.postgresClient.raw('COMMIT;');
+    return data;
+  }
+
+  public async renameEntry(data: EventData): Promise<EventData> {
+    return this.postgresClient.raw('update list set :col: = jsonb_set(:col:::jsonb, (\'{items,\' || (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int || \',name}\')::text[], \':name:\'::jsonb) where listid = :listId;', {
+      entryId: data.eventData.entryId,
+      col: this.getListByCheckedState(false),
+      listId: data.listid,
+      name: data.eventData.state.name,
+    }).debug(true);
+  }
+
+  public async moveEntry(data: EventData): Promise<EventData> {
+    throw new NotImplemented();
   }
 }
