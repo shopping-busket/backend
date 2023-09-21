@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="WS-232.9559.58">
+    <data-source name="busket@localhost" uuid="869024cb-d6c4-48b9-b05a-e51a6f3ac191">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" exact-version="0" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>busket-client</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" negative="1">
+            <node kind="schema" negative="1" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+  </component>
+</project>
