@@ -78,8 +78,10 @@ export class EventReceiver {
 
   public async moveEntry(data: EventData): Promise<EventData> {
     if (typeof data.eventData.state.oldIndex !== 'number' || typeof data.eventData.state.newIndex !== 'number') throw new BadRequest('state.oldIndex and state.newIndex have to be type of number and must exist!');
+    this.postgresClient.raw('BEGIN;');
     await this.deleteEntry(data, false);
     await this.createEntry(data, false, data.eventData.state.newIndex);
+    this.postgresClient.raw('COMMIT;');
     return data;
   }
 }
