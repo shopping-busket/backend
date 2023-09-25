@@ -5,12 +5,12 @@ import { getValidator, querySyntax, Type } from '@feathersjs/typebox';
 
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
-import { EventType } from './eventReceiver';
 import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { List } from '../list/list.schema';
 import { EventParams } from './event.class';
 import { BadRequest, Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors';
+import { EventType } from './eventReceiver.types';
 
 // Main data model schema
 export const eventSchema = Type.Object(
