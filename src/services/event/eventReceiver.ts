@@ -20,8 +20,7 @@ export class EventReceiver {
       return this.createEntry(data);
 
     case EventType.MOVE_ENTRY:
-      // return await this.moveEntry(eventData);
-      break;
+      return await this.moveEntry(data);
 
     case EventType.DELETE_ENTRY:
       return this.deleteEntry(data);
@@ -37,9 +36,10 @@ export class EventReceiver {
     return data;
   }
 
-  public async createEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
-    await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,0}\', :data::jsonb) WHERE listId = :listId;', {
-      col: this.getListByCheckedState(isCheckedEntry ?? false),
+  public async createEntry(data: EventData, isCheckedEntry = false, atIndex = 0): Promise<EventData> {
+    await this.postgresClient.raw('UPDATE list SET :col: = jsonb_insert(:col:, \'{items,:atIndex:}\', :data::jsonb) WHERE listId = :listId;', {
+      atIndex,
+      col: this.getListByCheckedState(isCheckedEntry),
       listId: data.listid,
       data: { id: data.eventData.entryId, name: data.eventData.state.name },
     });
@@ -50,9 +50,9 @@ export class EventReceiver {
     return checked ? 'checkedEntries' : 'entries';
   }
 
-  public async deleteEntry(data: EventData, isCheckedEntry?: boolean): Promise<EventData> {
+  public async deleteEntry(data: EventData, isCheckedEntry = true): Promise<EventData> {
     await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
-      col: this.getListByCheckedState(isCheckedEntry ?? true),
+      col: this.getListByCheckedState(isCheckedEntry),
       listId: data.listid,
       entryId: data.eventData.entryId,
     });
@@ -77,6 +77,9 @@ export class EventReceiver {
   }
 
   public async moveEntry(data: EventData): Promise<EventData> {
-    throw new NotImplemented();
+    if (typeof data.eventData.state.oldIndex !== 'number' || typeof data.eventData.state.newIndex !== 'number') throw new BadRequest('state.oldIndex and state.newIndex have to be type of number and must exist!');
+    await this.deleteEntry(data, false);
+    await this.createEntry(data, false, data.eventData.state.newIndex);
+    return data;
   }
 }
