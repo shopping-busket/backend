@@ -1,45 +1,7 @@
-import { EntryList, IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import { Knex } from 'knex';
 import { EventData } from './event.schema';
-import { List } from '../list/list.schema';
-import { NotImplemented } from '@feathersjs/errors';
-
-
-export enum EventType {
-  MOVE_ENTRY = 'MOVE_ENTRY',
-  DELETE_ENTRY = 'DELETE_ENTRY',
-  CREATE_ENTRY = 'CREATE_ENTRY',
-  CHANGED_ENTRY_NAME = 'CHANGED_ENTRY_NAME',
-  MARK_ENTRY_DONE = 'MARK_ENTRY_DONE',
-  MARK_ENTRY_TODO = 'MARK_ENTRY_TODO',
-}
-
-export interface RawEventData {
-  listid: string,
-  eventData: Event,
-}
-
-export interface EntryStateUpdate {
-  entries?: Record<string, any>,
-  checkedEntries?: Record<string, any>,
-}
-
-export type NewEntryState = {
-  update: EntryStateUpdate,
-  found: boolean,
-};
-export type NewEntryStateAsync = Promise<NewEntryState>;
-
-export interface FoundEntry {
-  foundIn: EntryList,
-  foundObj: IShoppingListItem[],
-  index: number,
-  entry: IShoppingListItem
-}
-
-export type ServerInternalItems = { items: IShoppingListItem[] };
-export type ServerInternalEntryLists = { entries: ServerInternalItems, checkedEntries: ServerInternalItems };
-export type ServerInternalList = List | List & ServerInternalEntryLists;
+import { BadRequest } from '@feathersjs/errors';
+import { EventType } from './eventReceiver.types';
 
 export class EventReceiver {
   private postgresClient: Knex<any, any>;

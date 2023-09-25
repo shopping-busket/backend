@@ -19,7 +19,7 @@ import { getOptions, ListService } from './list.class';
 import { listMethods, listPath } from './list.shared';
 import { onlyAllowWhitelistedOrOwner, requireDataToBeObject } from '../../helpers/channelSecurity';
 import { addToLibrary } from '../../helpers/libraryHelper';
-import { ServerInternalItems, ServerInternalList } from '../event/eventReceiver';
+import { ServerInternalItems, ServerInternalList } from '../event/eventReceiver.types';
 import _ from 'lodash';
 
 export * from './list.class';
