@@ -73,7 +73,7 @@ export const eventDataResolver = resolve<Event, HookContext>({
     if (loggedInUser === list.owner || whitelistedUsers.includes(loggedInUser)) return value;
     throw new Forbidden('You are not permitted to access this content!');
   },
-  eventData: async (value, event, ctx) => {
+  eventData: async (value) => {
     if (!value) throw new BadRequest('eventData shall not be undefined!');
     if (value.state.name.trim().length <= 0) throw new BadRequest('eventData.state.name must include more than 0 non-whitespace characters!');
 
