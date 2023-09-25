@@ -2,6 +2,9 @@
 public/*
 !public/img/*.*
 
+.idea/dataSources/*
+.idea/dataSources*.*
+
 # yarn
 .pnp.*
 .yarn/*
