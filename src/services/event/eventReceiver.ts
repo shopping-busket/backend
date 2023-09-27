@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 import { EventData } from './event.schema';
 import { BadRequest } from '@feathersjs/errors';
-import { EventType } from './eventReceiver.types';
+import { EventType } from '../../shoppinglist/events';
 
 export class EventReceiver {
   private postgresClient: Knex<any, any>;
@@ -24,6 +24,9 @@ export class EventReceiver {
 
     case EventType.DELETE_ENTRY:
       return this.deleteEntry(data);
+
+    case EventType.CLEAR_DONE:
+      return this.clearDoneEntries(data);
 
     case EventType.CHANGED_ENTRY_NAME:
       return this.renameEntry(data);
@@ -55,6 +58,13 @@ export class EventReceiver {
       col: this.getListByCheckedState(isCheckedEntry),
       listId: data.listid,
       entryId: data.eventData.entryId,
+    });
+    return data;
+  }
+
+  public async clearDoneEntries(data: EventData) {
+    await this.postgresClient.raw('update list set "checkedEntries" = \'{ items: [] }\'::jsonb where listId = :listId;', {
+      listId: data.listid,
     });
     return data;
   }

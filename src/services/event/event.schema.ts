@@ -10,7 +10,7 @@ import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema'
 import { List } from '../list/list.schema';
 import { EventParams } from './event.class';
 import { BadRequest, Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors';
-import { EventType } from './eventReceiver.types';
+import { EventType } from '../../shoppinglist/events';
 
 // Main data model schema
 export const eventSchema = Type.Object(
