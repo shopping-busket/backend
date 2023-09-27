@@ -63,7 +63,7 @@ export class EventReceiver {
   }
 
   public async clearDoneEntries(data: EventData) {
-    await this.postgresClient.raw('update list set "checkedEntries" = \'{ items: [] }\'::jsonb where listId = :listId;', {
+    await this.postgresClient.raw('update list set "checkedEntries" = \'{ \"items\": [] }\'::jsonb where listId = :listId;', {
       listId: data.listid,
     });
     return data;
