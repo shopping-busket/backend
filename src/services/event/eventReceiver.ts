@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { EventData } from './event.schema';
-import { BadRequest } from '@feathersjs/errors';
+import { BadRequest, NotFound } from '@feathersjs/errors';
 import { EventType } from '../../shoppinglist/events';
 
 export class EventReceiver {
@@ -54,10 +54,16 @@ export class EventReceiver {
   }
 
   public async deleteEntry(data: EventData, isCheckedEntry = true): Promise<EventData> {
-    await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int) where "listid" = :listId;', {
+    const rows = (await this.postgresClient.raw('select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId for update;', {
+      col: this.getListByCheckedState(isCheckedEntry),
+      entryId: data.eventData.entryId,
+    })).rows;
+    if (rows.length <= 0) throw new NotFound("Entry cannot be found!");
+    await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - :index::int) where "listid" = :listId;', {
       col: this.getListByCheckedState(isCheckedEntry),
       listId: data.listid,
       entryId: data.eventData.entryId,
+      index: rows[0].pos,
     });
     return data;
   }
@@ -70,10 +76,8 @@ export class EventReceiver {
   }
 
   public async markEntryAs(data: EventData, markAsDone: boolean): Promise<EventData> {
-    this.postgresClient.raw('BEGIN;');
-    await this.deleteEntry(data, !markAsDone);
-    await this.createEntry(data, markAsDone);
-    this.postgresClient.raw('COMMIT;');
+    await this.deleteEntry(data, !markAsDone)
+    await this.createEntry(data, markAsDone)
     return data;
   }
 
