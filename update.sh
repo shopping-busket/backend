@@ -41,6 +41,7 @@ compile_frontend() {
   echo -e "$TAG Compiling frontend..."
   (
     cd "web" || fatal "Failed to cd into web"
+    yarn
     rm -rf "dist/"*
     if ! yarn build; then
       fatal "Failed to compile frontend!"
@@ -60,6 +61,7 @@ compile_backend() {
   echo -e "$TAG Compiling backend..."
   (
     cd "backend" || fatal "Failed to cd into backend!"
+    yarn
     if ! yarn compile; then
       fatal "Failed to compile backend!"
     fi
