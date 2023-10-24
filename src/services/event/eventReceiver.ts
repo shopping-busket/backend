@@ -58,7 +58,10 @@ export class EventReceiver {
       col: this.getListByCheckedState(isCheckedEntry),
       entryId: data.eventData.entryId,
     })).rows;
-    if (rows.length <= 0) throw new NotFound("Entry cannot be found!");
+    if (rows.length <= 0) {
+      await this.postgresClient.raw('ABORT;');
+      throw new NotFound('Entry cannot be found!');
+    }
     await this.postgresClient.raw('update list set :col: = jsonb_set(:col:, \'{items}\', (:col:->\'items\') - :index::int) where "listid" = :listId;', {
       col: this.getListByCheckedState(isCheckedEntry),
       listId: data.listid,
