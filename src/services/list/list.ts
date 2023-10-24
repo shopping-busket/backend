@@ -52,7 +52,10 @@ export const list = (app: Application) => {
       find: [],
       get: [],
       create: [schemaHooks.validateData(listDataValidator), schemaHooks.resolveData(listDataResolver)],
-      patch: [schemaHooks.validateData(listPatchValidator), schemaHooks.resolveData(listPatchResolver)],
+      patch: [schemaHooks.validateData(listPatchValidator), schemaHooks.resolveData(listPatchResolver), (ctx: HookContext<ListService>) => {
+        delete ctx.params.query?.id;
+        return ctx;
+      }],
       remove: [],
     },
     after: {
