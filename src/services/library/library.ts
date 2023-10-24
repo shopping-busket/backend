@@ -19,8 +19,8 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, LibraryService } from './library.class';
 import { libraryMethods, libraryPath } from './library.shared';
-import { List } from '../list/list.schema';
 import { createSwaggerServiceOptions } from 'feathers-swagger';
+import { IShoppingList } from '../../shoppinglist/ShoppingList';
 
 export * from './library.class';
 export * from './library.schema';
@@ -41,7 +41,7 @@ export const library = (app: Application) => {
         securities: ['all'],
         description: 'This service handles the user\'s library of lists.',
 
-      }
+      },
     }),
   });
   // Initialize hooks
@@ -65,9 +65,13 @@ export const library = (app: Application) => {
         const knex = app.get('postgresqlClient');
 
         for (const entry of (ctx.result as Library[])) {
-          entry.list = await knex('list').select().where({
-            listid: entry.listId,
-          }).first() as List;
+          const list = await app.service('list').find({
+            query: {
+              listid: entry.listId,
+            },
+          }) as unknown as IShoppingList[];
+          if (list.length <= 0) continue;
+          entry.list = list[0];
         }
       }],
     },

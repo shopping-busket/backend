@@ -11,7 +11,7 @@ import { app } from '../../app';
 import { WhitelistedUsers } from '../whitelisted-users/whitelisted-users.schema';
 import { ListParams } from './list.class';
 import { randomUUID } from 'crypto';
-import { onlyAllowInternalValue } from '../../helpers/channelSecurity';
+import { calledInternally, onlyAllowInternalValue } from '../../helpers/channelSecurity';
 import { IShoppingListItem } from '../../shoppinglist/ShoppingList';
 import _ from 'lodash';
 
@@ -29,7 +29,7 @@ export const listSchema = Type.Object(
 
     owner: Type.String({ format: 'uuid' }),
 
-    name: Type.String({ minLength: 3 }),
+    name: Type.String({ minLength: 1 }),
     description: Type.String(),
 
     entries: Type.Array(entryProperties),
@@ -71,7 +71,7 @@ export type ListPatch = Static<typeof listPatchSchema>
 export const listPatchValidator = getValidator(listPatchSchema, dataValidator);
 
 const checkIfOwner = async <T>(value: T | undefined, list: Partial<List>, ctx: HookContext): Promise<T | undefined> => {
-  if (!value) return value;
+  if (!value || calledInternally(ctx)) return value;
   if (!(ctx.params.query as List).listid) throw new Error('Patch only allowed with listid as query arg!');
   const knex = app.get('postgresqlClient');
 
@@ -105,7 +105,7 @@ export type ListQuery = Static<typeof listQuerySchema>;
 export const listQueryValidator = getValidator(listQuerySchema, queryValidator);
 export const listQueryResolver = resolve<ListQuery, HookContext>({
   id: async (value, shoppingList, context) => {
-    if (context.method === 'create') return value;
+    if (context.method === 'create' || calledInternally(context)) return value;
     value = context.id as number | undefined;
 
     const knex = app.get('postgresqlClient');
