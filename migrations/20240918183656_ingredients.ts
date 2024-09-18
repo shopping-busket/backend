@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign('recipeId').references('recipe.id').onDelete('CASCADE').onUpdate('CASCADE');
 
     table.string('name').notNullable();
-    table.string('hint').notNullable();
+    table.string('hint').nullable();
 
     table.float('amount').nullable();
     table.string('unit').nullable();
