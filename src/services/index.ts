@@ -1,3 +1,6 @@
+import { recipeComponent } from './recipe-component/recipe-component';
+import { ingredients } from './ingredients/ingredients';
+import { recipe } from './recipe/recipe';
 import { verifyEmail } from './verify-email/verify-email';
 import { library } from './library/library';
 import { viewMail } from './view-mail/view-mail';
@@ -9,6 +12,9 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(recipeComponent);
+  app.configure(ingredients);
+  app.configure(recipe);
   app.configure(verifyEmail);
   app.configure(library);
   app.configure(viewMail);

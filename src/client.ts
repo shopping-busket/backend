@@ -4,6 +4,10 @@ import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 import authenticationClient from '@feathersjs/authentication-client';
 
+import { recipeComponentClient } from './services/recipe-component/recipe-component.shared';
+import { ingredientsClient } from './services/ingredients/ingredients.shared';
+import { recipeClient } from './services/recipe/recipe.shared';
+
 import { verifyEmailClient } from './services/verify-email/verify-email.shared';
 import { libraryClient } from './services/library/library.shared';
 
@@ -14,6 +18,22 @@ import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted
 import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
+
+export type {
+  RecipeComponent,
+  RecipeComponentData,
+  RecipeComponentQuery,
+  RecipeComponentPatch,
+} from './services/recipe-component/recipe-component.shared';
+
+export type {
+  Ingredients,
+  IngredientsData,
+  IngredientsQuery,
+  IngredientsPatch,
+} from './services/ingredients/ingredients.shared';
+
+export type { Recipe, RecipeData, RecipeQuery, RecipePatch } from './services/recipe/recipe.shared';
 
 export type {
   VerifyEmail,
@@ -71,5 +91,8 @@ export const createClient = <Configuration = any>(
   client.configure(viewMailClient);
   client.configure(libraryClient);
   client.configure(verifyEmailClient);
+  client.configure(recipeClient);
+  client.configure(ingredientsClient);
+  client.configure(recipeComponentClient);
   return client;
 };
