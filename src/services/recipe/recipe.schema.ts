@@ -10,7 +10,8 @@ import { dataValidator, queryValidator } from '../../validators';
 export const recipeSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String(),
+    title: Type.String(),
+    ownerId: Type.Integer(),
   },
   { $id: 'Recipe', additionalProperties: false },
 );
@@ -21,7 +22,7 @@ export const recipeResolver = resolve<Recipe, HookContext>({});
 export const recipeExternalResolver = resolve<Recipe, HookContext>({});
 
 // Schema for creating new entries
-export const recipeDataSchema = Type.Pick(recipeSchema, ['text'], {
+export const recipeDataSchema = Type.Pick(recipeSchema, ['title'], {
   $id: 'RecipeData',
 });
 export type RecipeData = Static<typeof recipeDataSchema>;
@@ -37,7 +38,7 @@ export const recipePatchValidator = getValidator(recipePatchSchema, dataValidato
 export const recipePatchResolver = resolve<Recipe, HookContext>({});
 
 // Schema for allowed query properties
-export const recipeQueryProperties = Type.Pick(recipeSchema, ['id', 'text']);
+export const recipeQueryProperties = Type.Pick(recipeSchema, ['id', 'title', 'ownerId']);
 export const recipeQuerySchema = Type.Intersect(
   [
     querySyntax(recipeQueryProperties),

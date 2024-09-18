@@ -10,7 +10,18 @@ import { dataValidator, queryValidator } from '../../validators';
 export const recipeComponentSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String(),
+    recipeId: Type.Integer(),
+    type: Type.Enum({
+      "ul": "ul",
+      "ol": "ol",
+      "text": "text",
+      "subtitle": "subtitle",
+      "image": "image",
+    }),
+    content: Type.Optional(Type.String()),
+    listContent: Type.Optional(Type.Array(Type.String())),
+    note: Type.Optional(Type.String()),
+    sortingOrder: Type.Number(),
   },
   { $id: 'RecipeComponent', additionalProperties: false },
 );
@@ -21,7 +32,7 @@ export const recipeComponentResolver = resolve<RecipeComponent, HookContext>({})
 export const recipeComponentExternalResolver = resolve<RecipeComponent, HookContext>({});
 
 // Schema for creating new entries
-export const recipeComponentDataSchema = Type.Pick(recipeComponentSchema, ['text'], {
+export const recipeComponentDataSchema = Type.Pick(recipeComponentSchema, ['type', 'content', 'listContent', 'note', 'sortingOrder'], {
   $id: 'RecipeComponentData',
 });
 export type RecipeComponentData = Static<typeof recipeComponentDataSchema>;
@@ -37,7 +48,7 @@ export const recipeComponentPatchValidator = getValidator(recipeComponentPatchSc
 export const recipeComponentPatchResolver = resolve<RecipeComponent, HookContext>({});
 
 // Schema for allowed query properties
-export const recipeComponentQueryProperties = Type.Pick(recipeComponentSchema, ['id', 'text']);
+export const recipeComponentQueryProperties = recipeComponentSchema;
 export const recipeComponentQuerySchema = Type.Intersect(
   [
     querySyntax(recipeComponentQueryProperties),
