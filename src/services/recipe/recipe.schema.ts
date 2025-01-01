@@ -11,6 +11,7 @@ export const recipeSchema = Type.Object(
   {
     id: Type.Number(),
     title: Type.String(),
+    description: Type.String(),
     ownerId: Type.Integer(),
   },
   { $id: 'Recipe', additionalProperties: false },
@@ -27,7 +28,9 @@ export const recipeDataSchema = Type.Pick(recipeSchema, ['title'], {
 });
 export type RecipeData = Static<typeof recipeDataSchema>;
 export const recipeDataValidator = getValidator(recipeDataSchema, dataValidator);
-export const recipeDataResolver = resolve<Recipe, HookContext>({});
+export const recipeDataResolver = resolve<Recipe, HookContext>({
+  ownerId: async (value, recipe, ctx) => ctx.params.user.uuid,
+});
 
 // Schema for updating existing entries
 export const recipePatchSchema = Type.Partial(recipeSchema, {
