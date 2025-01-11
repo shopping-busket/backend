@@ -29,6 +29,12 @@ export const recipeStepsSchema = Type.Object(
 export type RecipeSteps = Static<typeof recipeStepsSchema>
 export const recipeStepsValidator = getValidator(recipeStepsSchema, dataValidator);
 export const recipeStepsResolver = resolve<RecipeSteps, HookContext<RecipeStepsService>>({});
+export const HTMLSanitizerOptions: sanitizeHtml.IOptions = {
+  allowedTags: ['b', 's', 'i', 'em', 'strong', 'ul', 'ol', 'li'],
+  allowedAttributes: {},
+  allowedIframeHostnames: [],
+};
+
 
 export const recipeStepsExternalResolver = resolve<RecipeSteps, HookContext<RecipeStepsService>>({});
 
@@ -51,14 +57,7 @@ export const recipeStepsDataResolver = resolve<RecipeSteps, HookContext<RecipeSt
   },
   content: async (value) => {
     if (!value) throw new BadRequest('content shall not be undefined!');
-    // TODO: REFINE SANITIZATION!
-    return sanitizeHtml(value, {
-      allowedTags: ['b', 'i', 'em', 'strong', 'a'],
-      allowedAttributes: {
-        'a': ['href'],
-      },
-      allowedIframeHostnames: ['www.youtube.com'],
-    });
+    return sanitizeHtml(value, HTMLSanitizerOptions);
   },
 });
 
@@ -78,6 +77,10 @@ export const recipeStepsPatchResolver = resolve<RecipeSteps, HookContext<RecipeS
     console.log(recipeOwner);
     if (!recipeOwner) throw new NotFound('The recipe parenting this step was not found or does not belong to the requesting user.');
     return value;
+  },
+  content: async (value) => {
+    if (!value) throw new BadRequest('content shall not be undefined!');
+    return sanitizeHtml(value, HTMLSanitizerOptions);
   },
 });
 
