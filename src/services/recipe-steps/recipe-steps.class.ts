@@ -4,29 +4,24 @@ import type { KnexAdapterOptions, KnexAdapterParams } from '@feathersjs/knex';
 import { KnexService } from '@feathersjs/knex';
 
 import type { Application } from '../../declarations';
-import type {
-  RecipeComponent,
-  RecipeComponentData,
-  RecipeComponentPatch,
-  RecipeComponentQuery,
-} from './recipe-component.schema';
+import type { RecipeSteps, RecipeStepsData, RecipeStepsPatch, RecipeStepsQuery } from './recipe-steps.schema';
 
-export type { RecipeComponent, RecipeComponentData, RecipeComponentPatch, RecipeComponentQuery };
+export type { RecipeSteps, RecipeStepsData, RecipeStepsPatch, RecipeStepsQuery }
 
-export interface RecipeComponentParams extends KnexAdapterParams<RecipeComponentQuery> {}
+export interface RecipeStepsParams extends KnexAdapterParams<RecipeStepsQuery> {}
 
 // By default calls the standard Knex adapter service methods but can be customized with your own functionality.
-export class RecipeComponentService<ServiceParams extends Params = RecipeComponentParams> extends KnexService<
-  RecipeComponent,
-  RecipeComponentData,
-  RecipeComponentParams,
-  RecipeComponentPatch
+export class RecipeStepsService<ServiceParams extends Params = RecipeStepsParams> extends KnexService<
+  RecipeSteps,
+  RecipeStepsData,
+  RecipeStepsParams,
+  RecipeStepsPatch
 > {}
 
 export const getOptions = (app: Application): KnexAdapterOptions => {
   return {
     paginate: app.get('paginate'),
     Model: app.get('postgresqlClient'),
-    name: 'recipe-component',
-  };
-};
+    name: 'recipe-steps'
+  }
+}

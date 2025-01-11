@@ -25,9 +25,11 @@ export const ingredientsResolver = resolve<Ingredients, HookContext>({});
 export const ingredientsExternalResolver = resolve<Ingredients, HookContext>({});
 
 // Schema for creating new entries
-export const ingredientsDataSchema = Type.Pick(ingredientsSchema, ['recipeId', 'name'], {
-  $id: 'IngredientsData',
-});
+export const ingredientsDataSchema = Type.Pick(ingredientsSchema,
+  ['recipeId', 'name', 'hint', 'amount', 'unit'],
+  {
+    $id: 'IngredientsData',
+  });
 export type IngredientsData = Static<typeof ingredientsDataSchema>;
 export const ingredientsDataValidator = getValidator(ingredientsDataSchema, dataValidator);
 export const ingredientsDataResolver = resolve<Ingredients, HookContext>({});

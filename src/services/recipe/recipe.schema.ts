@@ -23,7 +23,7 @@ export const recipeResolver = resolve<Recipe, HookContext>({});
 export const recipeExternalResolver = resolve<Recipe, HookContext>({});
 
 // Schema for creating new entries
-export const recipeDataSchema = Type.Pick(recipeSchema, ['title'], {
+export const recipeDataSchema = Type.Pick(recipeSchema, ['title', 'description'], {
   $id: 'RecipeData',
 });
 export type RecipeData = Static<typeof recipeDataSchema>;
@@ -41,7 +41,7 @@ export const recipePatchValidator = getValidator(recipePatchSchema, dataValidato
 export const recipePatchResolver = resolve<Recipe, HookContext>({});
 
 // Schema for allowed query properties
-export const recipeQueryProperties = Type.Pick(recipeSchema, ['id', 'title', 'ownerId']);
+export const recipeQueryProperties = Type.Pick(recipeSchema, ['id', 'title', 'description', 'ownerId']);
 export const recipeQuerySchema = Type.Intersect(
   [
     querySyntax(recipeQueryProperties),

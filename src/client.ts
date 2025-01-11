@@ -4,7 +4,8 @@ import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 import authenticationClient from '@feathersjs/authentication-client';
 
-import { recipeComponentClient } from './services/recipe-component/recipe-component.shared';
+import { recipeStepsClient } from './services/recipe-steps/recipe-steps.shared';
+
 import { ingredientsClient } from './services/ingredients/ingredients.shared';
 import { recipeClient } from './services/recipe/recipe.shared';
 
@@ -20,51 +21,51 @@ import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
 
 export type {
-  RecipeComponent,
-  RecipeComponentData,
-  RecipeComponentQuery,
-  RecipeComponentPatch,
-} from './services/recipe-component/recipe-component.shared';
+  RecipeSteps,
+  RecipeStepsData,
+  RecipeStepsQuery,
+  RecipeStepsPatch
+} from './services/recipe-steps/recipe-steps.shared'
 
 export type {
   Ingredients,
   IngredientsData,
   IngredientsQuery,
-  IngredientsPatch,
-} from './services/ingredients/ingredients.shared';
+  IngredientsPatch
+} from './services/ingredients/ingredients.shared'
 
-export type { Recipe, RecipeData, RecipeQuery, RecipePatch } from './services/recipe/recipe.shared';
+export type { Recipe, RecipeData, RecipeQuery, RecipePatch } from './services/recipe/recipe.shared'
 
 export type {
   VerifyEmail,
   VerifyEmailData,
-  VerifyEmailQuery,
-} from './services/verify-email/verify-email.shared';
+  VerifyEmailQuery
+} from './services/verify-email/verify-email.shared'
 
-export type { Library, LibraryData, LibraryQuery } from './services/library/library.shared';
+export type { Library, LibraryData, LibraryQuery } from './services/library/library.shared'
 
-export type { ViewMailInvite, ViewMailInviteQuery } from './services/view-mail/view-mail.shared';
+export type { ViewMailInvite, ViewMailInviteQuery } from './services/view-mail/view-mail.shared'
 
 export type {
   WhitelistedUsers,
   WhitelistedUsersData,
   WhitelistedUsersQuery,
-  WhitelistedUsersPatch,
-} from './services/whitelisted-users/whitelisted-users.shared';
+  WhitelistedUsersPatch
+} from './services/whitelisted-users/whitelisted-users.shared'
 
-export type { Event, EventData, EventQuery, EventPatch } from './services/event/event.shared';
+export type { Event, EventData, EventQuery, EventPatch } from './services/event/event.shared'
 
-export type { List, ListData, ListQuery, ListPatch } from './services/list/list.shared';
+export type { List, ListData, ListQuery, ListPatch } from './services/list/list.shared'
 
-export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared';
+export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
 
 export interface Configuration {
-  connection: TransportConnection<ServiceTypes>;
+  connection: TransportConnection<ServiceTypes>
 }
 
 export interface ServiceTypes {}
 
-export type ClientApplication = Application<ServiceTypes, Configuration>;
+export type ClientApplication = Application<ServiceTypes, Configuration>
 
 /**
  * Returns a typed client for the backend app.
@@ -74,25 +75,26 @@ export type ClientApplication = Application<ServiceTypes, Configuration>;
  * @see https://dove.feathersjs.com/api/client.html
  * @returns The Feathers client application
  */
-export const createClient = <Configuration = any>(
+export const createClient = <Configuration = any,>(
   connection: TransportConnection<ServiceTypes>,
-  authenticationOptions: Partial<AuthenticationClientOptions> = {},
+  authenticationOptions: Partial<AuthenticationClientOptions> = {}
 ) => {
-  const client: ClientApplication = feathers();
+  const client: ClientApplication = feathers()
 
-  client.configure(connection);
-  client.configure(authenticationClient(authenticationOptions));
-  client.set('connection', connection);
+  client.configure(connection)
+  client.configure(authenticationClient(authenticationOptions))
+  client.set('connection', connection)
 
-  client.configure(userClient);
-  client.configure(listClient);
-  client.configure(eventClient);
-  client.configure(whitelistedUsersClient);
-  client.configure(viewMailClient);
-  client.configure(libraryClient);
-  client.configure(verifyEmailClient);
-  client.configure(recipeClient);
-  client.configure(ingredientsClient);
-  client.configure(recipeComponentClient);
-  return client;
-};
+  client.configure(userClient)
+  client.configure(listClient)
+  client.configure(eventClient)
+  client.configure(whitelistedUsersClient)
+  client.configure(viewMailClient)
+  client.configure(libraryClient)
+  client.configure(verifyEmailClient)
+  client.configure(recipeClient)
+  client.configure(ingredientsClient)
+  client.configure(recipeComponentClient)
+  client.configure(recipeStepsClient)
+  return client
+}

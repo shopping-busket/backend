@@ -1,4 +1,4 @@
-import { recipeComponent } from './recipe-component/recipe-component';
+import { recipeSteps } from './recipe-steps/recipe-steps';
 import { ingredients } from './ingredients/ingredients';
 import { recipe } from './recipe/recipe';
 import { verifyEmail } from './verify-email/verify-email';
@@ -12,15 +12,15 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
-  app.configure(recipeComponent);
-  app.configure(ingredients);
-  app.configure(recipe);
-  app.configure(verifyEmail);
-  app.configure(library);
-  app.configure(viewMail);
-  app.configure(whitelistedUsers);
-  app.configure(event);
-  app.configure(list);
-  app.configure(user);
+  app.configure(recipeSteps)
+  app.configure(ingredients)
+  app.configure(recipe)
+  app.configure(verifyEmail)
+  app.configure(library)
+  app.configure(viewMail)
+  app.configure(whitelistedUsers)
+  app.configure(event)
+  app.configure(list)
+  app.configure(user)
   // All services will be registered here
-};
+}
