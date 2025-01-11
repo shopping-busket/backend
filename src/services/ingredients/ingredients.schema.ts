@@ -35,7 +35,7 @@ export const ingredientsDataValidator = getValidator(ingredientsDataSchema, data
 export const ingredientsDataResolver = resolve<Ingredients, HookContext>({});
 
 // Schema for updating existing entries
-export const ingredientsPatchSchema = Type.Partial(ingredientsSchema, {
+export const ingredientsPatchSchema = Type.Partial(Type.Omit(ingredientsSchema, ['id', 'recipeId']), {
   $id: 'IngredientsPatch',
 });
 export type IngredientsPatch = Static<typeof ingredientsPatchSchema>;

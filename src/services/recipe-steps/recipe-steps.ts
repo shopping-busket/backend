@@ -3,6 +3,7 @@
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  RecipeSteps,
   recipeStepsDataResolver,
   recipeStepsDataValidator,
   recipeStepsExternalResolver,
@@ -16,6 +17,7 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, RecipeStepsService } from './recipe-steps.class';
 import { recipeStepsMethods, recipeStepsPath } from './recipe-steps.shared';
+import { requireRecipeOwner } from '../recipe/recipe.schema';
 
 export * from './recipe-steps.class'
 export * from './recipe-steps.schema'
@@ -46,13 +48,17 @@ export const recipeSteps = (app: Application) => {
       get: [],
       create: [
         schemaHooks.validateData(recipeStepsDataValidator),
-        schemaHooks.resolveData(recipeStepsDataResolver)
+        schemaHooks.resolveData(recipeStepsDataResolver),
+        async (ctx) => requireRecipeOwner(ctx, (ctx.data as RecipeSteps).recipeId)
       ],
       patch: [
         schemaHooks.validateData(recipeStepsPatchValidator),
-        schemaHooks.resolveData(recipeStepsPatchResolver)
+        schemaHooks.resolveData(recipeStepsPatchResolver),
+        async (ctx) => requireRecipeOwner(ctx, (await app.service('recipe-steps').get(ctx.id!)).recipeId)
       ],
-      remove: []
+      remove: [
+        async (ctx) => requireRecipeOwner(ctx, (await app.service('recipe-steps').get(ctx.id!)).recipeId)
+      ]
     },
     after: {
       all: []

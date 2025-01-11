@@ -3,6 +3,7 @@
 import { hooks as schemaHooks } from '@feathersjs/schema';
 
 import {
+  Ingredients,
   ingredientsDataResolver,
   ingredientsDataValidator,
   ingredientsExternalResolver,
@@ -16,6 +17,9 @@ import {
 import type { Application } from '../../declarations';
 import { getOptions, IngredientsService } from './ingredients.class';
 import { ingredientsMethods, ingredientsPath } from './ingredients.shared';
+import { requireRecipeOwner } from '../recipe/recipe.schema';
+import { BadRequest } from '@feathersjs/errors';
+import _ from 'lodash';
 
 export * from './ingredients.class';
 export * from './ingredients.schema';
@@ -47,12 +51,36 @@ export const ingredients = (app: Application) => {
       create: [
         schemaHooks.validateData(ingredientsDataValidator),
         schemaHooks.resolveData(ingredientsDataResolver),
+        async (ctx) => requireRecipeOwner(ctx, (ctx.data as Ingredients).recipeId),
       ],
       patch: [
         schemaHooks.validateData(ingredientsPatchValidator),
         schemaHooks.resolveData(ingredientsPatchResolver),
+        async (ctx) => {
+          return requireRecipeOwner(ctx, (await app.service('ingredients').get(ctx.id!)).recipeId);
+        },
       ],
-      remove: [],
+      remove: [
+        async (ctx) => {
+          if (ctx.id) return requireRecipeOwner(ctx, (await app.service('ingredients').get(ctx.id!)).recipeId);
+          if (typeof ctx.params.query?.id !== 'number' && Array.isArray(ctx.params.query?.id?.$in)) {
+            const ingredientsWithId = ctx.params.query.id.$in;
+            ctx.params.query = _(ctx.params.query).pick('id.$in').value();
+            if (ingredientsWithId.length <= 0) return ctx;
+
+            const recipeIds: number[] = await app.get('postgresqlClient').raw(`
+                SELECT "recipeId"
+                FROM "ingredients"
+                WHERE ingredients."recipeId" in (${ingredientsWithId.map(_ => '?').join(',')})
+            `, [...ingredientsWithId]);
+
+            for (let id of _.uniq(recipeIds)) await requireRecipeOwner(ctx, id);
+
+            return ctx;
+          }
+          throw new BadRequest('removes on multiple ingredients may only be written using query.id.$in!');
+        },
+      ],
     },
     after: {
       all: [],

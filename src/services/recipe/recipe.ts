@@ -11,6 +11,7 @@ import {
   recipeQueryResolver,
   recipeQueryValidator,
   recipeResolver,
+  requireRecipeOwner,
 } from './recipe.schema';
 
 import type { Application } from '../../declarations';
@@ -39,8 +40,8 @@ export const recipe = (app: Application) => {
       find: [],
       get: [],
       create: [schemaHooks.validateData(recipeDataValidator), schemaHooks.resolveData(recipeDataResolver)],
-      patch: [schemaHooks.validateData(recipePatchValidator), schemaHooks.resolveData(recipePatchResolver)],
-      remove: [],
+      patch: [schemaHooks.validateData(recipePatchValidator), schemaHooks.resolveData(recipePatchResolver), requireRecipeOwner],
+      remove: [requireRecipeOwner],
     },
     after: {
       all: [],

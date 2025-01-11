@@ -14,14 +14,16 @@ export interface RecipeParams extends KnexAdapterParams<RecipeQuery> {
 }
 
 type RecipeWithOwnerFlat = Recipe & {
+  owner_uuid: string,
   owner_name: string,
   owner_avatar_uri?: string,
 };
 
 type RecipeWithOwner = Recipe & {
   owner: {
+    uuid: string,
     fullName: string,
-    avatarURI?: string;
+    avatarURI?: string,
   }
 }
 
@@ -32,23 +34,13 @@ export class RecipeService<ServiceParams extends Params = RecipeParams> extends 
   RecipeParams,
   RecipePatch
 > {
-  // language=PostgreSQL
-  private static baseSelect = `
-      SELECT recipe.id,
-             title,
-             description,
-             "ownerId",
-             u."fullName"  AS owner_name,
-             u."avatarURI" AS owner_avatar_uri
-      FROM recipe
-  `;
-
   private _buildQuery(where: string = '') {
     return `
         SELECT recipe.id,
                title,
                description,
                "ownerId",
+               u."uuid" AS owner_uuid,
                u."fullName"  AS owner_name,
                u."avatarURI" AS owner_avatar_uri
         FROM recipe
@@ -64,6 +56,7 @@ export class RecipeService<ServiceParams extends Params = RecipeParams> extends 
       description: recipe.description,
       ownerId: recipe.ownerId,
       owner: {
+        uuid: recipe.owner_uuid,
         fullName: recipe.owner_name,
         avatarURI: recipe.owner_avatar_uri,
       },
