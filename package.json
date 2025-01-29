@@ -63,6 +63,7 @@
     "@feathersjs/socketio": "5.0.31",
     "@feathersjs/transport-commons": "5.0.31",
     "@feathersjs/typebox": "5.0.31",
+    "@koa/multer": "^3.0.2",
     "@types/lodash": "^4.17.13",
     "@types/nodemailer": "^6.4.17",
     "feathers-swagger": "^3.0.0",
@@ -70,6 +71,7 @@
     "koa-history-api-fallback": "^1.0.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "pg": "8.13.1",
     "sanitize-html": "^2.14.0",
@@ -80,6 +82,7 @@
   "devDependencies": {
     "@feathersjs/cli": "^5.0.31",
     "@feathersjs/rest-client": "5.0.31",
+    "@types/koa__multer": "^2.0.7",
     "@types/mocha": "10.0.10",
     "@types/node": "22.10.2",
     "@types/pg": "^8.11.10",

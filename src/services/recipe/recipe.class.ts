@@ -7,6 +7,7 @@ import type { Application } from '../../declarations';
 import type { Recipe, RecipeData, RecipePatch, RecipeQuery } from './recipe.schema';
 import { app } from '../../app';
 import { NotFound } from '@feathersjs/errors';
+import _ from 'lodash';
 
 export type { Recipe, RecipeData, RecipePatch, RecipeQuery };
 
@@ -40,6 +41,9 @@ export class RecipeService<ServiceParams extends Params = RecipeParams> extends 
                title,
                description,
                "ownerId",
+               "headerImagePath",
+               "headerImageAlt",
+               "headerImageNote",
                u."uuid" AS owner_uuid,
                u."fullName"  AS owner_name,
                u."avatarURI" AS owner_avatar_uri
@@ -51,10 +55,7 @@ export class RecipeService<ServiceParams extends Params = RecipeParams> extends 
   private _mapRecipe(recipe: RecipeWithOwnerFlat): RecipeWithOwner {
     if (!recipe) return recipe;
     return {
-      id: recipe.id,
-      title: recipe.title,
-      description: recipe.description,
-      ownerId: recipe.ownerId,
+      ...(_.omit(recipe, ['owner_name', 'owner_uuid', 'owner_avatar_uri'])),
       owner: {
         uuid: recipe.owner_uuid,
         fullName: recipe.owner_name,

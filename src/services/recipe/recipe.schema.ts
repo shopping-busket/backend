@@ -15,6 +15,10 @@ export const recipeSchema = Type.Object(
     title: Type.String(),
     description: Type.String(),
     ownerId: Type.Integer(),
+
+    headerImagePath: Type.Union([Type.String(), Type.Null()]),
+    headerImageAlt: Type.Union([Type.String(), Type.Null()]),
+    headerImageNote: Type.Union([Type.String(), Type.Null()]),
   },
   { $id: 'Recipe', additionalProperties: false },
 );
@@ -47,7 +51,10 @@ export const recipeDataResolver = resolve<Recipe, HookContext>({
 });
 
 // Schema for updating existing entries
-export const recipePatchSchema = Type.Partial(Type.Omit(recipeSchema, ['id', 'ownerId']), {
+export const recipePatchSchema = Type.Partial(Type.Omit(recipeSchema, [
+  'id',
+  'ownerId',
+]), {
   $id: 'RecipePatch',
 });
 export type RecipePatch = Static<typeof recipePatchSchema>;
@@ -57,7 +64,15 @@ export const recipePatchResolver = resolve<Recipe, HookContext>({
 });
 
 // Schema for allowed query properties
-export const recipeQueryProperties = Type.Pick(recipeSchema, ['id', 'title', 'description', 'ownerId']);
+export const recipeQueryProperties = Type.Pick(recipeSchema, [
+  'id',
+  'title',
+  'description',
+  'ownerId',
+  'headerImagePath',
+  'headerImageAlt',
+  'headerImageNote',
+]);
 export const recipeQuerySchema = Type.Intersect(
   [
     querySyntax(recipeQueryProperties),

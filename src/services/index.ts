@@ -1,3 +1,4 @@
+import { fileUpload } from './file-upload/file-upload';
 import { recipeSteps } from './recipe-steps/recipe-steps';
 import { ingredients } from './ingredients/ingredients';
 import { recipe } from './recipe/recipe';
@@ -12,6 +13,7 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(fileUpload)
   app.configure(recipeSteps)
   app.configure(ingredients)
   app.configure(recipe)

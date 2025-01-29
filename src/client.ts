@@ -4,6 +4,8 @@ import { feathers } from '@feathersjs/feathers';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 import authenticationClient from '@feathersjs/authentication-client';
 
+import { fileUploadClient } from './services/file-upload/file-upload.shared';
+
 import { recipeStepsClient } from './services/recipe-steps/recipe-steps.shared';
 
 import { ingredientsClient } from './services/ingredients/ingredients.shared';
@@ -19,6 +21,13 @@ import { whitelistedUsersClient } from './services/whitelisted-users/whitelisted
 import { eventClient } from './services/event/event.shared';
 import { listClient } from './services/list/list.shared';
 import { userClient } from './services/users/users.shared';
+
+export type {
+  FileUpload,
+  FileUploadSchema,
+  FileUploadQuery,
+  FileUploadPatch
+} from './services/file-upload/file-upload.shared'
 
 export type {
   RecipeSteps,
@@ -96,5 +105,6 @@ export const createClient = <Configuration = any,>(
   client.configure(ingredientsClient)
   client.configure(recipeComponentClient)
   client.configure(recipeStepsClient)
+  client.configure(fileUploadClient)
   return client
 }
