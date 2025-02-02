@@ -103,7 +103,6 @@ export const createClient = <Configuration = any,>(
   client.configure(verifyEmailClient)
   client.configure(recipeClient)
   client.configure(ingredientsClient)
-  client.configure(recipeComponentClient)
   client.configure(recipeStepsClient)
   client.configure(fileUploadClient)
   return client

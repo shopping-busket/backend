@@ -1341,15 +1341,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa__multer@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "@types/koa__multer@npm:2.0.7"
-  dependencies:
-    "@types/koa": "*"
-  checksum: 044fa237e085e59966825866fef836277dd151f639597c31512300eaeb6348d232457db77916081d427690af5212bb6c941635aacad96aaddb9e8d3e67b48fba
-  languageName: node
-  linkType: hard
-
 "@types/lodash@npm:^4.17.13":
   version: 4.17.13
   resolution: "@types/lodash@npm:4.17.13"
@@ -1759,7 +1750,6 @@ __metadata:
     "@feathersjs/transport-commons": 5.0.31
     "@feathersjs/typebox": 5.0.31
     "@koa/multer": ^3.0.2
-    "@types/koa__multer": ^2.0.7
     "@types/lodash": ^4.17.13
     "@types/mocha": 10.0.10
     "@types/node": 22.10.2

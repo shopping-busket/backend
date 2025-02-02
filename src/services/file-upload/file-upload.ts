@@ -16,6 +16,7 @@ import { hooks as schemaHooks } from '@feathersjs/schema';
 
 export * from './file-upload.class';
 
+// @ts-ignore
 const upload = multer();
 
 
