@@ -100,11 +100,11 @@ export class EventReceiver {
   }
 
   public async renameEntry(data: EventData): Promise<EventData> {
-    return this.postgresClient.raw('update list set :col: = jsonb_set(:col:::jsonb, (\'{items,\' || (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int || \',name}\')::text[], \':name:\'::jsonb) where listid = :listId;', {
+    return this.postgresClient.raw('update list set :col: = jsonb_set(:col:::jsonb, (\'{items,\' || (select pos - 1 as pos from list, jsonb_array_elements(:col:->\'items\') with ordinality arr(elems, pos) where elems ->> \'id\' = :entryId)::int || \',name}\')::text[], :name::jsonb) where listid = :listId;', {
       entryId: data.eventData.entryId,
       col: this.getListByCheckedState(false),
       listId: data.listid,
-      name: data.eventData.state.name,
+      name: JSON.stringify(data.eventData.state.name)
     }).debug(true);
   }
 
