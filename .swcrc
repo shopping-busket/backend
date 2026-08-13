@@ -1,0 +1,39 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "module": {
+    "type": "commonjs",
+    // These are defaults.
+    "strict": true,
+    "strictMode": true,
+    "lazy": false,
+  },
+  "sourceMaps": true,
+  "jsc": {
+    "minify": {
+      "compress": {
+        "unused": true,
+      },
+      "mangle": true
+    },
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "parser": {
+      "syntax": "typescript",
+      "jsx": false,
+      "dynamicImport": true,
+      "privateMethod": true,
+      "functionBind": false,
+      "topLevelAwait": true,
+      "importMeta": false,
+      "preserveAllComments": false
+    },
+    "target": "es2020",
+    "externalHelpers": false,
+    "keepClassNames": true
+  },
+  "isModule": true
+}
