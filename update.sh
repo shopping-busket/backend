@@ -61,8 +61,8 @@ compile_backend() {
   echo -e "$TAG Compiling backend..."
   (
     cd "backend" || fatal "Failed to cd into backend!"
-    yarn
-    if ! yarn compile; then
+    pnpm install
+    if ! pnpm compile; then
       fatal "Failed to compile backend!"
     fi
   )
