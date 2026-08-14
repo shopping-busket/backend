@@ -15,6 +15,7 @@ import nodemailer from 'nodemailer';
 import historyApiFallback from 'koa-history-api-fallback';
 import { FeathersKoaContext } from '@feathersjs/koa/src/declarations';
 import { FeathersError } from '@feathersjs/errors';
+import createTransportOrConsoleFallback from './helpers/mailer';
 
 const swagger = require('feathers-swagger');
 
@@ -100,16 +101,10 @@ app.hooks({
 
 // Setup mailtransporter
 const mailer = app.get('mailer');
-app.set('mailTransporter', nodemailer.createTransport({
-  host: mailer.host,
-  port: 587,
-  secure: false,
-  auth: {
-    user: mailer.address,
-    pass: mailer.password,
-  },
-}));
 app.set('mailFrom', `${mailer.name} <${mailer.address}>`);
+(async () => {
+  app.set('mailTransporter', await createTransportOrConsoleFallback());
+})();
 
 if (!app.get('verifyEmails') && process.env.NODE_ENV === 'production') console.warn('verifyEmails is set to false! This means that the backend won\'t require users to have verified their emails. It is not recommended to have this disabled in production!');
 
