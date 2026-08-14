@@ -83,9 +83,9 @@
   "devDependencies": {
     "@feathersjs/cli": "^5.0.48",
     "@feathersjs/rest-client": "5.0.48",
+    "@swc-node/core": "^1.15.0",
     "@swc-node/register": "^1.12.1",
     "@swc/cli": "^0.8.1",
-    "@swc-node/core": "^1.15.0",
     "@types/mocha": "10.0.10",
     "@types/node": "26.2.0",
     "@types/pg": "^8.21.0",
